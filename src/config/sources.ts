@@ -34,8 +34,17 @@ export interface Source {
   icon: string;        // ionicons name
   baseUrl: string;
   jurisdiction: Jurisdiction;
-  /** Funzione che recupera la lista news della fonte */
-  fetchNews: (page?: number) => Promise<SourceNewsItem[]>;
+  /**
+   * Modalità di visualizzazione delle news:
+   * - 'native': estrae le news con `fetchNews` e le mostra come card native (PST, GT)
+   * - 'webview': mostra direttamente la pagina news del sito in una WebView
+   *   (usato per fonti con problemi SSL o markup instabile, es. GA)
+   */
+  viewMode?: 'native' | 'webview';
+  /** URL della pagina news per il viewMode 'webview' */
+  newsUrl?: string;
+  /** Funzione che recupera la lista news della fonte (solo per viewMode='native') */
+  fetchNews?: (page?: number) => Promise<SourceNewsItem[]>;
 }
 
 export const SOURCES: Source[] = [
@@ -47,6 +56,7 @@ export const SOURCES: Source[] = [
     icon: 'shield-half-outline',
     baseUrl: 'https://pst.giustizia.it/PST/',
     jurisdiction: 'comuni',
+    viewMode: 'native',
     fetchNews: fetchPstNews,
   },
   {
@@ -57,7 +67,15 @@ export const SOURCES: Source[] = [
     icon: 'business-outline',
     baseUrl: 'https://www.giustizia-amministrativa.it/news',
     jurisdiction: 'amministrativo',
-    fetchNews: fetchGiustiziaAmministrativaNews,
+    /**
+     * Il sito GA ha una catena di certificati SSL non standard che fa fallire
+     * la verifica su molti runtime (CapacitorHttp / fetch nativo).
+     * Visualizzazione diretta in WebView nativa: garantisce sempre il contenuto
+     * aggiornato senza dipendere da scraping fragile.
+     */
+    viewMode: 'webview',
+    newsUrl: 'https://www.giustizia-amministrativa.it/news',
+    fetchNews: fetchGiustiziaAmministrativaNews, // disponibile come fallback
   },
   {
     id: 'gt',
@@ -67,6 +85,7 @@ export const SOURCES: Source[] = [
     icon: 'wallet-outline',
     baseUrl: 'https://www.dgt.mef.gov.it/gt/',
     jurisdiction: 'tributario',
+    viewMode: 'native',
     fetchNews: fetchGiustiziaTributariaNews,
   },
 ];

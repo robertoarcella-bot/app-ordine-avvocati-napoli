@@ -5,7 +5,7 @@ import {
 } from '@ionic/react';
 import {
   newspaperOutline, globeOutline, documentsOutline,
-  appsOutline, lockClosedOutline, informationCircleOutline,
+  appsOutline, lockClosedOutline,
   shieldHalfOutline,
 } from 'ionicons/icons';
 import { useEffect, useState, useCallback } from 'react';
@@ -24,7 +24,6 @@ const QUICK_TILES = [
   { label: 'Strumenti', icon: appsOutline, route: '/miniapps', color: 'primary' },
   { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'secondary' },
   { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'tertiary' },
-  { label: 'Info', icon: informationCircleOutline, route: '/info', color: 'medium' },
 ];
 
 const CACHE_KEY_LATEST = 'home:latest-news';

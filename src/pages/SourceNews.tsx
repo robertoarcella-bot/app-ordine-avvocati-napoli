@@ -1,18 +1,19 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonButtons, IonBackButton, IonCard, IonCardContent,
-  IonSpinner, IonText, IonButton, IonRefresher, IonRefresherContent,
-  IonInfiniteScroll, IonInfiniteScrollContent, IonChip, IonIcon,
+  IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
+  IonCard, IonCardContent, IonText,
+  IonRefresher, IonRefresherContent,
+  IonInfiniteScroll, IonInfiniteScrollContent, IonChip,
 } from '@ionic/react';
 import type { RefresherEventDetail } from '@ionic/core';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
 import { format, parseISO } from 'date-fns';
 import { it as itLocale } from 'date-fns/locale';
 import { getSource, type SourceNewsItem } from '../config/sources';
 import { cacheGet, cacheSet } from '../services/cache';
-import { openOutline, alertCircleOutline } from 'ionicons/icons';
+import { openOutline, alertCircleOutline, refreshOutline } from 'ionicons/icons';
 
 interface RouteParams { sourceId: string }
 
@@ -28,11 +29,12 @@ const SourceNews: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const cacheKey = `source:${sourceId}:p1`;
 
   const loadFirst = useCallback(async (force = false) => {
-    if (!source) return;
+    if (!source || !source.fetchNews) return;
     setError(null);
     if (!force) {
       const cached = await cacheGet<SourceNewsItem[]>(cacheKey);
@@ -59,10 +61,9 @@ const SourceNews: React.FC = () => {
   }, [source, cacheKey]);
 
   const loadMore = useCallback(async () => {
-    if (!source) return;
+    if (!source || !source.fetchNews) return;
     try {
       const data = await source.fetchNews(page);
-      // Filtra duplicati (lista PST ripete spesso le stesse news in primo piano)
       const existing = new Set(items.map(i => i.id));
       const fresh = data.filter(d => !existing.has(d.id));
       if (fresh.length === 0) {
@@ -76,7 +77,15 @@ const SourceNews: React.FC = () => {
     }
   }, [source, page, items]);
 
-  useEffect(() => { void loadFirst(); }, [loadFirst]);
+  const isWebview = source?.viewMode === 'webview';
+
+  useEffect(() => {
+    if (source && source.viewMode !== 'webview') {
+      void loadFirst();
+    } else {
+      setLoading(false);
+    }
+  }, [loadFirst, source]);
 
   const onRefresh = async (e: CustomEvent<RefresherEventDetail>) => {
     await loadFirst(true);
@@ -107,6 +116,12 @@ const SourceNews: React.FC = () => {
     );
   }
 
+  // -------- WEBVIEW MODE: mostra direttamente la pagina news del sito --------
+  if (isWebview) {
+    return <SourceWebView source={source} reloadKey={reloadKey} bumpReload={() => setReloadKey(k => k + 1)} />;
+  }
+
+  // -------- NATIVE MODE: lista nativa con cards --------
   return (
     <IonPage>
       <IonHeader>
@@ -210,6 +225,64 @@ const SourceNews: React.FC = () => {
         >
           <IonInfiniteScrollContent loadingText="Carico altre news..." />
         </IonInfiniteScroll>
+      </IonContent>
+    </IonPage>
+  );
+};
+
+// ---------------------------------------------------------------------------
+
+interface WebViewProps {
+  source: NonNullable<ReturnType<typeof getSource>>;
+  reloadKey: number;
+  bumpReload: () => void;
+}
+
+const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }) => {
+  const url = source.newsUrl || source.baseUrl;
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+  }, [url, reloadKey]);
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/processo-telematico" />
+          </IonButtons>
+          <IonTitle style={{ fontSize: 16 }}>{source.shortLabel}</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={bumpReload}>
+              <IonIcon slot="icon-only" icon={refreshOutline} />
+            </IonButton>
+            <IonButton onClick={() => Browser.open({ url })}>
+              <IonIcon slot="icon-only" icon={openOutline} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        {loading && (
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            backgroundColor: 'rgba(255,255,255,0.85)', zIndex: 10,
+          }}>
+            <IonSpinner name="dots" />
+          </div>
+        )}
+        <iframe
+          key={reloadKey}
+          ref={iframeRef}
+          src={url}
+          title={source.shortLabel}
+          onLoad={() => setLoading(false)}
+          style={{ border: 'none', width: '100%', height: '100%' }}
+        />
       </IonContent>
     </IonPage>
   );
