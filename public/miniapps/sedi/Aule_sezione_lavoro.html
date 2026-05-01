@@ -1,250 +1,313 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario Udienze Giudici</title>
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --bg-color: #f4f7f6;
-            --table-border: #bdc3c7;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Calendario Udienze — Sezione Lavoro Napoli</title>
+<style>
+  :root {
+    --primary: #0066CC;
+    --primary-dark: #003F7F;
+    --bg: #f5f7fa;
+    --card-bg: #fff;
+    --border: #e1e6ec;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --chip-bg: #eef4fb;
+    --chip-active: #0066CC;
+    --chip-active-text: #fff;
+    --secondary: #C9A24A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1820;
+      --card-bg: #15212c;
+      --border: #243646;
+      --text: #e8eef5;
+      --muted: #9aa6b3;
+      --chip-bg: #1c2b39;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 14px 12px 24px; }
 
-        .container {
-            width: 100%;
-            max-width: 800px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+  h1 { font-size: 20px; margin: 4px 0 4px; color: var(--primary-dark); }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
 
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
+  .controls {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .search-row { position: relative; }
+  #judgeSearch {
+    width: 100%; padding: 11px 38px 11px 14px; font-size: 16px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--card-bg); color: var(--text); outline: none;
+  }
+  #judgeSearch:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,102,204,0.15); }
+  #clearBtn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: transparent; border: none; font-size: 18px;
+    color: var(--muted); cursor: pointer; padding: 4px 8px; line-height: 1;
+    display: none;
+  }
+  #clearBtn.show { display: block; }
 
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            align-items: center;
-        }
+  .filters {
+    display: flex; gap: 6px; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+  }
+  .chip {
+    flex: 0 0 auto;
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--chip-bg); color: var(--text);
+    border: 1px solid transparent; font-size: 13px; font-weight: 600;
+    cursor: pointer; user-select: none; white-space: nowrap;
+  }
+  .chip.active { background: var(--chip-active); color: var(--chip-active-text); }
 
-        #judgeSearch {
-            width: 100%;
-            max-width: 300px;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: 1px solid var(--table-border);
-            border-radius: 4px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
+  .count { font-size: 12px; color: var(--muted); margin: 4px 0 8px; text-align: right; }
 
-        #judgeSearch:focus {
-            border-color: var(--primary-color);
-        }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 560px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 800px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
 
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid var(--table-border);
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #e8f4f8;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-            color: #7f8c8d;
-            display: none;
-        }
-    </style>
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .judge-name {
+    font-size: 16px; font-weight: 700; color: var(--primary-dark);
+    line-height: 1.2;
+  }
+  .badge {
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px; background: var(--secondary); color: #000;
+    flex: 0 0 auto;
+  }
+  .meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .days { display: flex; gap: 6px; flex-wrap: wrap; }
+  .day {
+    font-size: 12px; font-weight: 700; padding: 4px 10px;
+    border-radius: 6px; background: var(--chip-bg); color: var(--primary-dark);
+    border: 1px solid rgba(0,102,204,0.15);
+  }
+  .empty { color: var(--muted); font-style: italic; font-size: 13px; }
+  .nores {
+    text-align: center; padding: 32px 12px; color: var(--muted);
+    background: var(--card-bg); border: 1px dashed var(--border); border-radius: 12px;
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Calendario Udienze</h1>
-    
-    <div class="search-container">
-        <input type="text" id="judgeSearch" list="judge-datalist" placeholder="Cerca giudice..." oninput="filterTableByJudge()">
-        <datalist id="judge-datalist"></datalist>
-        <button onclick="resetSearch()" style="padding: 10px 15px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">Resetta</button>
-    </div>
+<div class="wrap">
+  <h1>Calendario Udienze</h1>
+  <div class="subtitle">Sezione Lavoro — Tribunale di Napoli</div>
 
-    <div class="table-responsive">
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>GIUDICI</th>
-                    <th>SEZIONE</th>
-                    <th>PIANO</th>
-                    <th colspan="2">GIORNI DI UDIENZA</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                </tbody>
-        </table>
-        <div id="noResults" class="no-results">Nessun risultato trovato.</div>
+  <div class="controls">
+    <div class="search-row">
+      <input type="text" id="judgeSearch" list="judgeDatalist" placeholder="Cerca giudice…" autocomplete="off" />
+      <datalist id="judgeDatalist"></datalist>
+      <button id="clearBtn" aria-label="Cancella" type="button">&times;</button>
     </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Filtra per giorno</div>
+      <div class="filters" id="dayFilters">
+        <button class="chip active" data-day="">Tutti</button>
+        <button class="chip" data-day="LUN">Lun</button>
+        <button class="chip" data-day="MART">Mar</button>
+        <button class="chip" data-day="MERC">Mer</button>
+        <button class="chip" data-day="GIOV">Gio</button>
+        <button class="chip" data-day="VEN">Ven</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Filtra per sezione</div>
+      <div class="filters" id="sectionFilters">
+        <button class="chip active" data-section="">Tutte</button>
+        <button class="chip" data-section="I">Sez. I</button>
+        <button class="chip" data-section="II">Sez. II</button>
+        <button class="chip" data-section="III">Sez. III</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="count" id="countLabel"></div>
+  <div class="grid" id="grid"></div>
+  <div class="nores" id="nores" style="display:none;">Nessun giudice trovato con i filtri attuali.</div>
 </div>
 
 <script>
-    // Dati estratti dall'immagine
-    const judgesData = [
-        { name: "ALFANO", section: "III", floor: "10", day1: "MART", day2: "GIOV" },
-        { name: "AMMENDOLA", section: "III", floor: "11", day1: "MART", day2: "MERC" },
-        { name: "ARMATO", section: "II", floor: "9", day1: "MART", day2: "GIOV" },
-        { name: "BENEDUCE", section: "I", floor: "8", day1: "MART", day2: "MERC" },
-        { name: "BILE", section: "II", floor: "8", day1: "MART", day2: "GIOV" },
-        { name: "BORRELLI", section: "I", floor: "8", day1: "MART", day2: "GIOV" },
-        { name: "BRIZZI", section: "I", floor: "7", day1: "MART", day2: "MERC" },
-        { name: "CARDELLICCHIO", section: "I", floor: "7", day1: "MART", day2: "GIOV" },
-        { name: "CIARAMELLA", section: "II", floor: "9", day1: "LUN", day2: "GIOV" },
-        { name: "COPPOLA", section: "III", floor: "11", day1: "MART", day2: "MERC" },
-        { name: "CORREGGIA", section: "II", floor: "10", day1: "MART", day2: "GIOV" },
-        { name: "D'AURIA", section: "I", floor: "7", day1: "MERC", day2: "GIOV" },
-        { name: "DELL'ERARIO", section: "II", floor: "8", day1: "MART", day2: "MERC" },
-        { name: "DI LORENZO", section: "II", floor: "9", day1: "LUN", day2: "MERC" },
-        { name: "DE MATTEIS", section: "I", floor: "7", day1: "MART", day2: "GIOV" },
-        { name: "ELMINO", section: "II", floor: "10", day1: "MART", day2: "GIOV" },
-        { name: "FINAMORE", section: "I", floor: "8", day1: "MERC", day2: "GIOV" },
-        { name: "FONTANA", section: "II", floor: "9", day1: "MART", day2: "GIOV" },
-        { name: "GAGLIARDI", section: "III", floor: "10", day1: "MART", day2: "MERC" },
-        { name: "GALANTE", section: "III", floor: "11", day1: "MERC", day2: "GIOV" },
-        { name: "GALLO", section: "II", floor: "9", day1: "MERC", day2: "GIOV" },
-        { name: "GAMBARDELLA", section: "I", floor: "7", day1: "MART", day2: "MERC" },
-        { name: "GHIONNI", section: "III", floor: "11", day1: "MERC", day2: "GIOV" },
-        { name: "GUGLIELMO", section: "", floor: "", day1: "", day2: "" },
-        { name: "LAZZARA", section: "III", floor: "11", day1: "MERC", day2: "GIOV" },
-        { name: "LIGUORI", section: "III", floor: "10", day1: "MART", day2: "GIOV" },
-        { name: "LOMBARDI", section: "II", floor: "10", day1: "MERC", day2: "GIOV" },
-        { name: "LUCANTONIO", section: "II", floor: "9", day1: "MERC", day2: "VEN" },
-        { name: "MAJORANO", section: "I", floor: "7", day1: "LUN", day2: "GIOV" },
-        { name: "MANZON", section: "III", floor: "11", day1: "MART", day2: "MERC" },
-        { name: "MAZZOCCA", section: "I", floor: "7", day1: "MART", day2: "GIOV" },
-        { name: "MONTUORI", section: "II", floor: "9", day1: "MERC", day2: "GIOV" },
-        { name: "MOZZILLO", section: "III", floor: "10", day1: "LUN", day2: "MERC" },
-        { name: "PALMIERI", section: "I", floor: "8", day1: "LUN", day2: "MART" },
-        { name: "PALUMBO", section: "II", floor: "9", day1: "MART", day2: "GIOV" },
-        { name: "PELUSO", section: "I", floor: "9", day1: "MART", day2: "MERC" },
-        { name: "PERPETUA", section: "", floor: "", day1: "", day2: "" },
-        { name: "PICCIOTTI", section: "II", floor: "9", day1: "MERC", day2: "GIOV" },
-        { name: "PIGRINI", section: "", floor: "", day1: "", day2: "" },
-        { name: "RUGGIERO", section: "III", floor: "11", day1: "MART", day2: "VEN" },
-        { name: "RUOPPOLO", section: "I", floor: "7", day1: "MART", day2: "MERC" },
-        { name: "SANTULLI", section: "III", floor: "10", day1: "MERC", day2: "GIOV" },
-        { name: "SCOGNAMIGLIO", section: "I", floor: "7", day1: "MART", day2: "MERC" },
-        { name: "TOMASSI", section: "III", floor: "11", day1: "MART", day2: "GIOV" },
-        { name: "URZINI", section: "III", floor: "11", day1: "MART", day2: "MERC" }
-    ];
+  const JUDGES = [
+    { name: "ALFANO",        section: "III", floor: "10", days: ["MART", "GIOV"] },
+    { name: "AMMENDOLA",     section: "III", floor: "11", days: ["MART", "MERC"] },
+    { name: "ARMATO",        section: "II",  floor: "9",  days: ["MART", "GIOV"] },
+    { name: "BENEDUCE",      section: "I",   floor: "8",  days: ["MART", "MERC"] },
+    { name: "BILE",          section: "II",  floor: "8",  days: ["MART", "GIOV"] },
+    { name: "BORRELLI",      section: "I",   floor: "8",  days: ["MART", "GIOV"] },
+    { name: "BRIZZI",        section: "I",   floor: "7",  days: ["MART", "MERC"] },
+    { name: "CARDELLICCHIO", section: "I",   floor: "7",  days: ["MART", "GIOV"] },
+    { name: "CIARAMELLA",    section: "II",  floor: "9",  days: ["LUN",  "GIOV"] },
+    { name: "COPPOLA",       section: "III", floor: "11", days: ["MART", "MERC"] },
+    { name: "CORREGGIA",     section: "II",  floor: "10", days: ["MART", "GIOV"] },
+    { name: "D'AURIA",       section: "I",   floor: "7",  days: ["MERC", "GIOV"] },
+    { name: "DELL'ERARIO",   section: "II",  floor: "8",  days: ["MART", "MERC"] },
+    { name: "DI LORENZO",    section: "II",  floor: "9",  days: ["LUN",  "MERC"] },
+    { name: "DE MATTEIS",    section: "I",   floor: "7",  days: ["MART", "GIOV"] },
+    { name: "ELMINO",        section: "II",  floor: "10", days: ["MART", "GIOV"] },
+    { name: "FINAMORE",      section: "I",   floor: "8",  days: ["MERC", "GIOV"] },
+    { name: "FONTANA",       section: "II",  floor: "9",  days: ["MART", "GIOV"] },
+    { name: "GAGLIARDI",     section: "III", floor: "10", days: ["MART", "MERC"] },
+    { name: "GALANTE",       section: "III", floor: "11", days: ["MERC", "GIOV"] },
+    { name: "GALLO",         section: "II",  floor: "9",  days: ["MERC", "GIOV"] },
+    { name: "GAMBARDELLA",   section: "I",   floor: "7",  days: ["MART", "MERC"] },
+    { name: "GHIONNI",       section: "III", floor: "11", days: ["MERC", "GIOV"] },
+    { name: "GUGLIELMO",     section: "",    floor: "",   days: [] },
+    { name: "LAZZARA",       section: "III", floor: "11", days: ["MERC", "GIOV"] },
+    { name: "LIGUORI",       section: "III", floor: "10", days: ["MART", "GIOV"] },
+    { name: "LOMBARDI",      section: "II",  floor: "10", days: ["MERC", "GIOV"] },
+    { name: "LUCANTONIO",    section: "II",  floor: "9",  days: ["MERC", "VEN"]  },
+    { name: "MAJORANO",      section: "I",   floor: "7",  days: ["LUN",  "GIOV"] },
+    { name: "MANZON",        section: "III", floor: "11", days: ["MART", "MERC"] },
+    { name: "MAZZOCCA",      section: "I",   floor: "7",  days: ["MART", "GIOV"] },
+    { name: "MONTUORI",      section: "II",  floor: "9",  days: ["MERC", "GIOV"] },
+    { name: "MOZZILLO",      section: "III", floor: "10", days: ["LUN",  "MERC"] },
+    { name: "PALMIERI",      section: "I",   floor: "8",  days: ["LUN",  "MART"] },
+    { name: "PALUMBO",       section: "II",  floor: "9",  days: ["MART", "GIOV"] },
+    { name: "PELUSO",        section: "I",   floor: "9",  days: ["MART", "MERC"] },
+    { name: "PERPETUA",      section: "",    floor: "",   days: [] },
+    { name: "PICCIOTTI",     section: "II",  floor: "9",  days: ["MERC", "GIOV"] },
+    { name: "PIGRINI",       section: "",    floor: "",   days: [] },
+    { name: "RUGGIERO",      section: "III", floor: "11", days: ["MART", "VEN"]  },
+    { name: "RUOPPOLO",      section: "I",   floor: "7",  days: ["MART", "MERC"] },
+    { name: "SANTULLI",      section: "III", floor: "10", days: ["MERC", "GIOV"] },
+    { name: "SCOGNAMIGLIO",  section: "I",   floor: "7",  days: ["MART", "MERC"] },
+    { name: "TOMASSI",       section: "III", floor: "11", days: ["MART", "GIOV"] },
+    { name: "URZINI",        section: "III", floor: "11", days: ["MART", "MERC"] }
+  ];
 
-    const tableBody = document.getElementById('tableBody');
-    const noResultsMsg = document.getElementById('noResults');
-    const dataTable = document.getElementById('dataTable');
-    const judgeSearch = document.getElementById('judgeSearch');
+  const $ = id => document.getElementById(id);
+  const grid = $('grid');
+  const noRes = $('nores');
+  const countLabel = $('countLabel');
+  const search = $('judgeSearch');
+  const clearBtn = $('clearBtn');
 
-    // Funzione per renderizzare la tabella
-    function renderTable(data) {
-        tableBody.innerHTML = '';
-        
-        if (data.length === 0) {
-            dataTable.style.display = 'none';
-            noResultsMsg.style.display = 'block';
-            return;
-        }
+  // Stato filtri
+  const state = { query: '', day: '', section: '' };
 
-        dataTable.style.display = 'table';
-        noResultsMsg.style.display = 'none';
+  // Datalist per autocompletamento
+  const dl = $('judgeDatalist');
+  JUDGES.filter(j => j.name).forEach(j => {
+    const o = document.createElement('option');
+    o.value = j.name;
+    dl.appendChild(o);
+  });
 
-        data.forEach(judge => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>${judge.name}</strong></td>
-                <td>${judge.section}</td>
-                <td>${judge.floor}</td>
-                <td>${judge.day1}</td>
-                <td>${judge.day2}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+  function render() {
+    const q = state.query.toUpperCase();
+    const items = JUDGES.filter(j => {
+      if (!j.name) return false;
+      if (q && !j.name.includes(q)) return false;
+      if (state.day && !j.days.includes(state.day)) return false;
+      if (state.section && j.section !== state.section) return false;
+      return true;
+    });
+
+    countLabel.textContent = items.length + ' giudic' + (items.length === 1 ? 'e' : 'i');
+    grid.innerHTML = '';
+    if (items.length === 0) { noRes.style.display = 'block'; return; }
+    noRes.style.display = 'none';
+
+    items.forEach(j => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const sez = j.section ? '<span class="badge">Sez. ' + j.section + '</span>' : '';
+      const meta = (j.floor || j.section)
+        ? '<div class="meta">' +
+            (j.floor ? '<span>🏛️ Piano ' + j.floor + '</span>' : '') +
+          '</div>'
+        : '';
+      const days = j.days.length
+        ? '<div class="days">' + j.days.map(d => '<span class="day">' + dayLabel(d) + '</span>').join('') + '</div>'
+        : '<div class="empty">Calendario non disponibile</div>';
+      card.innerHTML =
+        '<div class="card-head">' +
+          '<div class="judge-name">' + j.name + '</div>' + sez +
+        '</div>' +
+        meta + days;
+      grid.appendChild(card);
+    });
+  }
+
+  function dayLabel(d) {
+    return { LUN: 'Lunedì', MART: 'Martedì', MERC: 'Mercoledì', GIOV: 'Giovedì', VEN: 'Venerdì' }[d] || d;
+  }
+
+  // Search input
+  search.addEventListener('input', e => {
+    state.query = e.target.value.trim();
+    clearBtn.classList.toggle('show', !!state.query);
+    render();
+  });
+  clearBtn.addEventListener('click', () => {
+    search.value = '';
+    state.query = '';
+    clearBtn.classList.remove('show');
+    render();
+    search.focus();
+  });
+
+  // Day filters
+  document.querySelectorAll('#dayFilters .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('#dayFilters .chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      state.day = c.dataset.day;
+      render();
+    });
+  });
+
+  // Section filters
+  document.querySelectorAll('#sectionFilters .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('#sectionFilters .chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      state.section = c.dataset.section;
+      render();
+    });
+  });
+
+  // Default: pre-seleziona il filtro "oggi" se è un giorno feriale
+  (function autoselectToday() {
+    const map = ['', 'LUN', 'MART', 'MERC', 'GIOV', 'VEN', '']; // dom=0..sab=6
+    const today = map[new Date().getDay()];
+    if (today) {
+      const btn = document.querySelector('#dayFilters .chip[data-day="' + today + '"]');
+      if (btn) {
+        document.querySelectorAll('#dayFilters .chip').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        state.day = today;
+      }
     }
-
-    // Funzione per popolare il datalist con i nomi dei giudici unici
-    function populateDatalist() {
-        const datalist = document.getElementById('judge-datalist');
-        datalist.innerHTML = '';
-        const uniqueJudges = [...new Set(judgesData.map(j => j.name).filter(n => n !== ""))]; // Rimuove eventuali stringhe vuote
-        uniqueJudges.forEach(name => {
-            const option = document.createElement('option');
-            option.value = name;
-            datalist.appendChild(option);
-        });
-    }
-
-    // Funzione per filtrare i dati per giudice selezionato
-    function filterTableByJudge() {
-        const query = judgeSearch.value.toUpperCase().trim();
-        
-        if (!query) {
-            renderTable(judgesData); // Mostra tutti se il campo è vuoto
-            return;
-        }
-
-        // Cerca una corrispondenza esatta dopo l'autocompletamento o la digitazione completa
-        const filteredData = judgesData.filter(judge => judge.name === query);
-        
-        // Se non c'è una corrispondenza esatta, decidi se mostrare la tabella vuota o altro.
-        // Dato l'autocompletamento, una corrispondenza esatta è probabile dopo la selezione.
-        renderTable(filteredData);
-    }
-
-    // Funzione per resettare la ricerca e mostrare tutta la tabella
-    function resetSearch() {
-        judgeSearch.value = '';
-        renderTable(judgesData);
-    }
-
-    // Inizializzazione
-    populateDatalist();
-    renderTable(judgesData);
+    render();
+  })();
 </script>
 
 </body>

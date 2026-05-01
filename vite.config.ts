@@ -10,6 +10,12 @@ export default defineConfig({
      * le richieste vanno via CapacitorHttp e non passano da qui.
      */
     proxy: {
+      '/proxy/coa': {
+        target: 'https://www.ordineavvocatinapoli.it',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/proxy\/coa/, ''),
+        secure: true,
+      },
       '/proxy/pst': {
         target: 'https://pst.giustizia.it',
         changeOrigin: true,
