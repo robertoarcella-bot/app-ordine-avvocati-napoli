@@ -4,16 +4,26 @@ export interface MiniApp {
   id: string;
   title: string;
   subtitle: string;
-  /** Path relativo al webDir, es. 'miniapps/at/Calcolo_Interessi.html' */
-  file: string;
+  /**
+   * Percorso del file HTML autoportato (esclude `externalUrl`).
+   * Es. 'miniapps/at/Calcolo_Interessi.html'
+   */
+  file?: string;
+  /**
+   * URL esterno: la voce è uno "shortcut" che apre l'URL in app esterna
+   * (Browser nativo, Telegram, WhatsApp, ecc.) invece di una webapp inclusa.
+   * Mutualmente esclusivo con `file`.
+   */
+  externalUrl?: string;
   /** Nome icona ionicons */
   icon: string;
-  /** Giurisdizione di competenza */
+  /** Giurisdizione/sezione di competenza */
   jurisdiction: Jurisdiction;
   /**
-   * true se l'app non ha dipendenze CDN esterne e funziona completamente offline.
-   * false se carica risorse esterne (font, librerie) e potrebbe richiedere internet
-   * almeno alla prima apertura (poi vanno in cache del WebView).
+   * true se la mini-app non ha dipendenze CDN esterne e funziona completamente
+   * offline. false se carica risorse esterne (font, librerie) e potrebbe
+   * richiedere internet almeno alla prima apertura.
+   * Per gli `externalUrl` è sempre false (servono Internet + l'app esterna).
    */
   offlineReady: boolean;
   /** Autore originale, se diverso dall'app COA */
@@ -31,6 +41,39 @@ const AT_ORIGIN = 'avvocatotelematico.studiolegalearcella.it';
  * sono incluse nel bundle dell'APK e funzionano in larga parte offline.
  */
 export const MINIAPPS: MiniApp[] = [
+  // ============ SEDI E DISLOCAZIONE UFFICI ============
+  {
+    id: 'aule-sezione-lavoro',
+    title: 'Aule Sezione Lavoro Napoli',
+    subtitle: 'Calendario udienze giudici della sezione lavoro del Tribunale di Napoli',
+    file: 'miniapps/sedi/Aule_sezione_lavoro.html',
+    icon: 'business-outline',
+    jurisdiction: 'sedi',
+    offlineReady: true,
+    author: AT_AUTHOR,
+    origin: AT_ORIGIN,
+  },
+  {
+    id: 'aule-penali-na',
+    title: 'Aule Penali Napoli (Telegram)',
+    subtitle: 'Canale Telegram con segnalazioni in tempo reale sulle aule penali',
+    externalUrl: 'https://t.me/AulePenaliNapoli',
+    icon: 'chatbubbles-outline',
+    jurisdiction: 'sedi',
+    offlineReady: false,
+  },
+  {
+    id: 'calendario-gdp-na',
+    title: 'Calendario GdP Napoli 2026',
+    subtitle: 'Calendario delle udienze del Giudice di Pace di Napoli',
+    file: AT_BASE + 'Calendario_gdp_napoli_2026.html',
+    icon: 'calendar-outline',
+    jurisdiction: 'sedi',
+    offlineReady: true,
+    author: AT_AUTHOR,
+    origin: AT_ORIGIN,
+  },
+
   // ============ COMUNI ============
   {
     id: 'parametri-forensi',
@@ -207,17 +250,6 @@ export const MINIAPPS: MiniApp[] = [
     icon: 'search-outline',
     jurisdiction: 'civile',
     offlineReady: false,
-    author: AT_AUTHOR,
-    origin: AT_ORIGIN,
-  },
-  {
-    id: 'calendario-gdp-na',
-    title: 'Calendario GdP Napoli 2026',
-    subtitle: 'Calendario delle udienze del Giudice di Pace di Napoli',
-    file: AT_BASE + 'Calendario_gdp_napoli_2026.html',
-    icon: 'calendar-outline',
-    jurisdiction: 'civile',
-    offlineReady: true,
     author: AT_AUTHOR,
     origin: AT_ORIGIN,
   },

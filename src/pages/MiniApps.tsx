@@ -3,14 +3,23 @@ import {
   IonButtons, IonBackButton, IonMenuButton,
   IonList, IonItem, IonIcon, IonLabel, IonItemDivider, IonText,
 } from '@ionic/react';
-import { chevronForwardOutline, cloudOfflineOutline, wifiOutline } from 'ionicons/icons';
+import { chevronForwardOutline, cloudOfflineOutline, wifiOutline, openOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
-import { MINIAPPS } from '../config/miniapps';
+import { Browser } from '@capacitor/browser';
+import { MINIAPPS, type MiniApp } from '../config/miniapps';
 import { groupByJurisdiction } from '../config/jurisdictions';
 
 const MiniAppsPage: React.FC = () => {
   const history = useHistory();
   const groups = groupByJurisdiction(MINIAPPS);
+
+  const onOpen = (app: MiniApp) => {
+    if (app.externalUrl) {
+      void Browser.open({ url: app.externalUrl });
+    } else {
+      history.push(`/miniapps/${app.id}`);
+    }
+  };
 
   return (
     <IonPage>
@@ -48,22 +57,28 @@ const MiniAppsPage: React.FC = () => {
                   key={app.id}
                   button
                   detail={false}
-                  onClick={() => history.push(`/miniapps/${app.id}`)}
+                  onClick={() => onOpen(app)}
                 >
                   <IonIcon slot="start" icon={app.icon} color="primary" />
                   <IonLabel>
                     <h3>
                       {app.title}
                       <IonIcon
-                        icon={app.offlineReady ? cloudOfflineOutline : wifiOutline}
-                        color={app.offlineReady ? 'success' : 'warning'}
+                        icon={app.externalUrl ? openOutline
+                              : app.offlineReady ? cloudOfflineOutline
+                              : wifiOutline}
+                        color={app.externalUrl ? 'medium'
+                               : app.offlineReady ? 'success'
+                               : 'warning'}
                         style={{ verticalAlign: 'middle', marginLeft: 6, fontSize: 14 }}
-                        title={app.offlineReady ? 'Funziona offline' : 'Richiede internet'}
+                        title={app.externalUrl ? 'Apre in app esterna'
+                               : app.offlineReady ? 'Funziona offline'
+                               : 'Richiede internet'}
                       />
                     </h3>
                     <p>{app.subtitle}</p>
                   </IonLabel>
-                  <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
+                  <IonIcon slot="end" icon={app.externalUrl ? openOutline : chevronForwardOutline} color="medium" />
                 </IonItem>
               ))}
             </div>

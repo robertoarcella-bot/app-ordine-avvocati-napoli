@@ -102,11 +102,11 @@ const MiniAppView: React.FC = () => {
     }
   };
 
-  if (!app) {
+  if (!app || !app.file) {
     return (
       <IonPage>
         <IonContent fullscreen className="ion-padding">
-          <IonText color="medium">Strumento non trovato.</IonText>
+          <IonText color="medium">Strumento non disponibile in questa modalità.</IonText>
         </IonContent>
       </IonPage>
     );
