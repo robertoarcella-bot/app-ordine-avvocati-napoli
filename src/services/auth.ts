@@ -209,6 +209,61 @@ export async function getRememberedUsername(): Promise<string | null> {
 }
 
 /**
+ * Verifica esplicita dello stato di login facendo una GET a una pagina
+ * del sito e controllando se la risposta contiene marker di sessione attiva.
+ *
+ * Usata DOPO performLogin per confermare il vero esito (il rilevamento
+ * basato sul timeout dell'iframe può dare falsi positivi se il sito
+ * restituisce sempre 200 anche con credenziali errate).
+ *
+ * Marker di "loggato":
+ *  - link "logout" / "esci" / "log-out" nella pagina
+ *  - assenza del form di login (id="wppb-loginform")
+ *  - eventuali stringhe specifiche di area riservata
+ *
+ * Marker di "non loggato":
+ *  - presenza del form di login
+ *  - presenza di pattern di errore wppb (wppb-warning, wppb_error)
+ */
+export async function verifyLoggedIn(): Promise<{ logged: boolean; reason?: string }> {
+  try {
+    let html: string;
+    if (Capacitor.isNativePlatform()) {
+      const res = await CapacitorHttp.get({
+        url: LOGIN_PAGE,
+        headers: {
+          Accept: 'text/html',
+          'User-Agent': 'AppOrdineAvvocatiNapoli/1.0',
+        },
+        responseType: 'text',
+      });
+      html = typeof res.data === 'string' ? res.data : String(res.data ?? '');
+    } else {
+      const r = await fetch('/proxy/coa/login-logout/', { headers: { Accept: 'text/html' } });
+      html = await r.text();
+    }
+
+    // Marker di errore espliciti del plugin Profile Builder
+    if (/wppb-warning|wppb-error|wppb_error|"wppb_lostpassword"/.test(html) &&
+        /credenziali|incorrect|password|errore/i.test(html.slice(0, 30000))) {
+      return { logged: false, reason: 'invalid_credentials' };
+    }
+
+    // Marker positivi (loggato): presenza link/azione logout o assenza
+    // del form di login
+    const hasLogoutLink = /href="[^"]*action=logout|wp-login\.php\?action=logout|>\s*Logout\s*<|>\s*Esci\s*</i.test(html);
+    const hasLoginForm = /id="wppb-loginform"|name="wppb-loginform"/.test(html);
+
+    if (hasLogoutLink && !hasLoginForm) return { logged: true };
+    if (!hasLoginForm) return { logged: true, reason: 'no-form' };
+    if (hasLoginForm && hasLogoutLink) return { logged: true, reason: 'mixed' };
+    return { logged: false, reason: 'login-form-still-present' };
+  } catch (e) {
+    return { logged: false, reason: e instanceof Error ? e.message : 'fetch-failed' };
+  }
+}
+
+/**
  * Esegue il logout caricando l'URL di logout nell'iframe headless.
  * Il sito risponde cancellando i cookie wordpress_logged_in_* e tornando
  * alla home: dopo questa chiamata l'app non è più autenticata.

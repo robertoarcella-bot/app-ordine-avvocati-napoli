@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
 import {
-  fetchCsrfToken, performLogin, performLogout,
+  fetchCsrfToken, performLogin, performLogout, verifyLoggedIn,
   markLoggedIn, clearLoggedIn, isLoggedIn, getRememberedUsername,
   AUTH_URLS,
 } from '../services/auth';
@@ -33,11 +33,25 @@ const AreaRiservata: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const refreshState = async () => {
-    setLogged(await isLoggedIn());
+    const localLogged = await isLoggedIn();
     const u = await getRememberedUsername();
     if (u) {
       setUsername(u);
       setRemember(true);
+    }
+    setLogged(localLogged);
+    // Se localmente risulta loggato, verifichiamo che la sessione sia
+    // ancora valida lato server (cookie scaduti o invalidati altrove).
+    if (localLogged) {
+      try {
+        const verify = await verifyLoggedIn();
+        if (!verify.logged) {
+          await clearLoggedIn();
+          setLogged(false);
+        }
+      } catch {
+        // se il check fallisce per network, manteniamo lo stato locale
+      }
     }
   };
 
@@ -71,11 +85,22 @@ const AreaRiservata: React.FC = () => {
       }, token);
 
       if (result.ok) {
-        await markLoggedIn(username.trim(), remember);
-        setLogged(true);
-        setSuccess('Accesso effettuato.');
-        // Per sicurezza svuotiamo la password dal componente subito dopo
-        setPassword('');
+        // Verifica esplicita: anche se l'iframe ha completato senza errori
+        // visibili, ricontrolliamo lo stato facendo una GET dedicata che
+        // ispeziona la presenza/assenza del form di login nella response.
+        const verify = await verifyLoggedIn();
+        if (verify.logged) {
+          await markLoggedIn(username.trim(), remember);
+          setLogged(true);
+          setSuccess('Accesso effettuato.');
+          setPassword('');
+        } else {
+          setError(
+            verify.reason === 'invalid_credentials'
+              ? 'Credenziali non corrette.'
+              : 'Login non riuscito (sessione non attiva). Verifica nome utente e password.'
+          );
+        }
       } else {
         if (result.reason === 'invalid_credentials') {
           setError('Credenziali non corrette.');
