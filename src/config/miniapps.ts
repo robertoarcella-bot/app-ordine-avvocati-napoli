@@ -12,9 +12,16 @@ export interface MiniApp {
   /**
    * URL esterno: la voce è uno "shortcut" che apre l'URL in app esterna
    * (Browser nativo, Telegram, WhatsApp, ecc.) invece di una webapp inclusa.
-   * Mutualmente esclusivo con `file`.
+   * Mutualmente esclusivo con `file` e `webviewUrl`.
    */
   externalUrl?: string;
+  /**
+   * URL di un sito esterno da mostrare DENTRO l'app in WebView interna
+   * (riusa SitoView con CSS injection mobile-friendly). Utile per pagine
+   * istituzionali integrate ma non scaricabili. Mutualmente esclusivo
+   * con `file` ed `externalUrl`.
+   */
+  webviewUrl?: string;
   /** Nome icona ionicons */
   icon: string;
   /** Giurisdizione/sezione di competenza */
@@ -55,9 +62,15 @@ export const MINIAPPS: MiniApp[] = [
   },
   {
     id: 'aule-penali-na',
-    title: 'Aule Penali Napoli (Telegram)',
-    subtitle: 'Canale Telegram con segnalazioni in tempo reale sulle aule penali',
-    externalUrl: 'https://t.me/AulePenaliNapoli',
+    title: 'Aule Penali Napoli',
+    subtitle: 'Anteprima web del canale Telegram con segnalazioni in tempo reale (visibile anche senza Telegram installato)',
+    /**
+     * URL della "preview web" del canale Telegram (`/s/`): mostra l'ultimo
+     * stream di messaggi del canale pubblico in HTML standard, leggibile
+     * da qualsiasi browser. Dentro la pagina è comunque presente un bottone
+     * "Apri in Telegram" per chi ha l'app installata.
+     */
+    webviewUrl: 'https://t.me/s/AulePenaliNapoli',
     icon: 'chatbubbles-outline',
     jurisdiction: 'sedi',
     offlineReady: false,
@@ -265,6 +278,17 @@ export const MINIAPPS: MiniApp[] = [
     origin: AT_ORIGIN,
   },
   {
+    id: 'faq-pss-civile',
+    title: 'FAQ Patrocinio Spese Stato (Civile)',
+    subtitle: 'Domande frequenti sulle linee guida del PSS in materia civile',
+    file: AT_BASE + 'Faq_PSS_Civile.html',
+    icon: 'help-circle-outline',
+    jurisdiction: 'civile',
+    offlineReady: true,
+    author: AT_AUTHOR,
+    origin: AT_ORIGIN,
+  },
+  {
     id: 'depositi-ccii',
     title: 'Depositi CCII (Crisi d\'impresa)',
     subtitle: 'Selettore atto-ruolo per i depositi nel Codice della Crisi',
@@ -285,6 +309,15 @@ export const MINIAPPS: MiniApp[] = [
     offlineReady: true,
     author: AT_AUTHOR,
     origin: AT_ORIGIN,
+  },
+  {
+    id: 'gdp-cambia-ufficio',
+    title: 'GdP — Cambia ufficio',
+    subtitle: 'Selezione ufficio del Giudice di Pace per i depositi telematici',
+    webviewUrl: 'https://gdp.giustizia.it/index.php?pagina=cambiaufficio',
+    icon: 'business-outline',
+    jurisdiction: 'pct',
+    offlineReady: false,
   },
 
   // ============ PENALE ============

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrocinio a spese dello Stato - FAQ sulle linee guida</title>
+    <style>
+        /* Base e Typography */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header stile AgID / Pubblica Amministrazione */
+        header {
+            background-color: #0066CC;
+            color: white;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 4px solid #004a99;
+        }
+
+        .header-top {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        header h1 {
+            margin: 0.5rem 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            margin: 0.8rem 0 0;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            font-style: italic;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Ricerca - Sticky */
+        .search-container {
+            background-color: #ffffff;
+            padding: 1.2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #0066CC;
+            border-radius: 4px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #004a99;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            color: #004a99;
+            border-bottom: 2px solid #0066CC;
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border-left: 5px solid #0066CC;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .question {
+            font-weight: 700;
+            color: #0066CC;
+            display: block;
+            margin-bottom: 0.6rem;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+
+        .answer {
+            color: #444;
+            display: block;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #004a99;
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 4rem;
+            font-size: 0.95rem;
+            border-top: 5px solid #003366;
+        }
+
+        .footer-note {
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Messaggi di stato */
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            header { padding: 2rem 1rem; }
+            header h1 { font-size: 1.4rem; }
+            .section-title { font-size: 1.2rem; }
+            .faq-item { padding: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-top">Consiglio dell'Ordine degli Avvocati di Napoli</div>
+    <h1>Patrocinio a spese dello Stato - FAQ sulle linee guida</h1>
+    <p class="header-subtitle">A cura del Gruppo di Lavoro per la redazione delle Linee guida sul patrocinio a spese dello Stato</p>
+</header>
+
+<div class="search-container">
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="filterFaqs()" placeholder="Cerca parole chiave nelle FAQ..." aria-label="Cerca nelle FAQ">
+    </div>
+</div>
+
+<main id="faqContainer">
+    
+    <h2 class="section-title">Valutazione dei Requisiti e Reddito</h2>
+    
+    <div class="faq-item">
+        <span class="question">Qual è la soglia di reddito aggiornata per l'ammissione?</span>
+        <span class="answer">Il limite attuale è di 13.659,64 €.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale dichiarazione dei redditi fa fede?</span>
+        <span class="answer">Si considera il reddito imponibile risultante dall'ultima dichiarazione disponibile.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come si calcola il reddito in caso di convivenza?</span>
+        <span class="answer">Il reddito è costituito dalla somma dei redditi di ogni componente della famiglia convivente, incluso l'istante.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa si intende per famiglia ai fini del cumulo?</span>
+        <span class="answer">Include la famiglia anagrafica e la convivenza di fatto o more uxorio, basata su stabili legami affettivi e comunanza di interessi.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Lo stato di detenzione di un familiare esclude il cumulo?</span>
+        <span class="answer">No, il rapporto di convivenza non è escluso dallo stato di detenzione di un componente.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quando rileva solo il reddito personale?</span>
+        <span class="answer">Nei processi in cui gli interessi del richiedente sono in conflitto con quelli dei familiari conviventi o per cause su diritti della personalità.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">L'ISEE può sostituire la certificazione reddituale?</span>
+        <span class="answer">No, l'ISEE non è un parametro legale di ammissione e ha solo funzione integrativa o descrittiva.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quali redditi esenti IRPEF vanno comunque dichiarati?</span>
+        <span class="answer">Vanno indicati i redditi esenti, quelli soggetti a ritenuta alla fonte a titolo d'imposta o a imposta sostitutiva.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">L'indennità di accompagnamento deve essere conteggiata?</span>
+        <span class="answer">No, l'indennità di accompagnamento è irrilevante ai fini della determinazione del reddito.</span>
+    </div>
+
+    <h2 class="section-title">Istanza di Ammissione e Piattaforma Riconosco</h2>
+
+    <div class="faq-item">
+        <span class="question">Qual è l'unico canale per presentare l'istanza al COA Napoli?</span>
+        <span class="answer">La piattaforma telematica Riconosco.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa deve contenere l'istanza a pena di inammissibilità?</span>
+        <span class="answer">La richiesta, le generalità dei conviventi con codici fiscali, l'autocertificazione reddituale e l'impegno a comunicare variazioni.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come deve essere descritta la controversia?</span>
+        <span class="answer">Bisogna inserire enunciazioni in fatto e in diritto utili a valutare la non manifesta infondatezza e indicare le prove.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Sono ammesse formule generiche nell'istanza?</span>
+        <span class="answer">No, non sono idonee formulazioni meramente assertive o stereotipate.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa deve allegare il cittadino extracomunitario?</span>
+        <span class="answer">La certificazione dell'autorità consolare sui redditi esteri o la prova della richiesta inviata da almeno 30 giorni.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">In che formato e peso vanno caricati gli allegati?</span>
+        <span class="answer">In formato PDF, con un peso massimo di 10 MB per singolo file.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come si firmano digitalmente i documenti?</span>
+        <span class="answer">Se richiesta, la firma deve essere in modalità PADES.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa fare se il COA richiede integrazioni?</span>
+        <span class="answer">Non rispondere alla PEC, ma procedere alla modifica direttamente dalla piattaforma Riconosco.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Dove si scarica il provvedimento di ammissione?</span>
+        <span class="answer">Nell'Archivio istanze della piattaforma, all'interno della sezione Documenti.</span>
+    </div>
+
+    <h2 class="section-title">Adempimenti nel Giudizio</h2>
+
+    <div class="faq-item">
+        <span class="question">Da quando decorrono gli effetti dell'ammissione?</span>
+        <span class="answer">Dal deposito dell'atto introduttivo in cancelleria.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa indicare in epigrafe dell'atto giudiziario?</span>
+        <span class="answer">La menzione espressa dell'ammissione con gli estremi della delibera (data e numero).</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale dichiarazione inserire per i costi vivi?</span>
+        <span class="answer">Che la parte si costituisce con il beneficio della prenotazione a debito di contributo unificato e spese di notifica.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come formulare la richiesta sulle spese di lite?</span>
+        <span class="answer">Chiedere che siano poste a carico della controparte soccombente e disposte in favore dello Stato ex art. 133 D.P.R. 115/02.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa allegare all'iscrizione a ruolo se la delibera non è ancora pronta?</span>
+        <span class="answer">La ricevuta di trasmissione dell'istanza generata da Riconosco.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Entro quando va depositata la delibera in cancelleria?</span>
+        <span class="answer">Immediatamente dopo il riscontro di Riconosco e comunque non oltre la prima udienza.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">È necessario depositare la delibera se è negativa?</span>
+        <span class="answer">Sì, ai fini della regolarizzazione della prenotazione a debito del contributo unificato.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Il giudice decide sulla liquidazione se la documentazione è incompleta?</span>
+        <span class="answer">No, l'istanza viene posta in evidenza al giudice solo quando la documentazione risulta completa.</span>
+    </div>
+
+    <h2 class="section-title">Istanza di Liquidazione (LSG e PCT)</h2>
+
+    <div class="faq-item">
+        <span class="question">Quando va presentata l'istanza di liquidazione?</span>
+        <span class="answer">Al termine di ciascuna fase o grado e, di regola, prima della definizione del giudizio.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa succede se l'istanza è depositata dopo la sentenza?</span>
+        <span class="answer">Non è prevista decadenza e il giudice può comunque pronunciarsi.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Qual è il primo passaggio obbligatorio per la liquidazione?</span>
+        <span class="answer">L'inserimento dell'istanza web sulla piattaforma LSG del Ministero.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cos'è il PDF riepilogativo di LSG?</span>
+        <span class="answer">È un documento con identificativo numerico univoco da allegare obbligatoriamente al deposito PCT.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale dicitura inserire nel deposito PCT?</span>
+        <span class="answer">Selezionare ISTANZA GENERICA e indicare ISTANZA LIQUIDAZIONE PSS nel campo note.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come deve essere redatta la nota spese?</span>
+        <span class="answer">In modo analitico, indicando valore, scaglione, fasi espletate e parametri tabellari.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale riduzione va applicata al compenso del difensore?</span>
+        <span class="answer">Gli importi spettanti vanno ridotti della metà ex art. 130 D.P.R. 115/02.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa deve attestare l'avvocato riguardo al proprio status?</span>
+        <span class="answer">L'iscrizione nell'elenco speciale degli avvocati abilitati al patrocinio a spese dello Stato.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">È necessario allegare i verbali di udienza?</span>
+        <span class="answer">Sì, o un prospetto udienze corredato di attestazione di presenza.</span>
+    </div>
+
+    <h2 class="section-title">Fatturazione Elettronica e Stati SIAMM</h2>
+
+    <div class="faq-item">
+        <span class="question">Cos'è il numero SIAMM?</span>
+        <span class="answer">È l'identificativo alfanumerico necessario per il monitoraggio e la fatturazione.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quando si può emettere la fattura elettronica?</span>
+        <span class="answer">Solo quando lo stato in LSG risulta Provvedimento lordo esecutivo.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale dato è tassativo inserire in fattura?</span>
+        <span class="answer">Il numero SIAMM deve essere obbligatoriamente indicato nella causale.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa accade se manca il numero SIAMM in fattura?</span>
+        <span class="answer">L'ufficio non può registrare il provvedimento netto e la procedura di pagamento resta bloccata.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Lo stato Provvedimento lordo consente la fatturazione?</span>
+        <span class="answer">No, bisogna attendere l'inserimento della data di esecutività.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa indica lo stato Ordinativo trasmesso?</span>
+        <span class="answer">Che l'ordinativo di pagamento è stato inviato al funzionario delegato per l'esecuzione.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Come viene avvisato il difensore dell'avvenuto pagamento?</span>
+        <span class="answer">Tramite notifica automatica via email o PEC dal sistema LSG.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale importo va fatturato?</span>
+        <span class="answer">L'importo liquidato dal giudice, già decurtato della metà, oltre accessori di legge (15%, CPA, IVA se dovuta).</span>
+    </div>
+
+    <h2 class="section-title">Opposizione al Decreto di Pagamento</h2>
+
+    <div class="faq-item">
+        <span class="question">Qual è il termine per proporre opposizione?</span>
+        <span class="answer">30 giorni dalla comunicazione del decreto di pagamento.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Quale rito si applica all'opposizione?</span>
+        <span class="answer">Il rito semplificato di cognizione ex art. 15 D.Lgs. 150/2011.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Chi è il giudice competente per l'opposizione?</span>
+        <span class="answer">Il capo dell'ufficio giudiziario cui appartiene il magistrato che ha emesso il decreto.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Se il decreto è del Giudice di Pace, a chi ci si oppone?</span>
+        <span class="answer">Al Presidente del Tribunale.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">L'opposizione sospende il pagamento?</span>
+        <span class="answer">No, l'opposizione non ha effetto sospensivo del decreto impugnato.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Chi sono i litisconsorti necessari?</span>
+        <span class="answer">Il Ministero della Giustizia e, secondo la prassi prevalente, anche la parte ammessa al beneficio.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">È necessario un avvocato per l'opposizione?</span>
+        <span class="answer">No, le parti possono stare in giudizio personalmente.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">La sentenza di opposizione è appellabile?</span>
+        <span class="answer">No, la sentenza è inappellabile; è ammesso solo il ricorso per Cassazione.</span>
+    </div>
+
+    <h2 class="section-title">Mediazione e Negoziazione Assistita</h2>
+
+    <div class="faq-item">
+        <span class="question">Il PSS è applicabile a tutte le mediazioni?</span>
+        <span class="answer">Solo a quelle obbligatorie ex art. 5 comma 1 D.Lgs. 28/10 e se viene raggiunto l'accordo.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Qual è la condizione necessaria per la liquidazione in mediazione?</span>
+        <span class="answer">Il raggiungimento dell'accordo di conciliazione.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">La parte ammessa al PSS deve pagare l'organismo di mediazione?</span>
+        <span class="answer">No, non è dovuta alcuna indennità se la mediazione è condizione di procedibilità.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">A quale COA si presenta l'istanza per la mediazione?</span>
+        <span class="answer">Al COA del luogo dove ha sede l'organismo di mediazione competente.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">La negoziazione assistita in materia familiare è coperta dal PSS?</span>
+        <span class="answer">No, è esclusa in quanto procedura facoltativa.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">In quali casi di negoziazione assistita opera il beneficio?</span>
+        <span class="answer">Casi obbligatori: risarcimento danni da circolazione e pagamenti entro 50.000 €, se raggiunto l'accordo.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa deve fare il COA dopo l'accordo di negoziazione?</span>
+        <span class="answer">Deve confermare l'ammissione e apporre il visto di congruità sulla parcella.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Cosa fare se l'accordo non viene raggiunto?</span>
+        <span class="answer">Il difensore può proseguire in sede giudiziaria chiedendo l'ammissione secondo le regole ordinarie.</span>
+    </div>
+
+    <div class="faq-item">
+        <span class="question">Si possono percepire compensi dal cliente ammesso al PSS in negoziazione?</span>
+        <span class="answer">No, ogni patto contrario è nullo.</span>
+    </div>
+
+    <div id="noResults" class="no-results">
+        Nessun risultato trovato per la ricerca effettuata. Prova con termini diversi.
+    </div>
+</main>
+
+<footer>
+    <div class="footer-note">
+        Si raccomanda di consultare, per maggiori dettagli, il documento contenente le Linee Guida ufficiali del Consiglio dell'Ordine.
+    </div>
+</footer>
+
+<script>
+    function filterFaqs() {
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toLowerCase();
+        var faqItems = document.getElementsByClassName('faq-item');
+        var sections = document.getElementsByClassName('section-title');
+        var noResults = document.getElementById('noResults');
+        var foundAny = false;
+
+        // Filtra le singole FAQ
+        for (var i = 0; i < faqItems.length; i++) {
+            var text = faqItems[i].innerText.toLowerCase();
+            if (text.indexOf(filter) > -1) {
+                faqItems[i].style.display = "";
+                foundAny = true;
+            } else {
+                faqItems[i].style.display = "none";
+            }
+        }
+
+        // Nasconde i titoli delle sezioni se è in corso una ricerca
+        for (var j = 0; j < sections.length; j++) {
+            if (filter.length > 0) {
+                sections[j].style.display = "none";
+            } else {
+                sections[j].style.display = "";
+            }
+        }
+
+        // Gestione messaggio "nessun risultato"
+        if (!foundAny && filter.length > 0) {
+            noResults.style.display = "block";
+        } else {
+            noResults.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

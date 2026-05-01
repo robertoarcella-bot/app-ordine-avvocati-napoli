@@ -5,7 +5,7 @@ import {
 import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
-  shieldHalfOutline, peopleOutline, businessOutline,
+  shieldHalfOutline, peopleOutline, businessOutline, bookOutline,
 } from 'ionicons/icons';
 
 interface MenuItem {
@@ -14,10 +14,13 @@ interface MenuItem {
   icon: string;
 }
 
+const ALBO_URL = '/sito/view?u=' + encodeURIComponent('https://www.ordineavvocatinapoli.it/albo-elenchi/') + '&t=' + encodeURIComponent('Albo Avvocati');
+
 const ITEMS: MenuItem[] = [
   { title: 'Home', url: '/home', icon: homeOutline },
   { title: 'News', url: '/news', icon: newspaperOutline },
   { title: 'Sito Ordine Avvocati', url: '/sito', icon: globeOutline },
+  { title: 'Albo Avvocati', url: ALBO_URL, icon: bookOutline },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
   { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },

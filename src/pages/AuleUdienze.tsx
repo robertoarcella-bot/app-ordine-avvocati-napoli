@@ -18,6 +18,10 @@ const AuleUdienze: React.FC = () => {
   const onOpen = (app: MiniApp) => {
     if (app.externalUrl) {
       void Browser.open({ url: app.externalUrl });
+    } else if (app.webviewUrl) {
+      const u = encodeURIComponent(app.webviewUrl);
+      const t = encodeURIComponent(app.title);
+      history.push(`/sito/view?u=${u}&t=${t}`);
     } else {
       history.push(`/miniapps/${app.id}`);
     }

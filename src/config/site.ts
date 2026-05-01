@@ -37,12 +37,6 @@ export const SITE = {
       icon: 'reader-outline',
     },
     {
-      id: 'albo',
-      label: 'Albo ed Elenchi',
-      url: 'https://www.ordineavvocatinapoli.it/albo-elenchi/',
-      icon: 'book-outline',
-    },
-    {
       id: 'trasparenza',
       label: 'Amministrazione Trasparente',
       url: 'https://www.ordineavvocatinapoli.it/amministrazione-trasparente/',
