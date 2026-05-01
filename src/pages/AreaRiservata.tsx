@@ -11,6 +11,7 @@ import {
   shieldCheckmarkOutline,
 } from 'ionicons/icons';
 import { useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
 import {
   fetchCsrfToken, performLogin, performLogout,
@@ -20,6 +21,7 @@ import {
 
 const AreaRiservata: React.FC = () => {
   const headlessIframeRef = useRef<HTMLIFrameElement>(null);
+  const history = useHistory();
 
   const [logged, setLogged] = useState(false);
   const [username, setUsername] = useState('');
@@ -107,11 +109,20 @@ const AreaRiservata: React.FC = () => {
     }
   };
 
-  const openReservedArea = async () => {
-    // Apre l'area riservata in browser esterno (Custom Tabs): condivide
-    // i cookie wordpress_logged_in_* impostati nel WebView durante il
-    // login → l'utente dovrebbe vedersi già autenticato.
-    await Browser.open({ url: AUTH_URLS.reservedHome });
+  const openReservedArea = (url: string = AUTH_URLS.reservedHome, title: string = 'Area Riservata') => {
+    // Apre l'area riservata DENTRO l'app (SitoView), non in Custom Tabs:
+    // Chrome Custom Tabs ha un cookie jar separato dal WebView, quindi
+    // i cookie wordpress_logged_in_* impostati durante il login B-bis
+    // sono visibili SOLO al WebView interno dell'app.
+    const u = encodeURIComponent(url);
+    const t = encodeURIComponent(title);
+    history.push(`/sito/view?u=${u}&t=${t}`);
+  };
+
+  const openExternalBrowser = async (url: string) => {
+    // Solo se proprio l'utente vuole aprire fuori — per l'area riservata
+    // sconsigliato (Custom Tabs non ha la sessione).
+    await Browser.open({ url });
   };
 
   return (
@@ -223,7 +234,7 @@ const AreaRiservata: React.FC = () => {
             </IonCard>
 
             <div style={{ textAlign: 'center', marginTop: 16 }}>
-              <IonButton fill="outline" size="small" onClick={() => Browser.open({ url: AUTH_URLS.loginPage })}>
+              <IonButton fill="outline" size="small" onClick={() => openExternalBrowser(AUTH_URLS.loginPage)}>
                 <IonIcon slot="start" icon={openOutline} />
                 Apri sito di login nel browser
               </IonButton>
@@ -247,9 +258,16 @@ const AreaRiservata: React.FC = () => {
               {success && (
                 <IonText color="success"><p>{success}</p></IonText>
               )}
-              <IonButton expand="block" onClick={openReservedArea}>
+              <IonButton
+                expand="block"
+                onClick={() => openReservedArea(AUTH_URLS.reservedHome, 'Area Riservata Consiglieri')}
+              >
                 <IonIcon slot="start" icon={openOutline} /> Apri area riservata
               </IonButton>
+              <IonNote style={{ display: 'block', marginTop: 8, fontSize: 11, textAlign: 'center' }}>
+                L'area riservata viene aperta nel browser interno dell'app per
+                preservare la sessione di accesso.
+              </IonNote>
               <IonButton expand="block" fill="outline" color="medium" onClick={onLogout} disabled={busy} style={{ marginTop: 8 }}>
                 {busy ? <IonSpinner name="dots" /> : <>
                   <IonIcon slot="start" icon={logOutOutline} /> Esci
