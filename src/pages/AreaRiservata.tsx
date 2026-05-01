@@ -1,140 +1,60 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonButtons, IonBackButton, IonMenuButton,
-  IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonText, IonButton, IonIcon,
-  IonInput, IonLabel, IonItem, IonList, IonCheckbox, IonSpinner, IonNote,
-  useIonViewWillEnter,
+  IonButtons, IonBackButton, IonMenuButton, IonText,
+  IonCard, IonCardContent, IonCardHeader, IonCardTitle,
+  IonButton, IonIcon, IonNote,
 } from '@ionic/react';
 import {
   lockClosedOutline, openOutline, logInOutline, logOutOutline,
-  alertCircleOutline, checkmarkCircleOutline, eyeOutline, eyeOffOutline,
-  shieldCheckmarkOutline,
+  shieldCheckmarkOutline, checkmarkCircleOutline,
 } from 'ionicons/icons';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Browser } from '@capacitor/browser';
+import { useIonViewWillEnter } from '@ionic/react';
 import {
-  fetchCsrfToken, performLogin, performLogout,
-  markLoggedIn, clearLoggedIn, isLoggedIn, getRememberedUsername,
+  markLoggedIn, clearLoggedIn, isLoggedIn,
   AUTH_URLS,
 } from '../services/auth';
 
+/**
+ * Area Riservata — approccio "WebView pura".
+ *
+ * Perche' non un form nativo: il login del sito Profile Builder usa cookie
+ * di sessione che, su Android WebView, vengono memorizzati con storage
+ * partitioning. Un iframe nascosto cross-origin salva i cookie in una
+ * partition diversa rispetto a quella usata quando il sito e' caricato
+ * come top-frame: l'utente, dopo aver "loggato" via form nativo, in WebView
+ * si ritrova ancora sloggato perche' i cookie non sono visibili.
+ *
+ * Soluzione: l'utente fa il login direttamente nella WebView interna che
+ * mostra la pagina ufficiale del sito. I cookie sono first-party, persistono
+ * nel CookieManager Android per le successive aperture di pagine riservate.
+ *
+ * L'app non vede e non tocca mai username/password.
+ */
 const AreaRiservata: React.FC = () => {
-  const headlessIframeRef = useRef<HTMLIFrameElement>(null);
   const history = useHistory();
+  const [seen, setSeen] = useState(false);
 
-  const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(false);
-  const [showPwd, setShowPwd] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const refresh = async () => setSeen(await isLoggedIn());
+  useEffect(() => { void refresh(); }, []);
+  useIonViewWillEnter(() => { void refresh(); });
 
-  const refreshState = async () => {
-    const localLogged = await isLoggedIn();
-    const u = await getRememberedUsername();
-    if (u) {
-      setUsername(u);
-      setRemember(true);
-    }
-    setLogged(localLogged);
-    // Niente verify HTTP all'apertura: su Android CapacitorHttp non
-    // condivide cookie con il WebView, quindi una verifica nativa
-    // restituirebbe falsamente "non loggato" e ripulirebbe lo stato.
-    // L'utente vedra' il vero stato della sessione aprendo l'area
-    // riservata (WebView interna, cookie condivisi).
-  };
-
-  useEffect(() => { void refreshState(); }, []);
-  useIonViewWillEnter(() => { void refreshState(); });
-
-  const onSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
-    setError(null);
-    setSuccess(null);
-    if (!username.trim() || !password) {
-      setError('Inserisci nome utente e password.');
-      return;
-    }
-    if (!headlessIframeRef.current) {
-      setError('Errore interno: iframe non pronto.');
-      return;
-    }
-    setBusy(true);
-    try {
-      const token = await fetchCsrfToken();
-      if (!token) {
-        setError('Impossibile contattare il sito (token di sicurezza non ottenuto). Verifica la connessione.');
-        setBusy(false);
-        return;
-      }
-      const result = await performLogin(headlessIframeRef.current, {
-        username: username.trim(),
-        password,
-        remember,
-      }, token);
-
-      if (result.ok) {
-        // NB: una verify HTTP esplicita post-login darebbe falsi negativi
-        // perche' su Android CapacitorHttp e WebView usano cookie jar
-        // separati. Ci affidiamo al rilevamento dell'iframe che ha
-        // effettivamente fatto il POST: se non ha visto pattern di errore
-        // espliciti, consideriamo riuscito. La conferma definitiva
-        // avviene quando l'utente apre l'area riservata e vede i propri
-        // dati.
-        await markLoggedIn(username.trim(), remember);
-        setLogged(true);
-        setSuccess('Accesso effettuato. Apri l\'area riservata per verificare.');
-        setPassword('');
-      } else {
-        if (result.reason === 'invalid_credentials') {
-          setError('Credenziali non corrette.');
-        } else if (result.reason === 'network') {
-          setError('Impossibile completare il login (timeout di rete).');
-        } else if (result.reason === 'csrf') {
-          setError('Token di sicurezza scaduto, riprova.');
-        } else {
-          setError('Login non riuscito. Riprova.');
-        }
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Errore inatteso durante il login.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const onLogout = async () => {
-    setError(null);
-    setBusy(true);
-    try {
-      if (headlessIframeRef.current) {
-        await performLogout(headlessIframeRef.current);
-      }
-      await clearLoggedIn();
-      setLogged(false);
-      setSuccess('Disconnessione effettuata.');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const openReservedArea = (url: string = AUTH_URLS.reservedHome, title: string = 'Area Riservata') => {
-    // Apre l'area riservata DENTRO l'app (SitoView), non in Custom Tabs:
-    // Chrome Custom Tabs ha un cookie jar separato dal WebView, quindi
-    // i cookie wordpress_logged_in_* impostati durante il login B-bis
-    // sono visibili SOLO al WebView interno dell'app.
-    const u = encodeURIComponent(url);
-    const t = encodeURIComponent(title);
+  const openLoginPage = () => {
+    const u = encodeURIComponent(AUTH_URLS.loginPage);
+    const t = encodeURIComponent('Area Riservata');
     history.push(`/sito/view?u=${u}&t=${t}`);
+    // Marchiamo localmente "l'utente ha visitato la pagina di login" come
+    // hint UX (non e' una vera autenticazione, solo per cambiare l'aspetto
+    // della home dell'area riservata)
+    void markLoggedIn('', false);
   };
 
-  const openExternalBrowser = async (url: string) => {
-    // Solo se proprio l'utente vuole aprire fuori — per l'area riservata
-    // sconsigliato (Custom Tabs non ha la sessione).
-    await Browser.open({ url });
+  const openLogoutPage = async () => {
+    await clearLoggedIn();
+    const u = encodeURIComponent(AUTH_URLS.logoutPage);
+    const t = encodeURIComponent('Logout');
+    history.push(`/sito/view?u=${u}&t=${t}`);
   };
 
   return (
@@ -150,144 +70,92 @@ const AreaRiservata: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen className="ion-padding">
 
-        {/* Iframe headless per il flusso login/logout (sempre presente, nascosto) */}
-        <iframe
-          ref={headlessIframeRef}
-          title="auth"
-          style={{ display: 'none' }}
-          sandbox="allow-scripts allow-same-origin allow-forms"
-        />
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>
+              <IonIcon icon={lockClosedOutline} color="primary" />{' '}
+              Accesso al sito ufficiale
+            </IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <IonText>
+              <p style={{ marginTop: 0 }}>
+                L'area riservata viene aperta direttamente sul sito ufficiale
+                del Consiglio dell'Ordine degli Avvocati di Napoli, dentro
+                il browser interno dell'app.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--ion-color-medium)' }}>
+                Effettua il login con le tue credenziali del sito; la sessione
+                resta attiva finché non esegui il logout o non chiudi del
+                tutto l'app.
+              </p>
+            </IonText>
 
-        {!logged && (
-          <>
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>
-                  <IonIcon icon={lockClosedOutline} color="primary" /> Accesso al sito
-                </IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonText color="medium">
-                  <p style={{ marginTop: 0 }}>
-                    Effettua il login con le credenziali del sito ufficiale del
-                    Consiglio dell'Ordine degli Avvocati di Napoli.
-                  </p>
-                </IonText>
+            <IonButton expand="block" onClick={openLoginPage} color="primary">
+              <IonIcon slot="start" icon={logInOutline} />
+              {seen ? 'Apri area riservata' : 'Accedi all\'area riservata'}
+            </IonButton>
 
-                <form onSubmit={onSubmit}>
-                  <IonList lines="full" style={{ background: 'transparent' }}>
-                    <IonItem>
-                      <IonLabel position="stacked">Nome utente</IonLabel>
-                      <IonInput
-                        value={username}
-                        onIonInput={e => setUsername(String(e.detail.value ?? ''))}
-                        autocomplete="username"
-                        autocapitalize="off"
-                        spellcheck={false}
-                        disabled={busy}
-                        required
-                      />
-                    </IonItem>
-                    <IonItem>
-                      <IonLabel position="stacked">Password</IonLabel>
-                      <IonInput
-                        type={showPwd ? 'text' : 'password'}
-                        value={password}
-                        onIonInput={e => setPassword(String(e.detail.value ?? ''))}
-                        autocomplete="current-password"
-                        disabled={busy}
-                        required
-                      />
-                      <IonButton
-                        slot="end"
-                        fill="clear"
-                        color="medium"
-                        size="small"
-                        type="button"
-                        onClick={() => setShowPwd(s => !s)}
-                        aria-label={showPwd ? 'Nascondi password' : 'Mostra password'}
-                      >
-                        <IonIcon slot="icon-only" icon={showPwd ? eyeOffOutline : eyeOutline} />
-                      </IonButton>
-                    </IonItem>
-                    <IonItem lines="none">
-                      <IonCheckbox
-                        slot="start"
-                        checked={remember}
-                        onIonChange={e => setRemember(e.detail.checked)}
-                        disabled={busy}
-                      />
-                      <IonLabel>Ricorda nome utente</IonLabel>
-                    </IonItem>
-                  </IonList>
-
-                  {error && (
-                    <IonCard color="danger" style={{ margin: '12px 0' }}>
-                      <IonCardContent>
-                        <IonIcon icon={alertCircleOutline} color="light" /> {error}
-                      </IonCardContent>
-                    </IonCard>
-                  )}
-
-                  <div style={{ marginTop: 16 }}>
-                    <IonButton expand="block" type="submit" disabled={busy}>
-                      {busy ? <IonSpinner name="dots" /> : <>
-                        <IonIcon slot="start" icon={logInOutline} /> Accedi
-                      </>}
-                    </IonButton>
-                  </div>
-                </form>
-
-                <IonNote style={{ display: 'block', marginTop: 12, fontSize: 12 }}>
-                  <IonIcon icon={shieldCheckmarkOutline} /> La password non viene salvata
-                  dall'app. La sessione resta attiva nel browser interno fino al logout.
-                </IonNote>
-              </IonCardContent>
-            </IonCard>
-
-            <div style={{ textAlign: 'center', marginTop: 16 }}>
-              <IonButton fill="outline" size="small" onClick={() => openExternalBrowser(AUTH_URLS.loginPage)}>
-                <IonIcon slot="start" icon={openOutline} />
-                Apri sito di login nel browser
-              </IonButton>
-            </div>
-          </>
-        )}
-
-        {logged && (
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>
-                <IonIcon icon={checkmarkCircleOutline} color="success" /> Accesso effettuato
-              </IonCardTitle>
-            </IonCardHeader>
-            <IonCardContent>
-              {username && (
-                <IonText>
-                  <p>Sei collegato come <strong>{username}</strong>.</p>
-                </IonText>
-              )}
-              {success && (
-                <IonText color="success"><p>{success}</p></IonText>
-              )}
+            {seen && (
               <IonButton
                 expand="block"
-                onClick={() => openReservedArea(AUTH_URLS.reservedHome, 'Area Riservata Consiglieri')}
+                fill="outline"
+                color="medium"
+                onClick={openLogoutPage}
+                style={{ marginTop: 8 }}
               >
-                <IonIcon slot="start" icon={openOutline} /> Apri area riservata
+                <IonIcon slot="start" icon={logOutOutline} />
+                Esci dal sito
               </IonButton>
-              <IonNote style={{ display: 'block', marginTop: 8, fontSize: 11, textAlign: 'center' }}>
-                L'area riservata viene aperta nel browser interno dell'app per
-                preservare la sessione di accesso.
-              </IonNote>
-              <IonButton expand="block" fill="outline" color="medium" onClick={onLogout} disabled={busy} style={{ marginTop: 8 }}>
-                {busy ? <IonSpinner name="dots" /> : <>
-                  <IonIcon slot="start" icon={logOutOutline} /> Esci
-                </>}
+            )}
+
+            {seen && (
+              <div style={{
+                marginTop: 12, padding: 10, borderRadius: 8,
+                background: 'rgba(45, 211, 111, 0.1)',
+                display: 'flex', gap: 8, alignItems: 'flex-start',
+              }}>
+                <IonIcon icon={checkmarkCircleOutline} color="success" style={{ flex: '0 0 auto', marginTop: 2 }} />
+                <IonText color="success">
+                  <small>Sessione attiva nel browser interno dell'app.</small>
+                </IonText>
+              </div>
+            )}
+
+            <IonNote style={{
+              display: 'flex', gap: 8, alignItems: 'flex-start',
+              marginTop: 14, fontSize: 12, color: 'var(--ion-color-medium)',
+            }}>
+              <IonIcon icon={shieldCheckmarkOutline} />
+              <span>
+                Le credenziali vengono inserite direttamente sul sito ufficiale
+                del COA: l'app non le vede e non le memorizza.
+              </span>
+            </IonNote>
+          </IonCardContent>
+        </IonCard>
+
+        <IonCard color="light">
+          <IonCardContent>
+            <IonText>
+              <small>
+                Se preferisci, puoi anche aprire l'area riservata in Chrome
+                Custom Tabs (browser di sistema). In quel caso però, dopo il
+                logout, dovrai ripetere l'accesso.
+              </small>
+            </IonText>
+            <div style={{ marginTop: 12 }}>
+              <IonButton
+                size="small"
+                fill="outline"
+                onClick={() => window.open(AUTH_URLS.loginPage, '_blank')}
+              >
+                <IonIcon slot="start" icon={openOutline} />
+                Apri in browser di sistema
               </IonButton>
-            </IonCardContent>
-          </IonCard>
-        )}
+            </div>
+          </IonCardContent>
+        </IonCard>
       </IonContent>
     </IonPage>
   );
