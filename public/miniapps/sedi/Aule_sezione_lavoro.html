@@ -85,27 +85,32 @@
     border-radius: 12px;
     padding: 12px 14px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .card-head {
-    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    display: flex; flex-direction: column; gap: 10px;
   }
   .judge-name {
-    font-size: 16px; font-weight: 700; color: var(--primary-dark);
+    font-size: 17px; font-weight: 700; color: var(--primary-dark);
     line-height: 1.2;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
   }
-  .badge {
-    font-size: 11px; font-weight: 700; padding: 3px 8px;
-    border-radius: 6px; background: var(--secondary); color: #000;
-    flex: 0 0 auto;
+  .info-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .info-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    background: var(--chip-bg); color: var(--primary-dark);
+    border: 1px solid rgba(0,102,204,0.18);
   }
-  .meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-  .meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .info-pill .label { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .info-pill.section { background: var(--secondary); color: #000; border-color: var(--secondary); }
+  .info-pill.section .label { color: #4a3a14; }
+  .days-block { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+  .days-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
   .days { display: flex; gap: 6px; flex-wrap: wrap; }
   .day {
-    font-size: 12px; font-weight: 700; padding: 4px 10px;
-    border-radius: 6px; background: var(--chip-bg); color: var(--primary-dark);
-    border: 1px solid rgba(0,102,204,0.15);
+    font-size: 12px; font-weight: 700; padding: 5px 10px;
+    border-radius: 6px; background: var(--card-bg); color: var(--primary-dark);
+    border: 1px solid var(--primary);
   }
   .empty { color: var(--muted); font-style: italic; font-size: 13px; }
   .nores {
@@ -238,20 +243,41 @@
     items.forEach(j => {
       const card = document.createElement('div');
       card.className = 'card';
-      const sez = j.section ? '<span class="badge">Sez. ' + j.section + '</span>' : '';
-      const meta = (j.floor || j.section)
-        ? '<div class="meta">' +
-            (j.floor ? '<span>🏛️ Piano ' + j.floor + '</span>' : '') +
+
+      const pills = [];
+      if (j.section) {
+        pills.push(
+          '<div class="info-pill section">' +
+            '<span class="label">Sezione</span>' +
+            '<span>' + j.section + '</span>' +
           '</div>'
-        : '';
-      const days = j.days.length
-        ? '<div class="days">' + j.days.map(d => '<span class="day">' + dayLabel(d) + '</span>').join('') + '</div>'
+        );
+      }
+      if (j.floor) {
+        pills.push(
+          '<div class="info-pill">' +
+            '<span class="label">Piano</span>' +
+            '<span>' + j.floor + '</span>' +
+          '</div>'
+        );
+      }
+      const pillsHtml = pills.length
+        ? '<div class="info-row">' + pills.join('') + '</div>'
+        : '<div class="empty">Sezione e piano non disponibili</div>';
+
+      const daysBlock = j.days.length
+        ? '<div class="days-block">' +
+            '<span class="days-label">Giorni di udienza</span>' +
+            '<div class="days">' +
+              j.days.map(d => '<span class="day">' + dayLabel(d) + '</span>').join('') +
+            '</div>' +
+          '</div>'
         : '<div class="empty">Calendario non disponibile</div>';
+
       card.innerHTML =
-        '<div class="card-head">' +
-          '<div class="judge-name">' + j.name + '</div>' + sez +
-        '</div>' +
-        meta + days;
+        '<div class="judge-name">' + j.name + '</div>' +
+        pillsHtml +
+        daysBlock;
       grid.appendChild(card);
     });
   }
