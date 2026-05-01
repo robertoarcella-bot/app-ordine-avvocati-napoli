@@ -15,6 +15,7 @@ import ProcessoTelematico from './pages/ProcessoTelematico';
 import SourceNews from './pages/SourceNews';
 import AreaRiservata from './pages/AreaRiservata';
 import Info from './pages/Info';
+import Commissione from './pages/Commissione';
 
 /* Core CSS Ionic */
 import '@ionic/react/css/core.css';
@@ -51,6 +52,7 @@ const App: React.FC = () => (
           <Route exact path="/processo-telematico/:sourceId" component={SourceNews} />
           <Route exact path="/area-riservata" component={AreaRiservata} />
           <Route exact path="/info" component={Info} />
+          <Route exact path="/commissione" component={Commissione} />
           <Route exact path="/" render={() => <Redirect to="/home" />} />
         </IonRouterOutlet>
       </IonSplitPane>

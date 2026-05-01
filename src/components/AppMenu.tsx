@@ -5,7 +5,7 @@ import {
 import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
-  shieldHalfOutline,
+  shieldHalfOutline, peopleOutline,
 } from 'ionicons/icons';
 
 interface MenuItem {
@@ -22,6 +22,7 @@ const ITEMS: MenuItem[] = [
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
   { title: 'Processo Telematico', url: '/processo-telematico', icon: shieldHalfOutline },
   { title: 'Area Riservata', url: '/area-riservata', icon: lockClosedOutline },
+  { title: 'Commissione Informatica', url: '/commissione', icon: peopleOutline },
   { title: 'Info & Crediti', url: '/info', icon: informationCircleOutline },
 ];
 

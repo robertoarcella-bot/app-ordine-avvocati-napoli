@@ -8,11 +8,13 @@ import {
   globeOutline, mailOutline, openOutline, codeSlashOutline,
   bulbOutline, ribbonOutline,
 } from 'ionicons/icons';
+import { useHistory } from 'react-router';
 import { openExternal } from '../services/download';
 
 const APP_VERSION = '0.1.0';
 
 const Info: React.FC = () => {
+  const history = useHistory();
   return (
     <IonPage>
       <IonHeader>
@@ -52,11 +54,19 @@ const Info: React.FC = () => {
                   <p>Avv. Roberto Arcella</p>
                 </IonLabel>
               </IonItem>
-              <IonItem lines="none">
+              <IonItem
+                button
+                detail
+                lines="none"
+                onClick={() => history.push('/commissione')}
+              >
                 <IonIcon slot="start" icon={bulbOutline} color="secondary" />
                 <IonLabel>
                   <h3>Idea e collaborazione</h3>
                   <p>Commissione Informatica del Consiglio dell'Ordine degli Avvocati di Napoli</p>
+                  <p style={{ color: 'var(--ion-color-primary)', fontWeight: 600, marginTop: 4 }}>
+                    Vedi i componenti →
+                  </p>
                 </IonLabel>
               </IonItem>
               <IonItem lines="none">
