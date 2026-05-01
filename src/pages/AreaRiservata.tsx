@@ -14,7 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
 import {
-  fetchCsrfToken, performLogin, performLogout, verifyLoggedIn,
+  fetchCsrfToken, performLogin, performLogout,
   markLoggedIn, clearLoggedIn, isLoggedIn, getRememberedUsername,
   AUTH_URLS,
 } from '../services/auth';
@@ -40,19 +40,11 @@ const AreaRiservata: React.FC = () => {
       setRemember(true);
     }
     setLogged(localLogged);
-    // Se localmente risulta loggato, verifichiamo che la sessione sia
-    // ancora valida lato server (cookie scaduti o invalidati altrove).
-    if (localLogged) {
-      try {
-        const verify = await verifyLoggedIn();
-        if (!verify.logged) {
-          await clearLoggedIn();
-          setLogged(false);
-        }
-      } catch {
-        // se il check fallisce per network, manteniamo lo stato locale
-      }
-    }
+    // Niente verify HTTP all'apertura: su Android CapacitorHttp non
+    // condivide cookie con il WebView, quindi una verifica nativa
+    // restituirebbe falsamente "non loggato" e ripulirebbe lo stato.
+    // L'utente vedra' il vero stato della sessione aprendo l'area
+    // riservata (WebView interna, cookie condivisi).
   };
 
   useEffect(() => { void refreshState(); }, []);
@@ -85,22 +77,17 @@ const AreaRiservata: React.FC = () => {
       }, token);
 
       if (result.ok) {
-        // Verifica esplicita: anche se l'iframe ha completato senza errori
-        // visibili, ricontrolliamo lo stato facendo una GET dedicata che
-        // ispeziona la presenza/assenza del form di login nella response.
-        const verify = await verifyLoggedIn();
-        if (verify.logged) {
-          await markLoggedIn(username.trim(), remember);
-          setLogged(true);
-          setSuccess('Accesso effettuato.');
-          setPassword('');
-        } else {
-          setError(
-            verify.reason === 'invalid_credentials'
-              ? 'Credenziali non corrette.'
-              : 'Login non riuscito (sessione non attiva). Verifica nome utente e password.'
-          );
-        }
+        // NB: una verify HTTP esplicita post-login darebbe falsi negativi
+        // perche' su Android CapacitorHttp e WebView usano cookie jar
+        // separati. Ci affidiamo al rilevamento dell'iframe che ha
+        // effettivamente fatto il POST: se non ha visto pattern di errore
+        // espliciti, consideriamo riuscito. La conferma definitiva
+        // avviene quando l'utente apre l'area riservata e vede i propri
+        // dati.
+        await markLoggedIn(username.trim(), remember);
+        setLogged(true);
+        setSuccess('Accesso effettuato. Apri l\'area riservata per verificare.');
+        setPassword('');
       } else {
         if (result.reason === 'invalid_credentials') {
           setError('Credenziali non corrette.');
