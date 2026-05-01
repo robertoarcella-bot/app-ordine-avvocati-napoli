@@ -71,6 +71,33 @@ const PROXY_SCRIPT = `
       '* { box-sizing: border-box; max-width: 100%; }' +
       '.container, .wrapper, .main, main { max-width: 100% !important; width: auto !important; }';
     (document.head || document.body).appendChild(style);
+
+    // Forza un reflow + resize: il WebView Android non sempre ricalcola
+    // il layout dopo l'iniezione del CSS overflow, e lo scroll resta
+    // bloccato finché l'utente non tocca qualcosa. Sequenza ridondante
+    // di reflow toggle + resize a 3 timestep per coprire tutti i casi.
+    function forceReflow() {
+      try {
+        var html = document.documentElement;
+        var body = document.body;
+        if (!html || !body) return;
+        var oldHtmlOverflow = html.style.overflow;
+        var oldBodyOverflow = body.style.overflow;
+        html.style.overflow = 'hidden';
+        body.style.overflow = 'hidden';
+        void body.offsetHeight; // forza reflow
+        html.style.overflow = oldHtmlOverflow || 'auto';
+        body.style.overflow = oldBodyOverflow || 'auto';
+        void body.offsetHeight;
+        window.dispatchEvent(new Event('resize'));
+        // Tocco programmatico per "svegliare" il gesture handler
+        window.scrollTo(0, 1);
+        window.scrollTo(0, 0);
+      } catch (e) { /* noop */ }
+    }
+    setTimeout(forceReflow, 100);
+    setTimeout(forceReflow, 300);
+    setTimeout(forceReflow, 700);
   } catch (e) { /* noop */ }
 
   // 3) Intercetta window.open (per WhatsApp, mailto, link esterni)
@@ -149,14 +176,23 @@ const MiniAppView: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen>
+      {/* scrollY=false: lasciamo che sia l'iframe a gestire lo scroll interno,
+          altrimenti IonContent intercetta i touch e l'iframe resta bloccato. */}
+      <IonContent fullscreen scrollY={false}>
         <iframe
           ref={iframeRef}
           src={`/${app.file}`}
           title={app.title}
           onLoad={onLoad}
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
-          style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
+          style={{
+            border: 'none',
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            position: 'absolute',
+            inset: 0,
+          }}
         />
       </IonContent>
     </IonPage>

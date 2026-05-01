@@ -6,7 +6,8 @@ import {
 } from '@ionic/react';
 import {
   globeOutline, mailOutline, openOutline, codeSlashOutline,
-  bulbOutline, ribbonOutline,
+  bulbOutline, ribbonOutline, callOutline, locationOutline,
+  printOutline, timeOutline, shieldCheckmarkOutline,
 } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { openExternal } from '../services/download';
@@ -82,23 +83,87 @@ const Info: React.FC = () => {
 
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Contatti istituzionali</IonCardTitle>
+            <IonCardTitle>Contatti</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
             <IonList lines="full">
-              <IonItem button detail={false} onClick={() => openExternal('https://www.ordineavvocatinapoli.it/')}>
+              <IonItem
+                button detail={false}
+                onClick={() => openExternal('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Ordine Avvocati Napoli, Centro Direzionale, Piazza Coperta, 80143 Napoli'))}
+              >
+                <IonIcon slot="start" icon={locationOutline} color="primary" />
+                <IonLabel>
+                  <h3>Sede</h3>
+                  <p>Centro Direzionale, Piazza Coperta — 80143 Napoli</p>
+                </IonLabel>
+                <IonNote slot="end"><IonIcon icon={openOutline} /></IonNote>
+              </IonItem>
+              <IonItem
+                button detail={false}
+                onClick={() => openExternal('tel:+390817343737')}
+              >
+                <IonIcon slot="start" icon={callOutline} color="primary" />
+                <IonLabel>
+                  <h3>Telefono</h3>
+                  <p>+39 081 734 3737</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonIcon slot="start" icon={printOutline} color="medium" />
+                <IonLabel>
+                  <h3>Fax</h3>
+                  <p>+39 081 734 3010</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem
+                button detail={false}
+                onClick={() => openExternal('mailto:segreteria@ordineavvocati.napoli.it')}
+              >
+                <IonIcon slot="start" icon={mailOutline} color="primary" />
+                <IonLabel>
+                  <h3>Email</h3>
+                  <p>segreteria@ordineavvocati.napoli.it</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem
+                button detail={false}
+                onClick={() => openExternal('mailto:segreteria@avvocatinapoli.legalmail.it')}
+              >
+                <IonIcon slot="start" icon={shieldCheckmarkOutline} color="primary" />
+                <IonLabel>
+                  <h3>PEC</h3>
+                  <p>segreteria@avvocatinapoli.legalmail.it</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonIcon slot="start" icon={timeOutline} color="primary" />
+                <IonLabel>
+                  <h3>Orari di apertura — Segreteria</h3>
+                  <p>Lun – Ven, 9.00 – 12.30</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonIcon slot="start" icon={ribbonOutline} color="medium" />
+                <IonLabel>
+                  <h3>Codice fiscale</h3>
+                  <p>80013690633</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem lines="full">
+                <IonIcon slot="start" icon={ribbonOutline} color="medium" />
+                <IonLabel>
+                  <h3>Codice univoco fatturazione</h3>
+                  <p>UF9L1M</p>
+                </IonLabel>
+              </IonItem>
+              <IonItem
+                button detail={false}
+                onClick={() => openExternal('https://www.ordineavvocatinapoli.it/')}
+              >
                 <IonIcon slot="start" icon={globeOutline} color="primary" />
                 <IonLabel>
                   <h3>Sito ufficiale</h3>
                   <p>ordineavvocatinapoli.it</p>
-                </IonLabel>
-                <IonNote slot="end"><IonIcon icon={openOutline} /></IonNote>
-              </IonItem>
-              <IonItem button detail={false} onClick={() => openExternal('https://www.ordineavvocatinapoli.it/contatti-2/')}>
-                <IonIcon slot="start" icon={mailOutline} color="primary" />
-                <IonLabel>
-                  <h3>Contatti</h3>
-                  <p>Telefono, PEC, email</p>
                 </IonLabel>
                 <IonNote slot="end"><IonIcon icon={openOutline} /></IonNote>
               </IonItem>

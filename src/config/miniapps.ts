@@ -62,15 +62,14 @@ export const MINIAPPS: MiniApp[] = [
   },
   {
     id: 'aule-penali-na',
-    title: 'Aule Penali Napoli',
-    subtitle: 'Anteprima web del canale Telegram con segnalazioni in tempo reale (visibile anche senza Telegram installato)',
+    title: 'Aule Penali Napoli (Telegram)',
+    subtitle: 'Canale Telegram con segnalazioni in tempo reale — richiede Telegram installato',
     /**
-     * URL della "preview web" del canale Telegram (`/s/`): mostra l'ultimo
-     * stream di messaggi del canale pubblico in HTML standard, leggibile
-     * da qualsiasi browser. Dentro la pagina è comunque presente un bottone
-     * "Apri in Telegram" per chi ha l'app installata.
+     * Il canale @AulePenaliNapoli non espone la "web preview" (/s/) — quindi
+     * va aperto con il deep-link Telegram. Senza Telegram installato l'utente
+     * verrà reindirizzato alla pagina di download di Telegram dal browser.
      */
-    webviewUrl: 'https://t.me/s/AulePenaliNapoli',
+    externalUrl: 'https://t.me/AulePenaliNapoli',
     icon: 'chatbubbles-outline',
     jurisdiction: 'sedi',
     offlineReady: false,
@@ -311,9 +310,9 @@ export const MINIAPPS: MiniApp[] = [
     origin: AT_ORIGIN,
   },
   {
-    id: 'gdp-cambia-ufficio',
-    title: 'GdP — Cambia ufficio',
-    subtitle: 'Selezione ufficio del Giudice di Pace per i depositi telematici',
+    id: 'sigp-gdp',
+    title: 'SIGP — Consultazione Giudice di Pace',
+    subtitle: 'Sistema Informativo Giudice di Pace: consultazione fascicoli e udienze',
     webviewUrl: 'https://gdp.giustizia.it/index.php?pagina=cambiaufficio',
     icon: 'business-outline',
     jurisdiction: 'pct',
