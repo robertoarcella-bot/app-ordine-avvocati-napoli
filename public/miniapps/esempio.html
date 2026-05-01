@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mini-app di esempio</title>
+<style>
+  :root {
+    --primary: #0B3D2E;
+    --secondary: #C9A24A;
+    --bg: #f8f8f8;
+    --text: #222;
+    --card: #fff;
+    --border: #e3e3e3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1410; --text: #e8e8e8; --card: #15201a; --border: #2a3a31;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 16px; }
+  h1 { color: var(--primary); margin-top: 0; font-size: 22px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  input, button, select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+  }
+  button {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  button:active { opacity: 0.85; }
+  .result {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(11,61,46,0.08);
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .row { display: flex; gap: 8px; }
+  .row > * { flex: 1; }
+  .muted { color: #888; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Mini-app di esempio</h1>
+
+  <div class="card">
+    <p class="muted" style="margin-top:0">
+      Questa è una mini-webapp HTML autoportata, integrata nel menu dell'app.
+      Tutto il codice (HTML, CSS, JS) è contenuto in questo singolo file.
+      Per aggiungerne di nuove basta copiare un file in <code>public/miniapps/</code>
+      e registrarlo in <code>src/config/miniapps.ts</code>.
+    </p>
+  </div>
+
+  <div class="card">
+    <label for="op">Calcolo termine processuale (esempio)</label>
+    <div class="row">
+      <input id="data" type="date" />
+      <input id="giorni" type="number" placeholder="giorni" value="30" />
+    </div>
+    <button onclick="calcola()">Calcola scadenza</button>
+    <div id="risultato" class="result" style="display:none"></div>
+  </div>
+
+  <div class="card">
+    <p class="muted" style="margin: 0">
+      Nota: i calcoli qui mostrati sono puramente esemplificativi e
+      non tengono conto di sospensioni feriali o festività.
+    </p>
+  </div>
+</div>
+
+<script>
+  document.getElementById('data').valueAsDate = new Date();
+
+  function calcola() {
+    const dataIniziale = document.getElementById('data').valueAsDate;
+    const giorni = parseInt(document.getElementById('giorni').value, 10) || 0;
+    if (!dataIniziale) return;
+    const r = new Date(dataIniziale);
+    r.setDate(r.getDate() + giorni);
+    const opt = { day: '2-digit', month: 'long', year: 'numeric' };
+    const out = document.getElementById('risultato');
+    out.style.display = 'block';
+    out.textContent = 'Scadenza: ' + r.toLocaleDateString('it-IT', opt);
+  }
+</script>
+</body>
+</html>
