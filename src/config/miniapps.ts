@@ -312,8 +312,13 @@ export const MINIAPPS: MiniApp[] = [
   {
     id: 'sigp-gdp',
     title: 'SIGP — Consultazione Giudice di Pace',
-    subtitle: 'Sistema Informativo Giudice di Pace: consultazione fascicoli e udienze',
-    webviewUrl: 'https://gdp.giustizia.it/index.php?pagina=cambiaufficio',
+    subtitle: 'Sistema Informativo Giudice di Pace: consultazione fascicoli e udienze (apre nel browser esterno)',
+    /**
+     * Sito legacy del Min. Giustizia (XHTML 1.0, no viewport): nel
+     * WebView interno è poco usabile. Usiamo externalUrl per aprirlo
+     * con Chrome Custom Tabs Android (più veloce, gesti zoom nativi).
+     */
+    externalUrl: 'https://gdp.giustizia.it/index.php?pagina=cambiaufficio',
     icon: 'business-outline',
     jurisdiction: 'pct',
     offlineReady: false,

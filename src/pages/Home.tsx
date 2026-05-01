@@ -11,6 +11,7 @@ import {
 import { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router';
 import type { RefresherEventDetail } from '@ionic/core';
+import { Browser } from '@capacitor/browser';
 import { fetchNews, type NewsItem } from '../services/api';
 import { cacheGet, cacheSet } from '../services/cache';
 import { NEWS_CACHE_MINUTES } from '../config/site';
@@ -25,7 +26,7 @@ const QUICK_TILES = [
   { label: 'Aule Udienze', icon: businessOutline, route: '/aule-udienze', color: 'secondary' },
   { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'tertiary' },
   { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'primary' },
-  { label: 'Riconosco', icon: fingerPrintOutline, route: '/sito/view?u=https%3A%2F%2Friconosco.dcssrl.it%2F&t=Riconosco', color: 'secondary' },
+  { label: 'Riconosco', icon: fingerPrintOutline, route: 'EXTERNAL:https://riconosco.dcssrl.it/', color: 'secondary' },
 ];
 
 const CACHE_KEY_LATEST = 'home:latest-news';
@@ -99,7 +100,13 @@ const Home: React.FC = () => {
               <IonCol size="6" sizeMd="4" key={t.route}>
                 <IonCard
                   button
-                  onClick={() => history.push(t.route)}
+                  onClick={() => {
+                    if (t.route.startsWith('EXTERNAL:')) {
+                      void Browser.open({ url: t.route.slice(9) });
+                    } else {
+                      history.push(t.route);
+                    }
+                  }}
                   style={{
                     textAlign: 'center',
                     borderRadius: 'var(--coa-card-radius)',
