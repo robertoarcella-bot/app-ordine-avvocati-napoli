@@ -13,7 +13,7 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 const SitoView: React.FC = () => {
   const q = useQuery();
   const url = q.get('u') || SITE.baseUrl;
-  const title = q.get('t') || 'COA Napoli';
+  const title = q.get('t') || 'Ordine Avvocati Napoli';
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = useState(true);

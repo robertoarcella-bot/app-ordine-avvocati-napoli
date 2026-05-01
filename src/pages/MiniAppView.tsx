@@ -38,7 +38,42 @@ const PROXY_SCRIPT = `
     } catch (e) { /* noop */ }
   }
 
-  // Intercetta window.open
+  // 1) Garantisce un viewport mobile-friendly (molte webapp originarie
+  //    mancavano il meta viewport o lo avevano fissato su 1200px).
+  try {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    var existing = document.querySelector('meta[name="viewport"]');
+    if (existing) existing.parentNode.removeChild(existing);
+    var meta = document.createElement('meta');
+    meta.setAttribute('name', 'viewport');
+    meta.setAttribute('content', 'width=device-width, initial-scale=1.0, viewport-fit=cover');
+    if (head) head.appendChild(meta);
+  } catch (e) { /* noop */ }
+
+  // 2) Inietta CSS che forza lo scroll verticale e impedisce a layout
+  //    fissi di sforare orizzontalmente (sostituisce overflow:hidden).
+  try {
+    var style = document.createElement('style');
+    style.setAttribute('data-coa', 'mobile-fit');
+    style.textContent =
+      'html, body {' +
+      '  margin: 0 !important;' +
+      '  padding: 0 !important;' +
+      '  max-width: 100% !important;' +
+      '  overflow-x: auto !important;' +
+      '  overflow-y: auto !important;' +
+      '  -webkit-overflow-scrolling: touch;' +
+      '  height: auto !important;' +
+      '  min-height: 100% !important;' +
+      '}' +
+      'body { padding: 8px !important; box-sizing: border-box; font-size: 16px; }' +
+      'img, table, video, iframe, canvas, svg { max-width: 100% !important; height: auto; }' +
+      '* { box-sizing: border-box; max-width: 100%; }' +
+      '.container, .wrapper, .main, main { max-width: 100% !important; width: auto !important; }';
+    (document.head || document.body).appendChild(style);
+  } catch (e) { /* noop */ }
+
+  // 3) Intercetta window.open (per WhatsApp, mailto, link esterni)
   var nativeOpen = window.open;
   window.open = function (url, target, features) {
     if (isExternal(url)) {
@@ -48,7 +83,7 @@ const PROXY_SCRIPT = `
     return nativeOpen ? nativeOpen.call(window, url, target, features) : null;
   };
 
-  // Intercetta click su <a href> esterni o target=_blank
+  // 4) Intercetta click su <a href> esterni o target=_blank
   document.addEventListener('click', function (e) {
     var t = e.target;
     while (t && t.nodeType === 1 && t.tagName !== 'A') t = t.parentNode;

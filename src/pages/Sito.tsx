@@ -19,7 +19,7 @@ const Sito: React.FC = () => {
             <IonBackButton defaultHref="/home" />
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Sito COA</IonTitle>
+          <IonTitle>Sito dell'Ordine</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

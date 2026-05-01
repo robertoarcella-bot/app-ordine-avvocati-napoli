@@ -6,7 +6,7 @@ import {
 import {
   newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline,
-  shieldHalfOutline,
+  shieldHalfOutline, businessOutline, fingerPrintOutline,
 } from 'ionicons/icons';
 import { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router';
@@ -22,8 +22,10 @@ const QUICK_TILES = [
   { label: 'Sito', icon: globeOutline, route: '/sito', color: 'secondary' },
   { label: 'Documenti', icon: documentsOutline, route: '/documenti', color: 'tertiary' },
   { label: 'Strumenti', icon: appsOutline, route: '/miniapps', color: 'primary' },
-  { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'secondary' },
-  { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'tertiary' },
+  { label: 'Aule Udienze', icon: businessOutline, route: '/aule-udienze', color: 'secondary' },
+  { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'tertiary' },
+  { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'primary' },
+  { label: 'Riconosco', icon: fingerPrintOutline, route: '/sito/view?u=https%3A%2F%2Friconosco.dcssrl.it%2F&t=Riconosco', color: 'secondary' },
 ];
 
 const CACHE_KEY_LATEST = 'home:latest-news';
@@ -70,7 +72,7 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start"><IonMenuButton /></IonButtons>
-          <IonTitle style={{ fontSize: 16 }}>Consiglio dell'Ordine</IonTitle>
+          <IonTitle style={{ fontSize: 16 }}>Ordine Avvocati Napoli</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding">
@@ -98,11 +100,29 @@ const Home: React.FC = () => {
                 <IonCard
                   button
                   onClick={() => history.push(t.route)}
-                  style={{ textAlign: 'center', borderRadius: 'var(--coa-card-radius)', boxShadow: 'var(--coa-card-shadow)' }}
+                  style={{
+                    textAlign: 'center',
+                    borderRadius: 'var(--coa-card-radius)',
+                    boxShadow: 'var(--coa-card-shadow)',
+                    height: '128px',
+                    margin: 4,
+                    display: 'flex',
+                    alignItems: 'stretch',
+                  }}
                 >
-                  <IonCardContent>
-                    <IonIcon icon={t.icon} color={t.color} style={{ fontSize: 36 }} />
-                    <div style={{ marginTop: 8, fontWeight: 600 }}>{t.label}</div>
+                  <IonCardContent style={{
+                    display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center',
+                    width: '100%', padding: 12,
+                  }}>
+                    <IonIcon icon={t.icon} color={t.color} style={{ fontSize: 32, flex: '0 0 auto' }} />
+                    <div style={{
+                      marginTop: 8, fontWeight: 600, fontSize: 13,
+                      lineHeight: 1.15, minHeight: '2.4em',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {t.label}
+                    </div>
                   </IonCardContent>
                 </IonCard>
               </IonCol>

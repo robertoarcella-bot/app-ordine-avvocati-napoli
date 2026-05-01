@@ -110,7 +110,7 @@ const Info: React.FC = () => {
           <IonText color="medium">
             <small>
               Quest'app è uno strumento informativo non ufficiale realizzato a beneficio
-              degli iscritti. I contenuti sono attinti dal sito istituzionale del COA Napoli.
+              degli iscritti. I contenuti sono attinti dal sito istituzionale dell'Ordine degli Avvocati di Napoli.
             </small>
           </IonText>
         </div>

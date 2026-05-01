@@ -13,6 +13,7 @@ import MiniApps from './pages/MiniApps';
 import MiniAppView from './pages/MiniAppView';
 import ProcessoTelematico from './pages/ProcessoTelematico';
 import SourceNews from './pages/SourceNews';
+import AuleUdienze from './pages/AuleUdienze';
 import AreaRiservata from './pages/AreaRiservata';
 import Info from './pages/Info';
 import Commissione from './pages/Commissione';
@@ -50,6 +51,7 @@ const App: React.FC = () => (
           <Route exact path="/miniapps/:id" component={MiniAppView} />
           <Route exact path="/processo-telematico" component={ProcessoTelematico} />
           <Route exact path="/processo-telematico/:sourceId" component={SourceNews} />
+          <Route exact path="/aule-udienze" component={AuleUdienze} />
           <Route exact path="/area-riservata" component={AreaRiservata} />
           <Route exact path="/info" component={Info} />
           <Route exact path="/commissione" component={Commissione} />

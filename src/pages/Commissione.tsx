@@ -119,7 +119,7 @@ const Commissione: React.FC = () => {
         <div style={{ padding: '16px 24px 32px', textAlign: 'center' }}>
           <IonText color="medium">
             <small>
-              La Commissione Informatica del COA Napoli promuove la digitalizzazione
+              La Commissione Informatica del Consiglio dell'Ordine degli Avvocati di Napoli promuove la digitalizzazione
               della professione forense, supporta l'innovazione tecnologica negli studi
               legali e nei servizi telematici della giustizia, e ha ideato questa app
               come strumento informativo a beneficio degli iscritti.

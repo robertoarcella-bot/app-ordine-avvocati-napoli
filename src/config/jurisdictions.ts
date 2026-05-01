@@ -6,6 +6,7 @@
 
 export type Jurisdiction =
   | 'sedi'
+  | 'pct'
   | 'comuni'
   | 'civile'
   | 'penale'
@@ -22,8 +23,9 @@ export interface JurisdictionMeta {
 }
 
 export const JURISDICTIONS: Record<Jurisdiction, JurisdictionMeta> = {
-  sedi:           { id: 'sedi',           label: 'Sedi e dislocazione uffici', short: 'Sedi',          order: -1 },
-  comuni:         { id: 'comuni',         label: 'Comuni a tutti gli avvocati', short: 'Comuni',       order: 0 },
+  sedi:           { id: 'sedi',           label: 'Sedi e dislocazione uffici', short: 'Sedi',          order: -2 },
+  pct:            { id: 'pct',            label: 'Strumenti per il Processo Telematico', short: 'PCT', order: -1 },
+  comuni:         { id: 'comuni',         label: 'Servizi di interesse generale', short: 'Generali',  order: 0 },
   civile:         { id: 'civile',         label: 'Civile',                                             order: 1 },
   penale:         { id: 'penale',         label: 'Penale',                                             order: 2 },
   amministrativo: { id: 'amministrativo', label: 'Amministrativo',                                     order: 3 },

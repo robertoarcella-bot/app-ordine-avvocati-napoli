@@ -5,7 +5,7 @@ import {
 import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
-  shieldHalfOutline, peopleOutline,
+  shieldHalfOutline, peopleOutline, businessOutline,
 } from 'ionicons/icons';
 
 interface MenuItem {
@@ -17,9 +17,10 @@ interface MenuItem {
 const ITEMS: MenuItem[] = [
   { title: 'Home', url: '/home', icon: homeOutline },
   { title: 'News', url: '/news', icon: newspaperOutline },
-  { title: 'Sito COA', url: '/sito', icon: globeOutline },
+  { title: 'Sito Ordine Avvocati', url: '/sito', icon: globeOutline },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
+  { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },
   { title: 'Processo Telematico', url: '/processo-telematico', icon: shieldHalfOutline },
   { title: 'Area Riservata', url: '/area-riservata', icon: lockClosedOutline },
   { title: 'Commissione Informatica', url: '/commissione', icon: peopleOutline },
