@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Interessi Legali e Moratori</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Stili personalizzati aggiuntivi */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #1e3a8a;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            color: white;
+            border-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            border-color: #4b5563;
+        }
+
+        .btn-action {
+            background-color: #f9fafb;
+            color: #1e3a8a;
+            border-color: #d1d5db;
+        }
+
+        .btn-action:hover {
+            background-color: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .btn-add-row,
+        .btn-delete-row {
+            background-color: #60a5fa;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            border: none;
+        }
+
+        .btn-add-row:hover,
+        .btn-delete-row:hover {
+            background-color: #3b82f6;
+        }
+
+        .btn-delete-row {
+            background-color: #ef4444;
+        }
+
+        .btn-delete-row:hover {
+            background-color: #dc2626;
+        }
+
+        label {
+            color: #374151;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            border: 1px solid #d1d5db;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            width: 100%;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: white;
+        }
+
+        /* Stile per freccia dropdown (select) */
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+            border-color: #d1d5db;
+            color: #2563eb;
+            margin-right: 0.5rem;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.6;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th,
+        td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #dbeafe;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        td[contenteditable="true"] {
+            background-color: #eff6ff;
+            cursor: text;
+        }
+
+        td[contenteditable="true"]:focus {
+            background-color: white;
+            outline: 2px solid #2563eb;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #e0f2fe;
+            border-radius: 0.5rem;
+            border: 1px solid #bae6fd;
+        }
+
+        .results-section h3 {
+            color: #0c4a6e;
+            margin-bottom: 1rem;
+        }
+
+        #resultActions {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #bae6fd;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .table-container-wrapper {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #error-message {
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid #fca5a5;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        #tablesSection {
+            display: none;
+        }
+
+        .copy-feedback {
+            font-size: 0.8rem;
+            color: #16a34a;
+            margin-left: 0.5rem;
+        }
+
+        /* Stili per le nuove opzioni */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .options-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 3 colonne su schermi medi e grandi */
+        .option-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        header {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        header p {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .back-link {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .back-link {
+                position: static;
+                display: inline-flex;
+                margin-bottom: 1rem;
+                transform: none;
+            }
+
+            header {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <a href="https://avvocatotelematico.studiolegalearcella.it/apps/" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Torna alla pagina delle apps
+        </a>
+        <h1>Calcolo interessi legali e moratori</h1>
+        <p>robertoarcella @2026</p>
+    </header>
+
+    <div class="container">
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label for="principal" class="block text-sm font-medium mb-1">Capitale (€)</label>
+                <input type="text" id="principal" placeholder="Es. 1000.00" class="text-right">
+            </div>
+            <div>
+                <label for="startDate" class="block text-sm font-medium mb-1">Data Inizio</label>
+                <input type="date" id="startDate">
+            </div>
+            <div>
+                <label for="endDate" class="block text-sm font-medium mb-1">Data Fine</label>
+                <input type="date" id="endDate">
+            </div>
+        </div>
+
+        <div class="options-grid border-t border-b border-gray-200 py-4">
+            <div class="option-group">
+                <label for="capitalizationFrequency" class="text-sm font-medium mb-1">Capitalizzazione Interessi
+                    Legali</label>
+                <select id="capitalizationFrequency">
+                    <option value="Nessuna" selected>Nessuna</option>
+                    <option value="Trimestrale">Trimestrale</option>
+                    <option value="Semestrale">Semestrale</option>
+                    <option value="Annuale">Annuale</option>
+                </select>
+            </div>
+            <div class="option-group">
+                <label class="text-sm font-medium mb-1">Opzioni Interessi Moratori</label>
+                <div class="space-y-2 mt-1">
+                    <label for="pre2013Transaction" class="checkbox-label">
+                        <input type="checkbox" id="pre2013Transaction">
+                        Transazione conclusa entro 31/12/2012 (magg. 7%)
+                    </label>
+                    <label for="agriFoodSurcharge" class="checkbox-label">
+                        <input type="checkbox" id="agriFoodSurcharge">
+                        Art. 4 DLGS 198/2021 (Prod. Agricoli/Alim. +4%)
+                    </label>
+                </div>
+            </div>
+            <div></div>
+        </div>
+
+
+        <div class="flex flex-wrap justify-center gap-4 mb-6 mt-6">
+            <button id="calculateBtn" class="btn btn-primary">Calcola Interessi</button>
+            <button id="toggleTablesBtn" class="btn btn-secondary">Mostra Tabelle Tassi</button>
+        </div>
+
+        <div id="error-message"></div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <h3 class="text-xl font-semibold">Risultati del Calcolo</h3>
+            <div id="legalInterestResult" class="mb-4"></div>
+            <div id="defaultInterestResult"></div>
+
+            <div id="resultActions" style="display: none;">
+                <button id="whatsappBtn" class="btn btn-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-4 w-4 mr-1" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <path
+                            d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+                    </svg>
+                    WhatsApp
+                </button>
+                <button id="copyBtn" class="btn btn-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-4 w-4 mr-1" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copia
+                    <span id="copyFeedback" class="copy-feedback" style="display: none;">Copiato!</span>
+                </button>
+                <button id="saveTxtBtn" class="btn btn-action">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-4 w-4 mr-1" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Salva .txt
+                </button>
+            </div>
+        </div>
+
+        <div id="tablesSection" class="mt-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div>
+                    <h2 class="text-2xl font-semibold mb-3">Tabella Tassi Interesse Legale</h2>
+                    <p class="text-sm text-gray-600 mb-2">Fare clic sulle celle per modificare i valori. Le date devono
+                        essere in formato GG/MM/AAAA, i tassi con il punto come separatore decimale (es. 5.00).</p>
+                    <div class="table-container-wrapper">
+                        <div class="table-container">
+                            <table id="legalRatesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Dal (GG/MM/AAAA)</th>
+                                        <th>Al (GG/MM/AAAA)</th>
+                                        <th>Saggio (%)</th>
+                                        <th>Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button id="addLegalRateRow" class="btn btn-add-row mt-2">Aggiungi Riga</button>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-semibold mb-3">Tabella Tassi Interesse Moratorio (ex D.Lgs. 231/2002)</h2>
+                    <p class="text-sm text-gray-600 mb-2">Fare clic sulle celle per modificare i valori. Le date devono
+                        essere in formato GG/MM/AAAA, i tassi con il punto come separatore decimale (es. 10.35).</p>
+                    <div class="table-container-wrapper">
+                        <div class="table-container">
+                            <table id="defaultRatesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Dal (GG/MM/AAAA)</th>
+                                        <th>Al (GG/MM/AAAA)</th>
+                                        <th>Saggio (%)</th>
+                                        <th>Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button id="addDefaultRateRow" class="btn btn-add-row mt-2">Aggiungi Riga</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <!-- Credits rimosso come richiesto -->
+        </footer>
+    </div>
+
+    <script>
+        // --- DATI INIZIALI TASSI ---
+        let legalInterestRates = [ /* ... dati tassi legali ... */
+            { startDate: '1942-04-21', endDate: '1990-12-15', rate: 5.00 }, { startDate: '1990-12-16', endDate: '1996-12-31', rate: 10.00 }, { startDate: '1997-01-01', endDate: '1998-12-31', rate: 5.00 }, { startDate: '1999-01-01', endDate: '2000-12-31', rate: 2.50 }, { startDate: '2001-01-01', endDate: '2001-12-31', rate: 3.50 }, { startDate: '2002-01-01', endDate: '2003-12-31', rate: 3.00 }, { startDate: '2004-01-01', endDate: '2007-12-31', rate: 2.50 }, { startDate: '2008-01-01', endDate: '2009-12-31', rate: 3.00 }, { startDate: '2010-01-01', endDate: '2010-12-31', rate: 1.00 }, { startDate: '2011-01-01', endDate: '2011-12-31', rate: 1.50 }, { startDate: '2012-01-01', endDate: '2013-12-31', rate: 2.50 }, { startDate: '2014-01-01', endDate: '2014-12-31', rate: 1.00 }, { startDate: '2015-01-01', endDate: '2015-12-31', rate: 0.50 }, { startDate: '2016-01-01', endDate: '2016-12-31', rate: 0.20 }, { startDate: '2017-01-01', endDate: '2017-12-31', rate: 0.10 }, { startDate: '2018-01-01', endDate: '2018-12-31', rate: 0.30 }, { startDate: '2019-01-01', endDate: '2019-12-31', rate: 0.80 }, { startDate: '2020-01-01', endDate: '2020-12-31', rate: 0.05 }, { startDate: '2021-01-01', endDate: '2021-12-31', rate: 0.01 }, { startDate: '2022-01-01', endDate: '2022-12-31', rate: 1.25 }, { startDate: '2023-01-01', endDate: '2023-12-31', rate: 5.00 }, { startDate: '2024-01-01', endDate: '2024-12-31', rate: 2.50 }, { startDate: '2025-01-01', endDate: '2025-12-31', rate: 2.00 }, { startDate: '2026-01-01', endDate: '9999-12-31', rate: 1.60 }
+        ];
+        let defaultInterestRates = [ /* ... dati tassi moratori ... */
+            // Nota: Questi sono i tassi TOTALI standard (BCE + maggiorazione 7% o 8%)
+            { startDate: '2002-07-01', endDate: '2002-12-31', rate: 10.35 }, { startDate: '2003-01-01', endDate: '2003-06-30', rate: 9.85 }, { startDate: '2003-07-01', endDate: '2003-12-31', rate: 9.10 }, { startDate: '2004-01-01', endDate: '2004-06-30', rate: 9.02 }, { startDate: '2004-07-01', endDate: '2004-12-31', rate: 9.01 }, { startDate: '2005-01-01', endDate: '2005-06-30', rate: 9.09 }, { startDate: '2005-07-01', endDate: '2005-12-31', rate: 9.05 }, { startDate: '2006-01-01', endDate: '2006-06-30', rate: 9.25 }, { startDate: '2006-07-01', endDate: '2006-12-31', rate: 9.83 }, { startDate: '2007-01-01', endDate: '2007-06-30', rate: 10.58 }, { startDate: '2007-07-01', endDate: '2007-12-31', rate: 11.07 }, { startDate: '2008-01-01', endDate: '2008-06-30', rate: 11.20 }, { startDate: '2008-07-01', endDate: '2008-12-31', rate: 11.10 }, { startDate: '2009-01-01', endDate: '2009-06-30', rate: 9.50 }, { startDate: '2009-07-01', endDate: '2009-12-31', rate: 8.00 }, { startDate: '2010-01-01', endDate: '2010-12-31', rate: 8.00 }, { startDate: '2011-01-01', endDate: '2011-06-30', rate: 8.00 }, { startDate: '2011-07-01', endDate: '2011-12-31', rate: 8.25 }, { startDate: '2012-01-01', endDate: '2012-06-30', rate: 8.00 }, { startDate: '2012-07-01', endDate: '2012-12-31', rate: 8.00 },
+            // Dal 2013 la maggiorazione standard è 8%
+            { startDate: '2013-01-01', endDate: '2013-06-30', rate: 8.75 }, { startDate: '2013-07-01', endDate: '2013-12-31', rate: 8.50 }, { startDate: '2014-01-01', endDate: '2014-06-30', rate: 8.25 }, { startDate: '2014-07-01', endDate: '2014-12-31', rate: 8.15 }, { startDate: '2015-01-01', endDate: '2015-06-30', rate: 8.05 }, { startDate: '2015-07-01', endDate: '2015-12-31', rate: 8.05 }, { startDate: '2016-01-01', endDate: '2016-06-30', rate: 8.05 }, { startDate: '2016-07-01', endDate: '2016-12-31', rate: 8.00 }, { startDate: '2017-01-01', endDate: '2017-06-30', rate: 8.00 }, { startDate: '2017-07-01', endDate: '2017-12-31', rate: 8.00 }, { startDate: '2018-01-01', endDate: '2018-06-30', rate: 8.00 }, { startDate: '2018-07-01', endDate: '2018-12-31', rate: 8.00 }, { startDate: '2019-01-01', endDate: '2019-06-30', rate: 8.00 }, { startDate: '2019-07-01', endDate: '2019-12-31', rate: 8.00 }, { startDate: '2020-01-01', endDate: '2020-06-30', rate: 8.00 }, { startDate: '2020-07-01', endDate: '2020-12-31', rate: 8.00 }, { startDate: '2021-01-01', endDate: '2021-06-30', rate: 8.00 }, { startDate: '2021-07-01', endDate: '2021-12-31', rate: 8.00 }, { startDate: '2022-01-01', endDate: '2022-06-30', rate: 8.00 }, { startDate: '2022-07-01', endDate: '2022-12-31', rate: 8.00 }, { startDate: '2023-01-01', endDate: '2023-06-30', rate: 10.50 }, { startDate: '2023-07-01', endDate: '2023-12-31', rate: 12.00 }, { startDate: '2024-01-01', endDate: '2024-06-30', rate: 12.50 }, { startDate: '2024-07-01', endDate: '2024-12-31', rate: 12.25 }, { startDate: '2025-01-01', endDate: '2025-06-30', rate: 11.15 }, { startDate: '2025-07-01', endDate: '2025-12-31', rate: 10.15 }, { startDate: '2026-01-01', endDate: '9999-12-31', rate: 10.15 }
+        ];
+
+        // Variabili per memorizzare gli ultimi risultati validi
+        let lastPrincipal = null;
+        let lastStartDate = null;
+        let lastEndDate = null;
+        let lastLegalResult = null;
+        let lastDefaultResult = null;
+        let lastOptions = {}; // Memorizza le opzioni usate per l'ultimo calcolo
+
+        // --- FUNZIONI HELPER ---
+        function parseDate(dateStr) { /* ... come prima ... */
+            if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) { return null; }
+            const parts = dateStr.split('-');
+            const year = parseInt(parts[0], 10);
+            const monthIndex = parseInt(parts[1], 10) - 1;
+            const day = parseInt(parts[2], 10);
+            // Usare UTC per evitare problemi con DST durante i calcoli di date
+            const date = new Date(Date.UTC(year, monthIndex, day));
+            // Verifica aggiuntiva perché UTC può "correggere" date invalide
+            if (date.getUTCFullYear() !== year || date.getUTCMonth() !== monthIndex || date.getUTCDate() !== day) {
+                return null;
+            }
+            return date;
+        }
+        function formatDateForDisplay(date) { /* ... come prima ... */
+            if (!(date instanceof Date) || isNaN(date)) return '';
+            // Usa getUTC per coerenza con parseDate
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const year = date.getUTCFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        function formatDateForInput(date) { /* ... come prima ... */
+            if (!(date instanceof Date) || isNaN(date)) return '';
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const year = date.getUTCFullYear();
+            return `${year}-${month}-${day}`;
+        }
+        function formatCurrency(amount) { /* ... come prima ... */
+            return amount.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+        }
+        function daysBetween(date1, date2) { /* ... come prima ... */
+            // Assicura che le date siano in UTC per il calcolo
+            const utc1 = Date.UTC(date1.getUTCFullYear(), date1.getUTCMonth(), date1.getUTCDate());
+            const utc2 = Date.UTC(date2.getUTCFullYear(), date2.getUTCMonth(), date2.getUTCDate());
+            const MS_PER_DAY = 1000 * 60 * 60 * 24;
+            return Math.round((utc2 - utc1) / MS_PER_DAY) + 1; // Usa round per sicurezza
+        }
+        function addMonths(date, months) {
+            const d = new Date(date.getTime()); // Clona la data
+            const currentMonth = d.getUTCMonth();
+            d.setUTCMonth(currentMonth + months);
+            // Se il giorno del mese cambia (es. da 31 Gen a 28 Feb), torna all'ultimo giorno del mese precedente
+            if (d.getUTCMonth() !== (currentMonth + months) % 12) {
+                d.setUTCDate(0); // Imposta all'ultimo giorno del mese precedente
+            }
+            return d;
+        }
+        function displayError(message) { /* ... come prima ... */
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('resultActions').style.display = 'none';
+        }
+        function clearError() { /* ... come prima ... */
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = '';
+            errorDiv.style.display = 'none';
+        }
+
+        // --- LOGICA DI CALCOLO INTERESSI (RIVISTA PROFONDAMENTE) ---
+        function calculateInterest(principal, startDate, endDate, ratesData, options) {
+            const {
+                interestType = 'legal', // 'legal' or 'default'
+                capitalizationFrequency = 'Nessuna', // 'Nessuna', 'Trimestrale', 'Semestrale', 'Annuale'
+                isPre2013Checked = false,
+                isAgriFoodChecked = false
+            } = options;
+
+            let totalInterest = 0;
+            let currentPrincipal = principal;
+            let calculationBreakdown = []; // Array per i dettagli del calcolo
+
+            // Date limite per logiche speciali
+            const defaultInterestSurchargeChangeDate = parseDate('2013-01-01'); // Data cambio maggiorazione standard
+            const defaultInterestStartDateLimit = parseDate('2002-07-01'); // Data inizio tassi moratori specifici
+
+            // Ordina le tabelle dei tassi una sola volta
+            const sortedLegalRates = [...legalInterestRates].sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate));
+            const sortedDefaultRates = [...defaultInterestRates].sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate));
+
+            // --- Logica Capitalizzazione (solo per interessi legali) ---
+            if (interestType === 'legal' && capitalizationFrequency !== 'Nessuna') {
+                let monthsToAdd;
+                if (capitalizationFrequency === 'Trimestrale') monthsToAdd = 3;
+                else if (capitalizationFrequency === 'Semestrale') monthsToAdd = 6;
+                else if (capitalizationFrequency === 'Annuale') monthsToAdd = 12;
+                else return { error: "Frequenza di capitalizzazione non valida" }; // Sicurezza
+
+                let periodStartDate = new Date(startDate.getTime()); // Data inizio del periodo di capitalizzazione corrente
+
+                while (periodStartDate <= endDate) {
+                    let periodEndDate = addMonths(periodStartDate, monthsToAdd);
+                    periodEndDate.setUTCDate(periodEndDate.getUTCDate() - 1); // Fine periodo è il giorno prima dell'inizio del successivo
+
+                    // Non superare la data di fine generale
+                    if (periodEndDate > endDate) {
+                        periodEndDate = new Date(endDate.getTime());
+                    }
+
+                    // Calcola interesse semplice per questo periodo di capitalizzazione
+                    const periodResult = calculateSimpleInterestForPeriod(
+                        currentPrincipal,
+                        periodStartDate,
+                        periodEndDate,
+                        sortedLegalRates // Usa sempre tassi legali per capitalizzazione
+                    );
+
+                    if (periodResult.error) return periodResult; // Propaga errore
+
+                    const periodInterest = periodResult.totalInterest;
+                    totalInterest += periodInterest;
+
+                    // Aggiungi dettaglio capitalizzazione al breakdown
+                    calculationBreakdown.push({
+                        type: 'capitalizationPeriod',
+                        periodStartDate: formatDateForDisplay(periodStartDate),
+                        periodEndDate: formatDateForDisplay(periodEndDate),
+                        principalAtStart: currentPrincipal,
+                        interestAccrued: periodInterest,
+                        principalAtEnd: currentPrincipal + periodInterest,
+                        subBreakdown: periodResult.breakdown // Dettaglio tassi usati nel periodo
+                    });
+
+                    // Capitalizza: aggiorna il capitale per il prossimo periodo
+                    currentPrincipal += periodInterest;
+
+                    // Prepara per il prossimo periodo
+                    periodStartDate = addMonths(periodStartDate, monthsToAdd);
+
+                    // Se il calcolo finisce esattamente alla fine del periodo, esci
+                    if (periodEndDate.getTime() === endDate.getTime()) break;
+                }
+
+                return { totalInterest, breakdown: calculationBreakdown, capitalized: true };
+
+            } else {
+                // --- Logica Interesse Semplice (Legale senza capitalizzazione o Moratorio) ---
+                const ratesToUse = interestType === 'legal' ? sortedLegalRates : sortedDefaultRates;
+                const simpleResult = calculateSimpleInterestForPeriod(
+                    principal,
+                    startDate,
+                    endDate,
+                    ratesToUse,
+                    interestType, // Passa il tipo per logica moratoria
+                    isPre2013Checked,
+                    isAgriFoodChecked,
+                    defaultInterestStartDateLimit,
+                    defaultInterestSurchargeChangeDate,
+                    sortedLegalRates // Passa tassi legali per fallback moratorio pre-2002
+                );
+
+                return { ...simpleResult, capitalized: false };
+            }
+        }
+
+        // Funzione ausiliaria per calcolare interesse semplice su un dato periodo (usata sia per calcolo diretto che per periodi di capitalizzazione)
+        function calculateSimpleInterestForPeriod(
+            principal,
+            periodStart,
+            periodEnd,
+            ratesData, // Tabella tassi da usare (legali o moratori)
+            interestType = 'legal', // Necessario per logica moratoria
+            isPre2013Checked = false,
+            isAgriFoodChecked = false,
+            defaultInterestStartDateLimit = null, // Data inizio tassi moratori specifici
+            defaultInterestSurchargeChangeDate = null, // Data cambio maggiorazione standard
+            legalRatesForFallback = [] // Tassi legali per moratori pre-2002
+        ) {
+            let currentInterest = 0;
+            let breakdown = [];
+            let currentDate = new Date(periodStart.getTime());
+
+            while (currentDate <= periodEnd) {
+                let applicableRateInfo = null;
+                let rateSourceTable = ratesData; // Tabella da cui prendere il tasso base
+                let usingLegalRateForDefault = false;
+                let baseRate = NaN; // Tasso base prima delle modifiche opzionali
+                let finalRate = NaN; // Tasso effettivamente applicato
+                let adjustments = []; // Descrizione aggiustamenti
+
+                // --- Logica specifica per trovare il tasso MORATORIO ---
+                if (interestType === 'default') {
+                    if (currentDate < defaultInterestStartDateLimit) {
+                        // Moratorio pre 01/07/2002: usa tasso LEGALE
+                        rateSourceTable = legalRatesForFallback;
+                        usingLegalRateForDefault = true;
+                    }
+                    // Trova il tasso nella tabella appropriata (legale o moratoria)
+                    for (const rateInfo of rateSourceTable) {
+                        const rateStart = parseDate(rateInfo.startDate);
+                        const rateEnd = parseDate(rateInfo.endDate);
+                        if (currentDate >= rateStart && currentDate <= rateEnd) {
+                            applicableRateInfo = { ...rateInfo }; // Clona
+                            baseRate = applicableRateInfo.rate;
+                            finalRate = baseRate; // Inizia con il tasso base
+                            break;
+                        }
+                    }
+
+                    // Applica aggiustamenti opzionali al tasso MORATORIO trovato
+                    if (applicableRateInfo) {
+                        // 1. Aggiustamento Pre-2013 (solo se NON stiamo già usando tasso legale come fallback)
+                        if (!usingLegalRateForDefault && isPre2013Checked && currentDate < defaultInterestSurchargeChangeDate) {
+                            finalRate -= 1.0;
+                            adjustments.push("Magg. 7% (pre-2013)");
+                        }
+                        // 2. Aggiustamento Prodotti Agricoli/Alimentari
+                        if (isAgriFoodChecked) {
+                            finalRate += 4.0;
+                            adjustments.push("Magg. +4% (Agr/Alim)");
+                        }
+                    }
+
+                } else {
+                    // --- Logica specifica per trovare il tasso LEGALE ---
+                    for (const rateInfo of ratesData) { // ratesData qui è sempre legalInterestRates
+                        const rateStart = parseDate(rateInfo.startDate);
+                        const rateEnd = parseDate(rateInfo.endDate);
+                        if (currentDate >= rateStart && currentDate <= rateEnd) {
+                            applicableRateInfo = { ...rateInfo };
+                            baseRate = applicableRateInfo.rate;
+                            finalRate = baseRate; // Nessun aggiustamento per tassi legali
+                            break;
+                        }
+                    }
+                }
+                // --- Fine logica ricerca tasso ---
+
+
+                if (!applicableRateInfo) {
+                    console.error(`Nessun tasso ${interestType} trovato per ${formatDateForDisplay(currentDate)}`);
+                    return { totalInterest: NaN, breakdown: [], error: `Tasso ${interestType} non trovato per ${formatDateForDisplay(currentDate)}` };
+                }
+
+                const ratePeriodEndDate = parseDate(applicableRateInfo.endDate);
+                let segmentEndDate = ratePeriodEndDate < periodEnd ? ratePeriodEndDate : periodEnd; // Limita alla fine del periodo di calcolo
+
+                const daysInSegment = daysBetween(currentDate, segmentEndDate);
+
+                if (daysInSegment <= 0) {
+                    currentDate = new Date(segmentEndDate.getTime());
+                    currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+                    continue;
+                }
+
+                const segmentInterest = principal * (finalRate / 100) * (daysInSegment / 365);
+                currentInterest += segmentInterest;
+
+                // Aggiungi al riepilogo del periodo semplice
+                breakdown.push({
+                    startDate: formatDateForDisplay(currentDate),
+                    endDate: formatDateForDisplay(segmentEndDate),
+                    days: daysInSegment,
+                    rate: finalRate, // Tasso effettivamente applicato
+                    baseRate: baseRate, // Tasso originale dalla tabella
+                    adjustments: adjustments, // Descrizione aggiustamenti (solo per moratori)
+                    isLegalRateUsedForDefault: usingLegalRateForDefault, // Flag per moratori pre-2002
+                    interest: segmentInterest
+                });
+
+                // Avanza la data
+                currentDate = new Date(segmentEndDate.getTime());
+                currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+            }
+
+            return { totalInterest: currentInterest, breakdown };
+        }
+
+
+        // --- GESTIONE TABELLE ---
+        function populateTable(tableId, data) { /* ... come prima ... */
+            const tableBody = document.getElementById(tableId).querySelector('tbody');
+            tableBody.innerHTML = '';
+            data.sort((a, b) => parseDate(a.startDate) - parseDate(b.startDate));
+            data.forEach((rateInfo, index) => {
+                const row = tableBody.insertRow();
+                row.dataset.index = index;
+                const cellStartDate = row.insertCell();
+                const cellEndDate = row.insertCell();
+                const cellRate = row.insertCell();
+                const cellActions = row.insertCell();
+                cellStartDate.textContent = formatDateForDisplay(parseDate(rateInfo.startDate));
+                cellEndDate.textContent = formatDateForDisplay(parseDate(rateInfo.endDate));
+                cellRate.textContent = rateInfo.rate.toFixed(2);
+                cellStartDate.contentEditable = true;
+                cellEndDate.contentEditable = true;
+                cellRate.contentEditable = true;
+                [cellStartDate, cellEndDate, cellRate].forEach(cell => {
+                    cell.addEventListener('blur', (event) => handleCellEdit(event, tableId, data));
+                    cell.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); event.target.blur(); } });
+                });
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Elimina';
+                deleteButton.classList.add('btn', 'btn-delete-row');
+                deleteButton.onclick = () => deleteRateRow(tableId, index, data);
+                cellActions.appendChild(deleteButton);
+            });
+        }
+        function handleCellEdit(event, tableId, dataArray) { /* ... come prima ... */
+            const cell = event.target;
+            const rowIndex = parseInt(cell.closest('tr').dataset.index, 10);
+            const newValue = cell.textContent.trim();
+            const colIndex = cell.cellIndex;
+            if (rowIndex < 0 || rowIndex >= dataArray.length) { console.error("Indice riga non valido:", rowIndex); return; }
+            const rateEntry = dataArray[rowIndex];
+            try {
+                if (colIndex === 0) {
+                    const dateParts = newValue.split('/');
+                    if (dateParts.length !== 3 || !/^\d{2}\/\d{2}\/\d{4}$/.test(newValue)) throw new Error("Formato data inizio non valido (GG/MM/AAAA).");
+                    const parsedDate = parseDate(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+                    if (!parsedDate) throw new Error("Data inizio non valida.");
+                    rateEntry.startDate = formatDateForInput(parsedDate);
+                    cell.textContent = formatDateForDisplay(parsedDate);
+                } else if (colIndex === 1) {
+                    const dateParts = newValue.split('/');
+                    if (dateParts.length !== 3 || !/^\d{2}\/\d{2}\/\d{4}$/.test(newValue)) throw new Error("Formato data fine non valido (GG/MM/AAAA).");
+                    const parsedDate = parseDate(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+                    if (!parsedDate) throw new Error("Data fine non valida.");
+                    rateEntry.endDate = formatDateForInput(parsedDate);
+                    cell.textContent = formatDateForDisplay(parsedDate);
+                } else if (colIndex === 2) {
+                    const numericValue = parseFloat(newValue.replace(',', '.'));
+                    if (isNaN(numericValue) || numericValue < 0) throw new Error("Tasso non valido. Inserire un numero positivo (es. 5.00 o 5,00).");
+                    rateEntry.rate = numericValue;
+                    cell.textContent = numericValue.toFixed(2);
+                }
+                clearError();
+                if (colIndex === 0 || colIndex === 1) { populateTable(tableId, dataArray); }
+            } catch (error) {
+                displayError(`Errore nella riga ${rowIndex + 1}, colonna ${colIndex + 1}: ${error.message}`);
+                if (colIndex === 0) cell.textContent = formatDateForDisplay(parseDate(rateEntry.startDate));
+                else if (colIndex === 1) cell.textContent = formatDateForDisplay(parseDate(rateEntry.endDate));
+                else if (colIndex === 2) cell.textContent = rateEntry.rate.toFixed(2);
+            }
+        }
+        function addRateRow(tableId, dataArray) { /* ... come prima ... */
+            const today = new Date();
+            const todayStr = formatDateForInput(today);
+            const newRate = { startDate: todayStr, endDate: '9999-12-31', rate: 0.00 };
+            dataArray.push(newRate);
+            populateTable(tableId, dataArray);
+            clearError();
+            const tableBody = document.getElementById(tableId).querySelector('tbody');
+            if (tableBody.lastElementChild) {
+                tableBody.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                tableBody.lastElementChild.style.backgroundColor = '#a5f3fc';
+                setTimeout(() => { if (tableBody.lastElementChild) tableBody.lastElementChild.style.backgroundColor = ''; }, 1000);
+            }
+        }
+        function deleteRateRow(tableId, index, dataArray) { /* ... come prima ... */
+            if (index >= 0 && index < dataArray.length) { dataArray.splice(index, 1); populateTable(tableId, dataArray); clearError(); }
+        }
+
+        // --- FUNZIONE PER FORMATTARE RISULTATI COME TESTO ---
+        function getResultsAsText(principal, startDate, endDate, legalResult, defaultResult, options) {
+            if (!legalResult || !defaultResult) return "Nessun risultato da formattare.";
+
+            let text = `*** Calcolo Interessi ***\n\n`;
+            text += `Periodo: Dal ${formatDateForDisplay(startDate)} al ${formatDateForDisplay(endDate)}\n`;
+            text += `Capitale Iniziale: ${formatCurrency(principal)}\n`;
+            text += `--------------------------\n\n`;
+
+            // Opzioni Legali
+            text += `OPZIONI INTERESSI LEGALI\n`;
+            text += `Capitalizzazione: ${options.capitalizationFrequency}\n\n`;
+
+            // Interessi Legali
+            text += `INTERESSI LEGALI\n`;
+            text += `Totale: ${formatCurrency(legalResult.totalInterest)}\n`;
+            if (legalResult.capitalized && legalResult.breakdown) {
+                text += `Dettaglio Capitalizzazione (${options.capitalizationFrequency}):\n`;
+                legalResult.breakdown.forEach(capPeriod => {
+                    text += ` Periodo ${capPeriod.periodStartDate} - ${capPeriod.periodEndDate}:\n`;
+                    text += `  Capitale Iniziale Periodo: ${formatCurrency(capPeriod.principalAtStart)}\n`;
+                    if (capPeriod.subBreakdown && capPeriod.subBreakdown.length > 0) {
+                        capPeriod.subBreakdown.forEach(item => {
+                            text += `  - Dal ${item.startDate} al ${item.endDate} (${item.days} gg) @ ${item.rate.toFixed(2)}%: ${formatCurrency(item.interest)}\n`;
+                        });
+                    }
+                    text += `  Interesse Periodo: ${formatCurrency(capPeriod.interestAccrued)}\n`;
+                    text += `  Capitale Finale Periodo: ${formatCurrency(capPeriod.principalAtEnd)}\n`;
+                });
+            } else if (legalResult.breakdown && legalResult.breakdown.length > 1) {
+                text += `Dettaglio (Semplice):\n`;
+                legalResult.breakdown.forEach(item => {
+                    text += `- Dal ${item.startDate} al ${item.endDate} (${item.days} gg) @ ${item.rate.toFixed(2)}%: ${formatCurrency(item.interest)}\n`;
+                });
+            } else if (legalResult.breakdown && legalResult.breakdown.length === 1) {
+                text += `(${legalResult.breakdown[0].days} giorni al ${legalResult.breakdown[0].rate.toFixed(2)}%)\n`;
+            }
+            text += `\n`;
+
+            // Opzioni Moratorie
+            text += `OPZIONI INTERESSI MORATORI\n`;
+            text += `Transazione pre-2013 (Magg. 7%): ${options.isPre2013Checked ? 'Sì' : 'No'}\n`;
+            text += `Magg. +4% Prod. Agr./Alim.: ${options.isAgriFoodChecked ? 'Sì' : 'No'}\n\n`;
+
+            // Interessi Moratori
+            text += `INTERESSI MORATORI (ex D.Lgs. 231/2002)\n`;
+            text += `Totale: ${formatCurrency(defaultResult.totalInterest)}\n`;
+            if (defaultResult.breakdown && defaultResult.breakdown.length > 0) {
+                text += `Dettaglio Moratori:\n`;
+                defaultResult.breakdown.forEach(item => {
+                    let rateDetails = `@ ${item.rate.toFixed(2)}%`;
+                    if (item.adjustments && item.adjustments.length > 0) {
+                        rateDetails += ` (Base: ${item.baseRate.toFixed(2)}%, ${item.adjustments.join(', ')})`;
+                    }
+                    if (item.isLegalRateUsedForDefault) {
+                        rateDetails += ' (Tasso Legale)';
+                    }
+                    text += `- Dal ${item.startDate} al ${item.endDate} (${item.days} gg) ${rateDetails}: ${formatCurrency(item.interest)}\n`;
+                });
+            }
+            text += `\n--------------------------\n`;
+            text += `Calcolo effettuato il: ${formatDateForDisplay(new Date())}\n`; // Usa data locale per questo
+            text += `Attribuzione: Avv. Roberto Arcella`;
+
+            return text;
+        }
+
+
+        // --- EVENT LISTENERS ---
+        document.getElementById('calculateBtn').addEventListener('click', () => {
+            clearError();
+            // Lettura Input
+            const principalInput = document.getElementById('principal');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            // Lettura Opzioni
+            const capitalizationFrequency = document.getElementById('capitalizationFrequency').value;
+            const isPre2013Checked = document.getElementById('pre2013Transaction').checked;
+            const isAgriFoodChecked = document.getElementById('agriFoodSurcharge').checked;
+            // Elementi Risultati
+            const resultsDiv = document.getElementById('results');
+            const legalInterestResultDiv = document.getElementById('legalInterestResult');
+            const defaultInterestResultDiv = document.getElementById('defaultInterestResult');
+            const resultActionsDiv = document.getElementById('resultActions');
+
+            // Nasconde risultati e azioni precedenti
+            resultsDiv.style.display = 'none';
+            resultActionsDiv.style.display = 'none';
+            lastLegalResult = null; lastDefaultResult = null; lastPrincipal = null; lastStartDate = null; lastEndDate = null; lastOptions = {};
+
+
+            // Validazione Input Principali
+            const principal = parseFloat(principalInput.value.replace(',', '.'));
+            if (isNaN(principal) || principal <= 0) { displayError("Inserire un importo valido per il capitale (> 0)."); principalInput.focus(); return; }
+            const startDate = parseDate(startDateInput.value); // Usa parseDate che ritorna UTC
+            if (!startDate) { displayError("Inserire una data di inizio valida."); startDateInput.focus(); return; }
+            const endDate = parseDate(endDateInput.value); // Usa parseDate che ritorna UTC
+            if (!endDate) { displayError("Inserire una data di fine valida."); endDateInput.focus(); return; }
+            if (endDate < startDate) { displayError("La data di fine non può essere precedente alla data di inizio."); endDateInput.focus(); return; }
+
+            // --- Calcolo e Visualizzazione ---
+            try {
+                const calculationOptions = {
+                    capitalizationFrequency,
+                    isPre2013Checked,
+                    isAgriFoodChecked
+                };
+
+                // Calcolo Interessi Legali
+                const legalResult = calculateInterest(principal, startDate, endDate, legalInterestRates, {
+                    interestType: 'legal',
+                    capitalizationFrequency: capitalizationFrequency
+                });
+                if (legalResult.error) throw new Error(`Errore interessi legali: ${legalResult.error}`);
+                if (isNaN(legalResult.totalInterest)) throw new Error("Errore imprevisto interessi legali.");
+
+                // Calcolo Interessi Moratori
+                const defaultResult = calculateInterest(principal, startDate, endDate, defaultInterestRates, {
+                    interestType: 'default',
+                    isPre2013Checked: isPre2013Checked,
+                    isAgriFoodChecked: isAgriFoodChecked
+                });
+                if (defaultResult.error) throw new Error(`Errore interessi moratori: ${defaultResult.error}`);
+                if (isNaN(defaultResult.totalInterest)) throw new Error("Errore imprevisto interessi moratori.");
+
+                // Memorizza i risultati e le opzioni valide
+                lastPrincipal = principal; lastStartDate = startDate; lastEndDate = endDate;
+                lastLegalResult = legalResult; lastDefaultResult = defaultResult;
+                lastOptions = calculationOptions;
+
+                // Visualizzazione HTML Risultati Legali
+                let legalHtml = `<h4>Interessi Legali (${formatDateForDisplay(startDate)} - ${formatDateForDisplay(endDate)})</h4>`;
+                legalHtml += `<p>Capitalizzazione: <strong>${capitalizationFrequency}</strong></p>`;
+                legalHtml += `<p><strong>Totale Interessi Legali: ${formatCurrency(legalResult.totalInterest)}</strong></p>`;
+                if (legalResult.capitalized && legalResult.breakdown) {
+                    legalHtml += `<p class="mt-2 text-sm font-semibold">Dettaglio Capitalizzazione:</p><div class="text-xs space-y-2 mt-1">`;
+                    legalResult.breakdown.forEach(capPeriod => {
+                        legalHtml += `<div class="p-1 border border-blue-200 rounded bg-blue-50">`;
+                        legalHtml += `<strong>Periodo ${capPeriod.periodStartDate} - ${capPeriod.periodEndDate}</strong><br/>`;
+                        legalHtml += ` Cap. Iniz.: ${formatCurrency(capPeriod.principalAtStart)}, Int. Accr.: ${formatCurrency(capPeriod.interestAccrued)}, Cap. Fine: ${formatCurrency(capPeriod.principalAtEnd)}<br/>`;
+                        if (capPeriod.subBreakdown && capPeriod.subBreakdown.length > 0) {
+                            legalHtml += `<span class="italic ml-2">Tassi nel periodo: `;
+                            legalHtml += capPeriod.subBreakdown.map(item => `${item.rate.toFixed(2)}% (${item.days}gg)`).join(', ');
+                            legalHtml += `</span>`;
+                        }
+                        legalHtml += `</div>`;
+                    });
+                    legalHtml += `</div>`;
+                } else if (legalResult.breakdown && legalResult.breakdown.length > 0) {
+                    legalHtml += '<p class="mt-2 text-sm font-semibold">Dettaglio (Semplice):</p><ul class="list-disc list-inside text-sm space-y-1">';
+                    legalResult.breakdown.forEach(item => { legalHtml += `<li>Dal ${item.startDate} al ${item.endDate} (${item.days} gg) al ${item.rate.toFixed(2)}%: ${formatCurrency(item.interest)}</li>`; });
+                    legalHtml += '</ul>';
+                }
+                legalInterestResultDiv.innerHTML = legalHtml;
+
+                // Visualizzazione HTML Risultati Moratori
+                let defaultHtml = `<h4 class="mt-4">Interessi Moratori (${formatDateForDisplay(startDate)} - ${formatDateForDisplay(endDate)})</h4>`;
+                defaultHtml += `<p>Trans. pre-2013: <strong>${isPre2013Checked ? 'Sì' : 'No'}</strong>, Magg. Agr./Alim.: <strong>${isAgriFoodChecked ? 'Sì' : 'No'}</strong></p>`;
+                defaultHtml += `<p><strong>Totale Interessi Moratori: ${formatCurrency(defaultResult.totalInterest)}</strong></p>`;
+                if (defaultResult.breakdown && defaultResult.breakdown.length > 0) {
+                    defaultHtml += '<p class="mt-2 text-sm font-semibold">Dettaglio:</p><ul class="list-disc list-inside text-sm space-y-1">';
+                    defaultResult.breakdown.forEach(item => {
+                        let rateDetails = `@ ${item.rate.toFixed(2)}%`;
+                        let adjustmentsText = item.adjustments.length > 0 ? ` (Base: ${item.baseRate.toFixed(2)}%, ${item.adjustments.join(', ')})` : '';
+                        let legalFallbackText = item.isLegalRateUsedForDefault ? ' (Tasso Legale)' : '';
+                        defaultHtml += `<li>Dal ${item.startDate} al ${item.endDate} (${item.days} gg) ${rateDetails}${adjustmentsText}${legalFallbackText}: ${formatCurrency(item.interest)}</li>`;
+                    });
+                    defaultHtml += '</ul>';
+                }
+                defaultInterestResultDiv.innerHTML = defaultHtml;
+
+                // Mostra la sezione risultati e i pulsanti azione
+                resultsDiv.style.display = 'block';
+                resultActionsDiv.style.display = 'flex';
+
+            } catch (error) {
+                console.error("Errore durante il calcolo o la visualizzazione:", error);
+                displayError(`Si è verificato un errore: ${error.message}`);
+                resultsDiv.style.display = 'none';
+                resultActionsDiv.style.display = 'none';
+                lastLegalResult = null; lastDefaultResult = null; lastPrincipal = null; lastStartDate = null; lastEndDate = null; lastOptions = {};
+            }
+        });
+
+        // Listener per mostrare/nascondere tabelle
+        document.getElementById('toggleTablesBtn').addEventListener('click', () => { /* ... come prima ... */
+            const tablesSection = document.getElementById('tablesSection');
+            const button = document.getElementById('toggleTablesBtn');
+            if (tablesSection.style.display === 'none' || tablesSection.style.display === '') {
+                tablesSection.style.display = 'block';
+                button.textContent = 'Nascondi Tabelle Tassi';
+            } else {
+                tablesSection.style.display = 'none';
+                button.textContent = 'Mostra Tabelle Tassi';
+            }
+        });
+
+        // Listener per auto-check Pre-2013
+        document.getElementById('startDate').addEventListener('change', (event) => {
+            const startDate = parseDate(event.target.value);
+            const pre2013Checkbox = document.getElementById('pre2013Transaction');
+            const limitDate = parseDate('2013-01-01');
+            if (startDate && limitDate) {
+                pre2013Checkbox.checked = startDate < limitDate;
+            } else {
+                pre2013Checkbox.checked = false;
+            }
+        });
+
+
+        // --- LISTENERS PER I PULSANTI AZIONE ---
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            if (lastLegalResult && lastDefaultResult && lastPrincipal && lastStartDate && lastEndDate) {
+                const textToShare = getResultsAsText(lastPrincipal, lastStartDate, lastEndDate, lastLegalResult, lastDefaultResult, lastOptions); // Passa anche le opzioni
+                const encodedText = encodeURIComponent(textToShare);
+                const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+                window.open(whatsappUrl, '_blank');
+            } else { displayError("Nessun risultato valido da inviare. Effettuare prima un calcolo."); }
+        });
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            if (lastLegalResult && lastDefaultResult && lastPrincipal && lastStartDate && lastEndDate) {
+                const textToCopy = getResultsAsText(lastPrincipal, lastStartDate, lastEndDate, lastLegalResult, lastDefaultResult, lastOptions); // Passa anche le opzioni
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        const feedbackSpan = document.getElementById('copyFeedback');
+                        feedbackSpan.style.display = 'inline';
+                        setTimeout(() => { feedbackSpan.style.display = 'none'; }, 2000);
+                    }).catch(err => { console.error('Errore copia:', err); displayError('Impossibile copiare...'); });
+                } else { displayError('Funzione Copia non supportata.'); }
+            } else { displayError("Nessun risultato valido da copiare."); }
+        });
+        document.getElementById('saveTxtBtn').addEventListener('click', () => {
+            if (lastLegalResult && lastDefaultResult && lastPrincipal && lastStartDate && lastEndDate) {
+                const textToSave = getResultsAsText(lastPrincipal, lastStartDate, lastEndDate, lastLegalResult, lastDefaultResult, lastOptions); // Passa anche le opzioni
+                const blob = new Blob([textToSave], { type: 'text/plain;charset=utf-8' });
+                const startDateStr = formatDateForInput(lastStartDate).replace(/-/g, '');
+                const endDateStr = formatDateForInput(lastEndDate).replace(/-/g, '');
+                const filename = `calcolo_interessi_${startDateStr}_${endDateStr}.txt`;
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            } else { displayError("Nessun risultato valido da salvare."); }
+        });
+
+        // --- INIZIALIZZAZIONE ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTable('legalRatesTable', legalInterestRates);
+            populateTable('defaultRatesTable', defaultInterestRates);
+            document.getElementById('addLegalRateRow').addEventListener('click', () => addRateRow('legalRatesTable', legalInterestRates));
+            document.getElementById('addDefaultRateRow').addEventListener('click', () => addRateRow('defaultRatesTable', defaultInterestRates));
+            // Imposta date di default e triggera il change per auto-check
+            const today = new Date(); // Data locale per UI
+            const oneYearAgo = new Date(today);
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            oneYearAgo.setDate(oneYearAgo.getDate() + 1);
+            const startDateInput = document.getElementById('startDate');
+            startDateInput.value = formatDateForInput(parseDate(oneYearAgo.toISOString().split('T')[0])); // Converte in UTC prima di formattare per input
+            document.getElementById('endDate').value = formatDateForInput(parseDate(today.toISOString().split('T')[0])); // Converte in UTC prima di formattare per input
+            startDateInput.dispatchEvent(new Event('change')); // Triggera l'evento change per l'auto-check
+
+            document.getElementById('resultActions').style.display = 'none';
+        });
+
+    </script>
+</body>
+
+</html>

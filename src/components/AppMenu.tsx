@@ -1,10 +1,11 @@
 import {
   IonContent, IonHeader, IonIcon, IonItem, IonLabel,
-  IonList, IonMenu, IonMenuToggle, IonNote, IonTitle, IonToolbar,
+  IonList, IonMenu, IonMenuToggle, IonTitle, IonToolbar,
 } from '@ionic/react';
 import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
+  shieldHalfOutline,
 } from 'ionicons/icons';
 
 interface MenuItem {
@@ -19,6 +20,7 @@ const ITEMS: MenuItem[] = [
   { title: 'Sito COA', url: '/sito', icon: globeOutline },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
+  { title: 'Processo Telematico', url: '/processo-telematico', icon: shieldHalfOutline },
   { title: 'Area Riservata', url: '/area-riservata', icon: lockClosedOutline },
   { title: 'Info & Crediti', url: '/info', icon: informationCircleOutline },
 ];
@@ -28,15 +30,21 @@ const AppMenu: React.FC = () => {
     <IonMenu contentId="main" type="overlay">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>COA Napoli</IonTitle>
+          <IonTitle style={{ fontSize: 16 }}>Menu</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
+        <div style={{ padding: '16px 16px 8px', textAlign: 'center', borderBottom: '1px solid var(--ion-color-light-shade)' }}>
+          <img
+            src="/logo.jpg"
+            alt="Consiglio dell'Ordine degli Avvocati di Napoli"
+            style={{ maxWidth: 200, width: '90%', height: 'auto' }}
+          />
+          <div style={{ fontSize: 13, color: 'var(--ion-color-medium)', marginTop: 4 }}>
+            Consiglio dell'Ordine<br />degli Avvocati di Napoli
+          </div>
+        </div>
         <IonList>
-          <IonNote style={{ padding: '16px', display: 'block' }}>
-            Consiglio dell'Ordine<br />
-            degli Avvocati di Napoli
-          </IonNote>
           {ITEMS.map(item => (
             <IonMenuToggle key={item.url} autoHide={false}>
               <IonItem

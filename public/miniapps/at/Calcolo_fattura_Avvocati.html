@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcolo Fattura Avvocato</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #e8edf2;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 700px;
+      margin: 30px auto; /* Aggiunto margine superiore/inferiore */
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 25px; /* Aumentato margine inferiore */
+    }
+     h2 {
+       color: #34495e;
+       border-bottom: 1px solid #ecf0f1;
+       padding-bottom: 8px;
+       margin-top: 20px;
+       margin-bottom: 15px;
+     }
+    label {
+      font-weight: bold;
+      margin-top: 15px; /* Aumentato margine superiore */
+      margin-bottom: 5px; /* Aggiunto margine inferiore */
+      display: block;
+      color: #34495e;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px; /* Aumentato margine */
+      margin-top: 8px; /* Aggiunto margine superiore */
+    }
+    /* Target label specificatamente dentro checkbox-group per stile diverso */
+    .checkbox-group label {
+        font-weight: normal; /* Rende il testo della checkbox non grassetto */
+        margin-top: 0; /* Resetta margine */
+        color: #555;
+    }
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px; /* Aumentato padding */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 15px; /* Aumentato margine */
+      font-size: 1rem;
+      box-sizing: border-box; /* Include padding/border nella larghezza */
+    }
+    input[type="checkbox"] {
+        width: auto; /* Dimensione automatica per checkbox */
+        margin-right: 5px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 18px; /* Aumentato padding laterale */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s ease;
+      margin-right: 8px; /* Spazio tra bottoni */
+      margin-top: 10px; /* Spazio sopra i bottoni */
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+     /* Stile specifico per bottoni in area risultati */
+    #result button, #result a {
+        font-size: 0.9rem; /* Leggermente più piccoli */
+        padding: 8px 12px;
+    }
+     #result a {
+        display: inline-block; /* Per allineamento e padding */
+        background-color: #2ecc71; /* Colore WhatsApp */
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+        margin-right: 8px;
+        margin-top: 10px;
+     }
+     #result a:hover {
+        background-color: #27ae60;
+     }
+    #result {
+      margin-top: 30px;
+      background: #f9f9fb;
+      border: 1px solid #dcdde1;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    #result p {
+      margin: 8px 0; /* Aumentato margine verticale */
+      font-size: 1rem;
+      color: #333;
+    }
+     #result p i { /* Stile per testo corsivo (es. imponibile lordo) */
+       color: #555;
+       font-style: italic;
+     }
+    #result strong {
+      font-size: 1.1rem; /* Leggermente ridotto */
+      color: #2c3e50;
+      font-weight: 600; /* Semi-bold */
+    }
+     #result small { /* Stile per note piccole */
+        font-size: 0.9em;
+        color: #7f8c8d;
+        display: block; /* Va a capo */
+        margin-top: 5px;
+     }
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .whatsapp-buttons { /* Contenitore per bottoni WhatsApp/Copia/etc */
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px dashed #eee; /* Separatore leggero */
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Calcolo Fattura Avvocato</h1>
+
+  <label for="mode">Tipo di Calcolo:</label>
+  <select id="mode" onchange="toggleMode()">
+    <option value="normale">Calcolo Fattura (da Competenze)</option>
+    <option value="inverso">Calcolo Inverso (da Totale)</option>
+  </select>
+
+  <div id="calcoloNormale">
+    <label for="competenze">Competenze (€):</label>
+    <input type="number" id="competenze" step="0.01" placeholder="Es: 1000.00">
+
+    <label for="rimborso">Rimborso Forfettario (%):</label>
+    <input type="number" id="rimborso" value="15" step="0.01">
+
+    <label for="cpa">CPA (%):</label>
+    <input type="number" id="cpa" value="4" step="0.01">
+
+    <label for="spese">Spese Escluse Art. 15 (€):</label>
+    <input type="number" id="spese" step="0.01" placeholder="Es: 50.00">
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="ritenuta">
+      <label for="ritenuta">Applica Ritenuta d'acconto (20% su imponibile)</label>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="forfettario">
+      <label for="forfettario">Regime Forfettario (Esclude IVA, CPA, Ritenuta; Bollo se > 77.47€)</label>
+    </div>
+
+    <button onclick="calcolaFattura()">Calcola Fattura</button>
+  </div>
+
+  <div id="calcoloInverso" style="display:none;">
+    <label for="totaleFattura">Importo Totale Fattura (€):</label>
+    <input type="number" id="totaleFattura" step="0.01" placeholder="Importo lordo finale pagato">
+
+    <label for="speseInverso">Spese Escluse Art. 15 Incluse nel Totale (€):</label>
+    <input type="number" id="speseInverso" step="0.01" placeholder="Spese già comprese nel totale">
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="conRimborso">
+      <label for="conRimborso">Il calcolo originale includeva Rimborso Forfettario (15%)?</label>
+    </div>
+    <p style="font-size: 0.9em; color: #7f8c8d;">Nota: Il calcolo inverso assume regime standard (IVA 22%, CPA 4%) e applica il bollo (€2) solo se le Spese Escluse superano €77.47.</p>
+
+    <button onclick="calcolaInverso()">Calcola Inverso</button>
+  </div>
+
+  <div id="result">
+     </div>
+
+  <div class="footer">
+    Applicazione a cura dell’Avv. Roberto Arcella
+  </div>
+</div>
+
+<script>
+function toggleMode() {
+  const mode = document.getElementById('mode').value;
+  const isNormale = mode === 'normale';
+
+  document.getElementById('calcoloNormale').style.display = isNormale ? 'block' : 'none';
+  document.getElementById('calcoloInverso').style.display = isNormale ? 'none' : 'block';
+  document.getElementById('result').innerHTML = ''; // Pulisce i risultati precedenti
+}
+
+function calcolaInverso() {
+    console.log('Calcolo Inverso Start');
+    const totaleInput = parseFloat(document.getElementById('totaleFattura').value) || 0;
+    const speseInput = parseFloat(document.getElementById('speseInverso').value) || 0;
+    const conRimborsoCheck = document.getElementById('conRimborso').checked;
+
+    // Assumiamo regime standard per il calcolo inverso
+    const ivaPerc = 0.22;
+    const cpaPerc = 0.04;
+    const rimborsoPerc = 0.15;
+
+    // Stima bollo basata su spese (assunzione standard regime)
+    const bolloStimato = speseInput > 77.47 ? 2 : 0;
+
+    // Importo su cui calcolare imponibile + cpa (Totale - Spese - Bollo)
+    const baseLordaSenzaSpese = totaleInput - speseInput - bolloStimato;
+    if (baseLordaSenzaSpese < 0) {
+        document.getElementById('result').innerHTML = '<p style="color: red;">Errore: Il totale fattura è inferiore alle spese e al bollo stimato.</p>';
+        return;
+    }
+
+    // Togliamo l'IVA ( Dividiamo per 1 + ivaPerc )
+    const imponibileConCPA = baseLordaSenzaSpese / (1 + ivaPerc);
+
+    // Togliamo la CPA ( Dividiamo per 1 + cpaPerc )
+    const imponibile = imponibileConCPA / (1 + cpaPerc);
+
+    let competenze = 0;
+    let rimborso = 0;
+    if (conRimborsoCheck) {
+        // Imponibile = Competenze * (1 + rimborsoPerc)
+        competenze = imponibile / (1 + rimborsoPerc);
+        rimborso = competenze * rimborsoPerc;
+    } else {
+        // Imponibile = Competenze
+        competenze = imponibile;
+        rimborso = 0; // Esplicitamente 0
+    }
+
+    // Ricalcolo componenti per verifica
+    const cpaCalcolato = imponibile * cpaPerc;
+    const ivaCalcolata = (imponibile + cpaCalcolato) * ivaPerc;
+    const totaleVerifica = imponibile + cpaCalcolato + ivaCalcolata + speseInput + bolloStimato;
+
+    console.log('Calcolo Inverso Results', { totaleInput, speseInput, conRimborsoCheck, bolloStimato, competenze, rimborso, cpaCalcolato, ivaCalcolata, totaleVerifica });
+
+
+    // Riepilogo per la visualizzazione e condivisione
+    const riepilogo =
+        `Riepilogo Calcolo Inverso (dal totale € ${totaleInput.toFixed(2)}):
+*ASSUNZIONI: Regime standard (IVA 22%, CPA 4%), Bollo solo se Spese > 77.47€*
+--------------------
+Competenze (stimate): € ${competenze.toFixed(2)}
+Rimborso forfettario ${conRimborsoCheck ? '(15%)' : '(Non Incluso)'}: € ${rimborso.toFixed(2)}
+CPA (stimata 4%): € ${cpaCalcolato.toFixed(2)}
+IVA (stimata 22%): € ${ivaCalcolata.toFixed(2)}
+Spese escluse Art. 15: € ${speseInput.toFixed(2)}
+${bolloStimato > 0 ? `Bollo: € ${bolloStimato.toFixed(2)}` : ''}
+--------------------
+Totale Ricalcolato (verifica): € ${totaleVerifica.toFixed(2)}`;
+
+  const testoWhatsApp = encodeURIComponent(riepilogo);
+
+  document.getElementById('result').innerHTML =
+      `<h2>Riepilogo Calcolo Inverso</h2>
+    <p><small>Basato su Totale Fattura: € ${totaleInput.toFixed(2)} e Spese Escluse: € ${speseInput.toFixed(2)}</small></p>
+    <p>Competenze (stimate): € ${competenze.toFixed(2)}</p>
+    <p>Rimborso forfettario ${conRimborsoCheck ? '(incluso)' : '(non incluso)'}: € ${rimborso.toFixed(2)}</p>
+    <p>CPA (stimata 4%): € ${cpaCalcolato.toFixed(2)}</p>
+    <p>IVA (stimata 22%): € ${ivaCalcolata.toFixed(2)}</p>
+    <p>Spese escluse Art. 15: € ${speseInput.toFixed(2)}</p>` +
+    (bolloStimato > 0 ? `<p>Bollo: € ${bolloStimato.toFixed(2)}</p>` : '') +
+    `<p><strong>Totale ricalcolato (verifica): € ${totaleVerifica.toFixed(2)}</strong></p>
+    <small>Nota: Lievi differenze nel totale ricalcolato possono derivare da arrotondamenti.</small>
+    <div class="whatsapp-buttons">
+      <a href="https://wa.me/?text=${testoWhatsApp}" target="_blank">Condividi su WhatsApp</a>
+      <button id="copyButtonInverso">Copia Riepilogo</button>
+      <button onclick="stampaRiepilogo()">Stampa Riepilogo</button>
+      <button id="pdfButtonInverso">Salva Riepilogo (.txt)</button>
+    </div>`;
+
+  // Aggiungi event listener DOPO aver impostato innerHTML
+  console.log('Attaching listeners for Inverso');
+  const currentRiepilogoText = riepilogo; // Cattura il riepilogo specifico di questo calcolo
+
+  const copyBtnInv = document.getElementById('copyButtonInverso');
+  if (copyBtnInv) {
+    copyBtnInv.addEventListener('click', function() {
+      console.log('Copy Inverso listener fired');
+      copyToClipboard(currentRiepilogoText);
+    });
+  } else {
+      console.error("Copy button Inverso not found");
+  }
+
+  const pdfBtnInv = document.getElementById('pdfButtonInverso');
+  if (pdfBtnInv) {
+    pdfBtnInv.addEventListener('click', function() {
+      console.log('PDF Inverso listener fired');
+      salvaPDF(currentRiepilogoText); // Salva come testo semplice
+    });
+  } else {
+      console.error("PDF button Inverso not found");
+  }
+}
+
+
+function calcolaFattura() {
+    console.log('Calcolo Fattura Start');
+    const competenze = parseFloat(document.getElementById('competenze').value) || 0;
+    const rimborsoPercInput = parseFloat(document.getElementById('rimborso').value);
+    const cpaPercInput = parseFloat(document.getElementById('cpa').value);
+    const spese = parseFloat(document.getElementById('spese').value) || 0;
+    const applicaRitenuta = document.getElementById('ritenuta').checked;
+    const isForfettario = document.getElementById('forfettario').checked;
+
+    const rimborsoPerc = isNaN(rimborsoPercInput) ? 0 : rimborsoPercInput / 100;
+    const cpaPerc = isNaN(cpaPercInput) ? 0 : cpaPercInput / 100;
+    const ivaPerc = 0.22;
+    const ritenutaPerc = 0.20;
+
+    const rimborsoVal = competenze * rimborsoPerc;
+    const imponibile = competenze + rimborsoVal;
+
+    let cpaVal = 0;
+    let ivaVal = 0;
+    let bolloVal = 0;
+    let ritenutaVal = 0;
+
+    if (isForfettario) {
+        // Regime Forfettario: No CPA, No IVA, No Ritenuta
+        cpaVal = 0;
+        ivaVal = 0;
+        ritenutaVal = 0;
+        // Bollo se imponibile (competenze + rimborso) > 77.47
+        if (imponibile > 77.47) {
+            bolloVal = 2;
+        }
+    } else {
+        // Regime Standard
+        cpaVal = imponibile * cpaPerc;
+        ivaVal = (imponibile + cpaVal) * ivaPerc;
+        // Bollo se Spese Escluse > 77.47
+        if (spese > 77.47) {
+            bolloVal = 2;
+        }
+        // Ritenuta (se selezionata) sull'imponibile (competenze + rimborso)
+        if (applicaRitenuta) {
+            ritenutaVal = imponibile * ritenutaPerc;
+        }
+    }
+
+    // Calcolo Totale e Netto
+    const totaleLordo = imponibile + cpaVal + ivaVal + spese + bolloVal;
+    const nettoAPagare = totaleLordo - ritenutaVal;
+
+    console.log('Calcolo Fattura Results', {competenze, rimborsoVal, imponibile, cpaVal, ivaVal, spese, bolloVal, totaleLordo, ritenutaVal, nettoAPagare});
+
+    // Riepilogo Testuale
+    const riepilogo =
+        `Riepilogo Calcolo Fattura${isForfettario ? ' (Regime Forfettario)' : ''}:
+--------------------
+Competenze: € ${competenze.toFixed(2)}
+Rimborso forfettario (${(rimborsoPerc * 100).toFixed(0)}%): € ${rimborsoVal.toFixed(2)}
+--------------------
+Imponibile Lordo: € ${imponibile.toFixed(2)}
+${isForfettario ? '' : `CPA (${(cpaPerc * 100).toFixed(0)}%): € ${cpaVal.toFixed(2)}`}
+${isForfettario ? '' : `Base Imponibile IVA: € ${(imponibile + cpaVal).toFixed(2)}`}
+${isForfettario ? '' : `IVA (${(ivaPerc * 100).toFixed(0)}%): € ${ivaVal.toFixed(2)}`}
+Spese escluse Art. 15: € ${spese.toFixed(2)}
+${bolloVal > 0 ? `Bollo: € ${bolloVal.toFixed(2)}` : ''}
+--------------------
+Totale Lordo Fattura: € ${totaleLordo.toFixed(2)}
+${ritenutaVal > 0 ? `Ritenuta d'acconto (${(ritenutaPerc * 100).toFixed(0)}% su imponibile): € ${ritenutaVal.toFixed(2)}` : ''}
+--------------------
+Netto a Pagare: € ${nettoAPagare.toFixed(2)}`;
+
+    const testoWhatsApp = encodeURIComponent(riepilogo);
+
+    // Aggiorna HTML Risultato
+    document.getElementById('result').innerHTML =
+        `<h2>Riepilogo Calcolo Fattura ${isForfettario ? '<small>(Regime Forfettario)</small>' : ''}</h2>
+        <p>Competenze: € ${competenze.toFixed(2)}</p>
+        <p>Rimborso forfettario (${(rimborsoPerc * 100).toFixed(0)}%): € ${rimborsoVal.toFixed(2)}</p>
+        <p><i>Imponibile Lordo: € ${imponibile.toFixed(2)}</i></p>` +
+        (isForfettario ? '' : `<p>CPA (${(cpaPerc * 100).toFixed(0)}%): € ${cpaVal.toFixed(2)}</p>`) +
+        (isForfettario ? '' : `<p>IVA (${(ivaPerc * 100).toFixed(0)}%): € ${ivaVal.toFixed(2)}</p>`) +
+        `<p>Spese escluse Art. 15: € ${spese.toFixed(2)}</p>` +
+        (bolloVal > 0 ? `<p>Bollo: € ${bolloVal.toFixed(2)}</p>` : '') +
+        `<p><strong>Totale Lordo Fattura: € ${totaleLordo.toFixed(2)}</strong></p>` +
+        (ritenutaVal > 0 ? `<p>Ritenuta d'acconto: € ${ritenutaVal.toFixed(2)}</p>` : '') +
+        `<p><strong>Netto a Pagare: € ${nettoAPagare.toFixed(2)}</strong></p>
+        <div class="whatsapp-buttons">
+            <a href="https://wa.me/?text=${testoWhatsApp}" target="_blank">Condividi su WhatsApp</a>
+            <button id="copyButtonNormale">Copia Riepilogo</button>
+            <button onclick="stampaRiepilogo()">Stampa Riepilogo</button>
+            <button id="pdfButtonNormale">Salva Riepilogo (.txt)</button>
+        </div>`;
+
+    // Aggiungi event listener DOPO aver impostato innerHTML
+    console.log('Attaching listeners for Normale');
+    const currentRiepilogoText = riepilogo; // Cattura il riepilogo specifico di questo calcolo
+
+    const copyBtn = document.getElementById('copyButtonNormale');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            console.log('Copy Normale listener fired');
+            copyToClipboard(currentRiepilogoText);
+        });
+    } else {
+        console.error("Copy button Normale not found");
+    }
+
+    const pdfBtn = document.getElementById('pdfButtonNormale');
+    if (pdfBtn) {
+        pdfBtn.addEventListener('click', function() {
+             console.log('PDF Normale listener fired');
+            salvaPDF(currentRiepilogoText); // Salva come testo semplice
+        });
+     } else {
+        console.error("PDF button Normale not found");
+    }
+}
+
+// --- Funzioni Ausiliarie ---
+
+function copyToClipboard(text) {
+    console.log("Attempting to copy text:", text);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Riepilogo copiato negli appunti');
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+            alert('Errore nel copiare il riepilogo (navigator.clipboard). Vedi console.');
+            fallbackCopyTextToClipboard(text); // Prova il fallback
+        });
+    } else {
+        console.warn('Navigator.clipboard not available, using fallback.');
+        fallbackCopyTextToClipboard(text); // Fallback per browser vecchi/http
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed'; // Evita scroll
+    textarea.style.left = '-9999px'; // Sposta fuori schermo
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'Riepilogo copiato negli appunti (fallback)' : 'Copia fallita (fallback)';
+        alert(msg);
+        if (!successful) console.error('Fallback: Copying text command was unsuccessful');
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        alert('Errore nel copiare il riepilogo (fallback execCommand).');
+    }
+    document.body.removeChild(textarea);
+}
+
+function stampaRiepilogo() {
+    const resultDiv = document.getElementById('result');
+    // Seleziona solo H2, P e SMALL direttamente figli di #result
+    const elementsToPrint = resultDiv.querySelectorAll(':scope > h2, :scope > p, :scope > small');
+
+    let contentToPrint = '';
+    elementsToPrint.forEach(node => {
+         // Evita di stampare il contenitore dei bottoni se è un P (improbabile ma sicuro)
+        if (!node.classList.contains('whatsapp-buttons')) {
+             contentToPrint += node.outerHTML;
+        }
+    });
+
+
+    if (!contentToPrint) {
+        contentToPrint = "<p>Nessun riepilogo valido da stampare.</p>";
+    }
+
+    const win = window.open('', '', 'width=800,height=600');
+    win.document.write(`
+        <html>
+        <head>
+            <title>Riepilogo Fattura</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.5; margin: 20px;}
+                h2 { color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-top: 0;}
+                p { margin: 5px 0; font-size: 1rem; color: #333;}
+                strong { font-weight: 600; color: #2c3e50; }
+                small { font-size: 0.9em; color: #7f8c8d; display: block; margin-top: 5px; }
+                i { font-style: italic; color: #555; }
+                 @media print {
+                    button { display: none; } /* Nasconde bottoni durante la stampa */
+                 }
+            </style>
+        </head>
+        <body>
+            ${contentToPrint}
+             <script> setTimeout(() => { window.print(); window.close(); }, 250); <\/script>
+        </body>
+        </html>
+    `);
+    win.document.close();
+}
+
+
+function salvaPDF(content) {
+    // Salva come file di testo semplice (.txt) per evitare confusione
+    // con un vero file PDF formattato.
+    console.log("Attempting to save text:", content);
+    const filename = "riepilogo_fattura.txt";
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+
+    // Utilizza l'approccio con link 'a' per il download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+
+    document.body.appendChild(link); // Necessario per alcuni browser (es. Firefox)
+    link.click(); // Simula il click per avviare il download
+    document.body.removeChild(link); // Rimuovi il link temporaneo
+    URL.revokeObjectURL(link.href); // Libera la memoria allocata per l'URL dell'oggetto
+    console.log("Save requested for:", filename);
+}
+
+
+// Inizializza la visualizzazione corretta all'avvio (dopo che il DOM è pronto)
+document.addEventListener('DOMContentLoaded', toggleMode);
+
+</script>
+</body>
+</html>

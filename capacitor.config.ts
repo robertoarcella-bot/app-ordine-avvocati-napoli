@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'it.ordineavvocatinapoli.app',
-  appName: 'COA Napoli',
+  appName: 'Ordine Avvocati Napoli',
   webDir: 'dist',
   android: {
     allowMixedContent: false,
@@ -13,7 +13,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 1500,
       launchAutoHide: true,
-      backgroundColor: '#0B3D2E',
+      backgroundColor: '#0066CC',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
@@ -22,12 +22,20 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'DARK',
-      backgroundColor: '#0B3D2E',
+      backgroundColor: '#0066CC',
     },
     Keyboard: {
       resize: 'body',
       style: 'LIGHT',
       resizeOnFullScreen: true,
+    },
+    /**
+     * Fa passare le chiamate fetch/XHR attraverso il bridge nativo,
+     * bypassando i limiti CORS del WebView. Indispensabile per fare
+     * scraping di siti come pst.giustizia.it che non espongono API.
+     */
+    CapacitorHttp: {
+      enabled: true,
     },
   },
 };

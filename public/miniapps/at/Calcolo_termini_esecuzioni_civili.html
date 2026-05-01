@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Termini Processuali Esecuzione Civile - Avv. R. Arcella</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6; margin: 20px; background-color: #f8f9fa; color: #212529;
+            padding-top: 40px; /* Add padding to prevent overlap with back link */
+        }
+        #back-link {
+            position: absolute; /* Position relative to the body */
+            top: 15px;
+            left: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #007bff;
+            padding: 5px 10px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: #fff;
+            transition: all 0.2s ease-in-out;
+        }
+        #back-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .container {
+            background-color: #ffffff; padding: 30px; border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 700px; margin: 20px auto 40px auto; /* Adjusted margin */
+        }
+        h1, h2 { color: #343a40; text-align: center; margin-bottom: 25px; }
+        h1 { font-size: 1.8em; } h2 { font-size: 1.4em; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+        select, input[type="date"] {
+            width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ced4da;
+            border-radius: 4px; box-sizing: border-box; background-color: #fff; font-size: 1rem;
+        }
+        select:focus, input[type="date"]:focus {
+            border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        button {
+            display: block; width: 100%; padding: 12px 20px; background-color: #007bff;
+            color: white; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        button:hover { background-color: #0056b3; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #risultato {
+            margin-top: 30px; padding: 20px; background-color: #e9f7ff;
+            border: 1px solid #b8daff; border-left: 5px solid #007bff;
+            border-radius: 4px; text-align: center;
+        }
+        #risultato p { margin: 8px 0; font-size: 1.1em; color: #004085; }
+        #risultato strong { font-weight: 700; }
+        .nota-suspensione { font-size: 0.95em; color: #545b62; margin-top: 10px; }
+
+        /* Styling for Disclaimers/Notes */
+        .disclaimer-section {
+            font-size: 0.9em; color: #6c757d; border-top: 1px solid #dee2e6;
+            padding-top: 20px; margin-top: 25px; text-align: left;
+        }
+        .disclaimer-section ul { padding-left: 20px; margin-top: 10px; list-style: disc; }
+        .disclaimer-section li { margin-bottom: 8px; }
+        .disclaimer-section strong { color: #dc3545; } /* General warning color */
+        .disclaimer-section .info { color: #007bff; font-weight: bold; } /* Info emphasis */
+
+        .nota-specifica {
+             font-size: 0.9em; color: #6c757d; margin-top: 15px;
+             padding: 10px 15px; background-color: #f8f9fa; /* Light grey background */
+             border: 1px solid #dee2e6; border-left: 4px solid #ffc107; /* Warning yellow accent */
+             border-radius: 4px;
+        }
+         .nota-specifica strong { color: #856404; } /* Darker yellow/brown for text */
+         .nota-specifica .info { color: #007bff; font-weight: bold; } /* Consistent info emphasis */
+
+        #author-attrib {
+             text-align: center;
+             margin-top: 35px;
+             font-size: 0.85em;
+             color: #6c757d;
+        }
+
+        optgroup {
+            font-weight: bold; font-style: italic; background-color: #e9ecef;
+            padding: 5px 0; margin-top: 5px; color: #495057;
+        }
+    </style>
+</head>
+<body>
+
+<a id="back-link" href="https://avvocatotelematico.studiolegalearcella.it/public_html/apps/" title="Torna all'elenco delle applicazioni">← Torna alle applicazioni</a>
+
+<div class="container">
+    <h1>Calcolo Termini Esecuzione Civile</h1>
+    <h2>(Riforma Cartabia e Aggiornamenti)</h2>
+
+    <form id="calcoloForm">
+        <label for="tipoTermine">Seleziona il tipo di termine:</label>
+        <select id="tipoTermine" name="tipoTermine" required>
+             <option value="">-- Seleziona un'opzione --</option>
+
+            <optgroup label="Fase Preliminare / Opposizioni (No Sospensione Feriale)">
+                <option value="precetto_efficacia_90" data-giorni="90" data-sospensione="false">Precetto - Termine efficacia (90 gg da notifica)</option>
+                <option value="opp_atti_617_1" data-giorni="20" data-sospensione="false">Opposizione Atti Esecutivi (art. 617 c.1 - pre-esecuzione) (20 gg da notifica titolo/precetto)</option>
+                <option value="opp_atti_617_2" data-giorni="20" data-sospensione="false">Opposizione Atti Esecutivi (art. 617 c.2 - in corso) (20 gg da primo atto esec./compimento atto)</option>
+            </optgroup>
+
+            <optgroup label="Pignoramento Mobiliare">
+                <option value="mob_iscrizione_ruolo_15" data-giorni="15" data-sospensione="true">Iscrizione a ruolo (15 gg da consegna verbale da UG)</option>
+                <option value="mob_istanza_vendita_45" data-giorni="45" data-sospensione="true">Istanza vendita/assegnazione (45 gg dal pignoramento - art. 497/501)</option>
+            </optgroup>
+
+            <optgroup label="Pignoramento Presso Terzi">
+                <option value="ppt_iscrizione_ruolo_30" data-giorni="30" data-sospensione="true">Iscrizione a ruolo (30 gg da consegna verbale da UG)</option>
+                 <option value="ppt_istanza_vendita_45" data-giorni="45" data-sospensione="true">Istanza vendita/assegnazione (45 gg dal pignoramento - art. 497/501)</option>
+                <option value="ppt_dichiarazione_terzo_10" data-giorni="10" data-sospensione="true">Dichiarazione del terzo (10 gg dalla notifica al terzo)</option>
+            </optgroup>
+
+            <optgroup label="Pignoramento Immobiliare">
+                <option value="imm_iscrizione_ruolo_15" data-giorni="15" data-sospensione="true">Iscrizione a ruolo (15 gg da consegna verbale da UG - art. 557)</option>
+                <option value="imm_deposito_doc_45" data-giorni="45" data-sospensione="true">Deposito documentazione ipocatastale (45 gg dal pignoramento - art. 567 c.2 / 497)</option>
+                <option value="imm_istanza_vendita_45" data-giorni="45" data-sospensione="true">Istanza vendita (45 gg dal pignoramento - art. 497/501)</option>
+            </optgroup>
+
+            <optgroup label="Pignoramento Autoveicoli (Art. 521-bis)">
+                <option value="auto_iscrizione_ruolo_30" data-giorni="30" data-sospensione="true">Iscrizione a ruolo (30 gg da comunicazione consegna IVG)</option>
+                <option value="auto_istanza_vendita_45" data-giorni="45" data-sospensione="true">Istanza vendita/assegnazione (45 gg da iscrizione a ruolo)</option>
+            </optgroup>
+        </select>
+
+        <label for="dataRiferimento">Data di riferimento:</label>
+        <input type="date" id="dataRiferimento" name="dataRiferimento" required title="Inserire la data di: Notifica (titolo/precetto/al terzo), Pignoramento, Consegna verbale da UG, Compimento atto esecutivo, Comunicazione consegna IVG, Iscrizione a ruolo (per 521-bis), etc. a seconda del termine selezionato.">
+
+        <button type="button" onclick="calcolaScadenza()">Calcola Scadenza</button>
+    </form>
+
+    <div id="risultato" style="display: none;">
+        <h2>Risultato Calcolo</h2>
+        <p>Il termine scade il: <strong id="dataScadenza"></strong></p>
+        <p class="nota-suspensione" id="notaSusp"></p>
+    </div>
+
+    <div id="disclaimer-generale" class="disclaimer-section" style="display: none;">
+         <ul>
+            <li><strong>Attenzione:</strong> Questo strumento è fornito a solo scopo informativo e simulativo, non sostituisce la consulenza legale professionale né il controllo puntuale sulle norme vigenti, la giurisprudenza applicabile e le prassi degli uffici giudiziari.</li>
+            <li>Il giorno di decorrenza (es. "pignoramento", "consegna verbale") può richiedere una valutazione specifica nel caso concreto.</li>
+            <li>Verificare sempre le scadenze con le norme aggiornate e le specificità del caso (es. notifiche, festività particolari diverse dalla sospensione feriale).</li>
+            <li>La <span class="info">Sospensione Feriale</span> (1 Agosto - 31 Agosto) è applicata ove indicato ('Sospensione: Sì'), ma è <strong>esclusa</strong> per i termini relativi al precetto e alle opposizioni all'esecuzione (art. 617 c.p.c.).</li>
+         </ul>
+    </div>
+
+    <div id="nota-492bis" class="nota-specifica" style="display: none;">
+        <span class="info">Efficacia Precetto (90gg):</span> Si ricorda che questo termine è <strong>sospeso</strong> in caso di attivazione della procedura di ricerca telematica dei beni (art. 492-bis c.p.c.). La sospensione opera fino alla comunicazione da parte dell'Ufficiale Giudiziario dell'esito (mancata ricerca, rigetto istanza, o consegna verbale con risultanze). Il calcolatore <strong>non</strong> tiene conto automaticamente di questa sospensione variabile.
+    </div>
+
+    <div id="nota-ppt-avviso" class="nota-specifica" style="display: none;">
+        <span class="info">Pignoramento Presso Terzi:</span> È necessario notificare al debitore e al terzo l'avviso di avvenuta iscrizione a ruolo <span class="info">entro la data dell'udienza</span> di comparizione indicata nell'atto di pignoramento.
+    </div>
+
+     <div id="nota-art501" class="nota-specifica" style="display: none;">
+         <span class="info">Istanza Vendita/Assegnazione:</span> Si ricorda che, ai sensi dell'art. 501 c.p.c., l'istanza non può essere proposta prima che siano decorsi <span class="info">10 giorni</span> dal pignoramento (salvo beni deteriorabili).
+     </div>
+
+     <div id="nota-imm-trascrizione" class="nota-specifica" style="display: none;">
+         <span class="info">Pignoramento Immobiliare:</span> Si ricorda che la <strong>trascrizione</strong> dell'atto di pignoramento (consegnato dall'U.G. al creditore) deve avvenire <strong>immediatamente dopo la notificazione dell'atto di pignoramento</strong> (Art. 555 c.p.c.).
+     </div>
+
+     <p id="author-attrib">Applicazione a cura dell'Avv. Roberto Arcella</p>
+
+</div><script>
+    // La funzione JavaScript 'calcolaScadenza()' rimane invariata rispetto alla versione precedente.
+    function calcolaScadenza() {
+        const tipoTermineSelect = document.getElementById('tipoTermine');
+        const dataRiferimentoInput = document.getElementById('dataRiferimento');
+        const risultatoDiv = document.getElementById('risultato');
+        const dataScadenzaSpan = document.getElementById('dataScadenza');
+        const notaSuspP = document.getElementById('notaSusp');
+
+        // Get references to disclaimer/note divs
+        const disclaimerGeneraleDiv = document.getElementById('disclaimer-generale');
+        const nota492bisDiv = document.getElementById('nota-492bis');
+        const notaPptAvvisoDiv = document.getElementById('nota-ppt-avviso');
+        const notaArt501Div = document.getElementById('nota-art501');
+        const notaImmTrascrizioneDiv = document.getElementById('nota-imm-trascrizione');
+
+        const selectedOption = tipoTermineSelect.options[tipoTermineSelect.selectedIndex];
+        const tipoTermineValue = selectedOption.value;
+        const dataRiferimentoValue = dataRiferimentoInput.value;
+
+        // --- Reset Visibility ---
+        risultatoDiv.style.display = 'none';
+        disclaimerGeneraleDiv.style.display = 'none';
+        nota492bisDiv.style.display = 'none';
+        notaPptAvvisoDiv.style.display = 'none';
+        notaArt501Div.style.display = 'none';
+        notaImmTrascrizioneDiv.style.display = 'none';
+
+        // --- Input Validation ---
+        if (!tipoTermineValue || !dataRiferimentoValue) {
+            alert("Per favore, seleziona il tipo di termine e inserisci la data di riferimento.");
+            return;
+        }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dataRiferimentoValue)) {
+             alert("Formato data non valido. Usare AAAA-MM-GG.");
+             return;
+        }
+
+        const giorni = parseInt(selectedOption.getAttribute('data-giorni'), 10);
+        const applicaSospensione = selectedOption.getAttribute('data-sospensione') === 'true';
+
+        // --- Date Calculation ---
+        const dataIniziale = new Date(dataRiferimentoValue + 'T00:00:00Z');
+         if (isNaN(dataIniziale.getTime())) {
+             alert("Data di riferimento non valida. Assicurati che sia nel formato corretto (AAAA-MM-GG) e che la data esista.");
+             return;
+        }
+
+        let dataCorrente = new Date(dataIniziale);
+        let giorniContati = 0;
+        let giorniSospesi = 0;
+
+        while (giorniContati < giorni) {
+            dataCorrente.setUTCDate(dataCorrente.getUTCDate() + 1);
+            const mese = dataCorrente.getUTCMonth();
+            const giornoDelMese = dataCorrente.getUTCDate();
+            if (applicaSospensione && mese === 7 && giornoDelMese >= 1 && giornoDelMese <= 31) {
+                giorniSospesi++;
+                continue;
+            }
+            giorniContati++;
+        }
+
+        // --- Display Results ---
+        const opzioniFormato = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
+        dataScadenzaSpan.textContent = dataCorrente.toLocaleDateString('it-IT', opzioniFormato);
+
+        // Display basic suspension info
+        if (applicaSospensione) {
+             notaSuspP.innerHTML = `Sospensione Feriale (1 Ago - 31 Ago): <strong>Sì</strong>.`;
+             if (giorniSospesi > 0) { notaSuspP.innerHTML += ` Esclusi ${giorniSospesi} giorni dal conteggio.`; }
+             else { notaSuspP.innerHTML += ` Periodo non intersecato.`; }
+        } else {
+            notaSuspP.innerHTML = `Sospensione Feriale (1 Ago - 31 Ago): <strong>No</strong>.`;
+        }
+
+        // Make the main result and general disclaimer visible
+        risultatoDiv.style.display = 'block';
+        disclaimerGeneraleDiv.style.display = 'block';
+
+        // --- Display Context-Specific Notes ---
+        if (tipoTermineValue === 'precetto_efficacia_90') {
+            nota492bisDiv.style.display = 'block';
+        }
+
+        if (tipoTermineValue.startsWith('ppt_')) {
+            notaPptAvvisoDiv.style.display = 'block';
+        }
+
+        // Check if it's an "Istanza Vendita/Assegnazione" term
+        if (tipoTermineValue.includes('_istanza_vendita_')) {
+             notaArt501Div.style.display = 'block';
+        }
+
+        if (tipoTermineValue.startsWith('imm_')) {
+            notaImmTrascrizioneDiv.style.display = 'block';
+        }
+
+         // Update date input title hint (optional)
+        dataRiferimentoInput.setAttribute('title', "Inserire la data di: Notifica (titolo/precetto/al terzo), Pignoramento, Consegna verbale da UG, Compimento atto esecutivo, Comunicazione consegna IVG, Iscrizione a ruolo (per 521-bis), etc. a seconda del termine selezionato.");
+    }
+</script>
+
+</body>
+</html>

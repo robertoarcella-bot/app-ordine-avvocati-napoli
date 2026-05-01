@@ -6,6 +6,7 @@ import {
 import {
   newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
+  shieldHalfOutline,
 } from 'ionicons/icons';
 import { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router';
@@ -21,7 +22,8 @@ const QUICK_TILES = [
   { label: 'Sito', icon: globeOutline, route: '/sito', color: 'secondary' },
   { label: 'Documenti', icon: documentsOutline, route: '/documenti', color: 'tertiary' },
   { label: 'Strumenti', icon: appsOutline, route: '/miniapps', color: 'primary' },
-  { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'secondary' },
+  { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'secondary' },
+  { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'tertiary' },
   { label: 'Info', icon: informationCircleOutline, route: '/info', color: 'medium' },
 ];
 
@@ -69,7 +71,7 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start"><IonMenuButton /></IonButtons>
-          <IonTitle>COA Napoli</IonTitle>
+          <IonTitle style={{ fontSize: 16 }}>Consiglio dell'Ordine</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding">
@@ -77,9 +79,17 @@ const Home: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
 
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          <img
+            src="/logo.jpg"
+            alt="Consiglio dell'Ordine degli Avvocati di Napoli"
+            style={{ maxWidth: 260, width: '70%', height: 'auto' }}
+          />
+        </div>
         <IonText>
-          <h2 style={{ marginTop: 0 }}>Consiglio dell'Ordine</h2>
-          <p style={{ color: 'var(--ion-color-medium)' }}>degli Avvocati di Napoli</p>
+          <h1 style={{ marginTop: 0, lineHeight: 1.2, fontSize: 20, textAlign: 'center' }}>
+            Consiglio dell'Ordine degli Avvocati di Napoli
+          </h1>
         </IonText>
 
         <IonGrid>

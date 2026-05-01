@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redazione Piano Genitoriale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .form-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .form-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e3a8a;
+            border-bottom: 2px solid #dbeafe;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1d4ed8;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"], input[type="date"], textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px #bfdbfe;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        .child-card {
+            position: relative;
+            border: 1px solid #93c5fd;
+            padding-top: 2rem;
+        }
+        .remove-child-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+        }
+        .routine-card {
+            border-left: 4px solid #1d4ed8;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-900">Redazione Piano Genitoriale</h1>
+            <p class="text-lg text-gray-600 mt-2">Compilare i campi per generare il documento per il Tribunale.</p>
+            <div class="mt-6 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md text-left text-sm shadow">
+                <p class="font-bold">Avvertenza:</p>
+                <p class="mt-1">Il piano genitoriale, previsto dagli artt. 473-bis.12, ultimo comma, e 473-bis.16 c.p.c., è un documento obbligatorio nei procedimenti che coinvolgono figli minori. Esso descrive in modo chiaro e dettagliato la quotidianità del minore – scuola, educazione, attività extrascolastiche, frequentazioni abituali e vacanze – al fine di tutelarne il benessere e garantire continuità affettiva ed educativa, anche in presenza di una crisi familiare. Il suo deposito è richiesto tanto alla parte ricorrente quanto a quella convenuta.</p>
+            </div>
+        </header>
+
+        <form id="parental-plan-form" onsubmit="return false;">
+            
+            <!-- SEZIONE DATI PROCEDIMENTO -->
+            <div class="form-section">
+                <h2>Dati del Procedimento</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="tribunale">Tribunale</label>
+                        <input type="text" id="tribunale" name="tribunale" placeholder="Es. Tribunale di Napoli">
+                    </div>
+                    <div>
+                        <label for="sezione">Sezione</label>
+                        <input type="text" id="sezione" name="sezione" placeholder="Es. Prima Sezione Civile">
+                    </div>
+                    <div>
+                        <label for="giudice">Giudice</label>
+                        <input type="text" id="giudice" name="giudice" placeholder="Es. Dott. Mario Rossi">
+                    </div>
+                    <div>
+                        <label for="rg_number">Numero R.G.</label>
+                        <input type="text" id="rg_number" name="rg_number" placeholder="Es. 12345/2025">
+                    </div>
+                    <div>
+                        <label for="ricorrente">Ricorrente</label>
+                        <input type="text" id="ricorrente" name="ricorrente" placeholder="Nome e Cognome della parte ricorrente">
+                    </div>
+                    <div>
+                        <label for="resistente">Resistente</label>
+                        <input type="text" id="resistente" name="resistente" placeholder="Nome e Cognome della parte resistente">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEZIONE OPZIONI -->
+            <div class="form-section">
+                <h2 class="!border-0 !pb-2">Opzioni Piano</h2>
+                <div class="flex items-center space-x-3 bg-blue-50 p-4 rounded-lg">
+                    <input type="checkbox" id="jointPlan" name="jointPlan" class="h-5 w-5 rounded text-blue-600 focus:ring-blue-500">
+                    <label for="jointPlan" class="mb-0 font-semibold text-lg text-blue-800">Piano a firma congiunta</label>
+                </div>
+            </div>
+
+            <!-- SEZIONE GENITORI -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Genitore 1 -->
+                <div id="parent1-section" class="form-section">
+                    <h2>Genitore 1</h2>
+                    <div>
+                        <label for="p1_name">Nome e Cognome</label>
+                        <input type="text" id="p1_name" name="p1_name" placeholder="Es. Mario Rossi">
+                    </div>
+                    <div class="mt-4">
+                        <label for="p1_birthdate">Data di nascita</label>
+                        <input type="date" id="p1_birthdate" name="p1_birthdate">
+                    </div>
+                    <h3 class="mt-6">Informazioni Economico-Patrimoniali</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="p1_lavoro">a) Attività lavorativa e fonti di reddito</label>
+                            <textarea id="p1_lavoro" name="p1_lavoro" placeholder="Indicare tipo di lavoro, retribuzioni, compensi anche saltuari, pensioni, canoni di locazione, redditi da investimenti, quote sociali, sussidi, assegno unico, assegni di mantenimento percepiti, etc."></textarea>
+                        </div>
+                        <div>
+                            <label for="p1_immobili">b) Proprietà immobiliari e beni mobili registrati</label>
+                            <textarea id="p1_immobili" name="p1_immobili" placeholder="Elencare proprietà immobiliari (indicando tipologia, utilizzo ed eventuale canone di locazione percepito) e beni mobili registrati (es. auto, moto)."></textarea>
+                        </div>
+                        <div>
+                            <label for="p1_bancari">c) Rapporti bancari e finanziari</label>
+                            <textarea id="p1_bancari" name="p1_bancari" placeholder="Indicare i rapporti bancari e finanziari (si ricorda di allegare gli estratti conto degli ultimi tre anni)."></textarea>
+                        </div>
+                        <div>
+                            <label for="p1_passivita">d) Passività</label>
+                            <textarea id="p1_passivita" name="p1_passivita" placeholder="Indicare mutui o finanziamenti, specificando anno di erogazione, durata e rata mensile."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Genitore 2 (visibile solo se piano congiunto) -->
+                <div id="parent2-section" class="form-section hidden">
+                    <h2>Genitore 2</h2>
+                    <div>
+                        <label for="p2_name">Nome e Cognome</label>
+                        <input type="text" id="p2_name" name="p2_name" placeholder="Es. Laura Bianchi">
+                    </div>
+                    <div class="mt-4">
+                        <label for="p2_birthdate">Data di nascita</label>
+                        <input type="date" id="p2_birthdate" name="p2_birthdate">
+                    </div>
+                    <h3 class="mt-6">Informazioni Economico-Patrimoniali</h3>
+                     <div class="space-y-4">
+                        <div>
+                            <label for="p2_lavoro">a) Attività lavorativa e fonti di reddito</label>
+                            <textarea id="p2_lavoro" name="p2_lavoro" placeholder="Indicare tipo di lavoro, retribuzioni, compensi anche saltuari, pensioni, canoni di locazione, redditi da investimenti, quote sociali, sussidi, assegno unico, assegni di mantenimento percepiti, etc."></textarea>
+                        </div>
+                        <div>
+                            <label for="p2_immobili">b) Proprietà immobiliari e beni mobili registrati</label>
+                            <textarea id="p2_immobili" name="p2_immobili" placeholder="Elencare proprietà immobiliari (indicando tipologia e utilizzo) e beni mobili registrati (es. auto, moto)."></textarea>
+                        </div>
+                        <div>
+                            <label for="p2_bancari">c) Rapporti bancari e finanziari</label>
+                            <textarea id="p2_bancari" name="p2_bancari" placeholder="Descrivere i rapporti bancari e finanziari (si ricorda di allegare gli estratti conto degli ultimi tre anni)."></textarea>
+                        </div>
+                        <div>
+                            <label for="p2_passivita">d) Passività</label>
+                            <textarea id="p2_passivita" name="p2_passivita" placeholder="Indicare mutui o finanziamenti, specificando anno di erogazione, durata e rata mensile."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SEZIONE FIGLI -->
+            <div id="children-section">
+                <!-- I figli vengono aggiunti qui dinamicamente -->
+            </div>
+
+            <div class="flex justify-center mt-6">
+                <button type="button" id="addChildBtn" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Aggiungi Figlio/a
+                </button>
+            </div>
+
+            <!-- SEZIONE ROUTINE SETTIMANALE -->
+            <div class="form-section mt-8">
+                <h2>Routine Settimanale e Accordi di Frequentazione (Opzionale)</h2>
+                <div class="mt-4 bg-orange-100 border-l-4 border-orange-500 text-orange-800 p-4 rounded-md text-left text-sm shadow">
+                    <p class="font-bold">Avvertenza Importante:</p>
+                    <p class="mt-1">Questa sezione va compilata preferibilmente in caso di procedimenti consensuali (es. ricorso congiunto). Nel caso di procedimenti giudiziali, va compilata soltanto se vi siano altri provvedimenti (o accordi di negoziazione) già vigenti, oppure se si sia consolidata una situazione di fatto che si vuole rappresentare al tribunale.</p>
+                </div>
+                
+                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+                     <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="differentiateRoutine" name="differentiateRoutine" class="h-5 w-5 rounded text-blue-600 focus:ring-blue-500">
+                        <label for="differentiateRoutine" class="mb-0 font-semibold text-md text-gray-800">Differenzia la routine per ogni figlio</label>
+                    </div>
+                </div>
+
+                <!-- Contenitore per la routine generale -->
+                <div id="general-routine-section" class="mt-6">
+                    <!-- Il template della routine verrà inserito qui -->
+                </div>
+
+                <!-- Contenitore per le routine differenziate -->
+                <div id="differentiated-routines-container" class="hidden mt-4 space-y-6">
+                    <!-- Le routine per ogni figlio verranno inserite qui -->
+                </div>
+
+            </div>
+
+
+            <!-- GENERAZIONE DOCUMENTO -->
+            <div class="mt-12 text-center">
+                <button type="button" id="generateRtfBtn" class="btn btn-primary btn-lg text-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Genera Piano in formato RTF
+                </button>
+            </div>
+        </form>
+
+        <footer class="text-center mt-12 pb-4">
+            <p class="text-sm text-gray-600">Realizzato dall' Avv. Roberto Arcella</p>
+            <div class="mt-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md">
+                <h4 class="font-bold">Nota sulla Privacy</h4>
+                <p class="text-sm">Tutti i dati inseriti vengono elaborati localmente sul tuo computer e non vengono trasmessi o salvati su alcun server. La privacy Tua e del Cliente è garantita.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Template per i figli (nascosto) -->
+    <template id="child-template">
+        <div class="form-section child-card">
+            <button type="button" class="remove-child-btn btn btn-danger btn-sm">Rimuovi</button>
+            <h2>Dati Figlio/a <span class="child-number"></span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label>Nome e Cognome</label>
+                    <input type="text" name="child_name" placeholder="Nome del figlio/a" class="child-name-input">
+                </div>
+                <div>
+                    <label>Data di nascita</label>
+                    <input type="date" name="child_birthdate">
+                </div>
+            </div>
+            
+            <h3 class="mt-6">Impegni e Attività Quotidiane</h3>
+            
+            <div>
+                <label>Scuola e Percorso Educativo</label>
+                <textarea name="child_school" placeholder="Indicare istituto, classe, orari, attività di doposcuola, rendimento scolastico, eventuali bisogni educativi speciali (BES) o disturbi specifici dell'apprendimento (DSA)."></textarea>
+            </div>
+
+            <div class="mt-4">
+                <label>Attività Extrascolastiche</label>
+                <textarea name="child_extracurricular" placeholder="Indicare sport, corsi di musica, lingue, catechismo, etc., specificando giorni, orari e costi."></textarea>
+            </div>
+
+            <div class="mt-4">
+                <label>Frequentazioni Abituali</label>
+                <textarea name="child_social" placeholder="Descrivere le frequentazioni con amici, parenti (nonni, zii, cugini) e le relative modalità."></textarea>
+            </div>
+
+            <div class="mt-4">
+                <label>Condizioni di Salute</label>
+                <textarea name="child_health" placeholder="Indicare eventuali patologie, allergie, terapie mediche o psicologiche in corso, medico pediatra di riferimento."></textarea>
+            </div>
+
+            <div class="mt-4">
+                <label>Vacanze</label>
+                <textarea name="child_holidays" placeholder="Descrivere le abitudini relative alle vacanze estive, invernali e altre festività (es. periodi, luoghi, permanenza con ciascun genitore)."></textarea>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Template per la routine (nascosto) -->
+    <template id="routine-template">
+        <div class="p-4 rounded-lg space-y-4 routine-card-instance" data-routine-id="">
+             <h3 class="routine-title text-lg font-bold text-blue-800">Routine</h3>
+             <div>
+                <label>Casa familiare assegnata a:</label>
+                <select name="routine_casa_familiare">
+                    <option value="">-- Seleziona --</option>
+                    <option value="madre">Madre</option>
+                    <option value="padre">Padre</option>
+                </select>
+            </div>
+            <div>
+                <label>Collocamento prevalente dei figli presso:</label>
+                <select name="routine_collocamento">
+                    <option value="">-- Seleziona --</option>
+                    <option value="madre">Madre</option>
+                    <option value="padre">Padre</option>
+                </select>
+            </div>
+            <div>
+                <label>Frequentazione infrasettimanale con il genitore non collocatario (descrivere):</label>
+                <textarea name="routine_infrasettimanale" placeholder="Es. due pomeriggi a settimana, dal termine della scuola fino alle ore 20:00, con pernottamento."></textarea>
+            </div>
+             <div>
+                <label>Frequentazione weekend con il genitore non collocatario (descrivere):</label>
+                <textarea name="routine_weekend" placeholder="Es. a fine settimana alternati, dal venerdì pomeriggio all'uscita da scuola fino alla domenica sera ore 20:30."></textarea>
+            </div>
+            <div>
+                <label>Accompagnamento a scuola (chi se ne occupa):</label>
+                <textarea name="routine_accompagnamento_scuola" placeholder="Indicare chi porta e prende i figli da scuola quotidianamente."></textarea>
+            </div>
+            <div>
+                <label>Accompagnamento ad attività extrascolastiche (chi se ne occupa):</label>
+                <textarea name="routine_accompagnamento_extra" placeholder="Indicare chi porta e prende i figli dalle varie attività."></textarea>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jointPlanCheckbox = document.getElementById('jointPlan');
+            const parent2Section = document.getElementById('parent2-section');
+            const addChildBtn = document.getElementById('addChildBtn');
+            const childrenSection = document.getElementById('children-section');
+            const generateRtfBtn = document.getElementById('generateRtfBtn');
+            const childTemplate = document.getElementById('child-template').content;
+            
+            const differentiateRoutineCheckbox = document.getElementById('differentiateRoutine');
+            const generalRoutineSection = document.getElementById('general-routine-section');
+            const differentiatedRoutinesContainer = document.getElementById('differentiated-routines-container');
+            const routineTemplate = document.getElementById('routine-template').content;
+
+            let childIdCounter = 0;
+
+            function updateRoutineDisplay() {
+                const isDifferentiated = differentiateRoutineCheckbox.checked;
+                const childCards = document.querySelectorAll('#children-section .child-card');
+
+                generalRoutineSection.classList.toggle('hidden', isDifferentiated || childCards.length === 0);
+                differentiatedRoutinesContainer.classList.toggle('hidden', !isDifferentiated || childCards.length === 0);
+
+                // Pulisce le sezioni
+                if (!isDifferentiated) {
+                    differentiatedRoutinesContainer.innerHTML = '';
+                    if (childCards.length > 0 && generalRoutineSection.children.length === 0) {
+                         const newRoutine = routineTemplate.cloneNode(true);
+                         newRoutine.querySelector('.routine-title').textContent = 'Routine Generale per Tutti i Figli';
+                         newRoutine.querySelector('.routine-card-instance').dataset.routineId = 'general';
+                         generalRoutineSection.appendChild(newRoutine);
+                    }
+                } else {
+                    generalRoutineSection.innerHTML = '';
+                    // Sincronizza le routine differenziate con i figli esistenti
+                    const existingRoutineIds = [...differentiatedRoutinesContainer.querySelectorAll('.routine-card-instance')].map(el => el.dataset.routineId);
+                    const childIds = [...childCards].map(el => el.dataset.childId);
+
+                    // Rimuovi routine di figli non più presenti
+                    existingRoutineIds.forEach(id => {
+                        if (!childIds.includes(id)) {
+                            differentiatedRoutinesContainer.querySelector(`[data-routine-id="${id}"]`)?.remove();
+                        }
+                    });
+
+                    // Aggiungi routine per nuovi figli
+                    childIds.forEach(id => {
+                        if (!existingRoutineIds.includes(id)) {
+                            const childCard = document.querySelector(`[data-child-id="${id}"]`);
+                            const childName = childCard.querySelector('.child-name-input').value || `Figlio/a ${childCard.querySelector('.child-number').textContent}`;
+                            const newRoutine = routineTemplate.cloneNode(true);
+                            newRoutine.querySelector('.routine-title').textContent = `Routine Specifica per ${childName}`;
+                            const routineInstance = newRoutine.querySelector('.routine-card-instance');
+                            routineInstance.dataset.routineId = id;
+                            differentiatedRoutinesContainer.appendChild(newRoutine);
+                        }
+                    });
+                }
+                 if(childCards.length === 0){
+                    generalRoutineSection.innerHTML = '';
+                    differentiatedRoutinesContainer.innerHTML = '';
+                 }
+            }
+            
+            function updateRoutineTitle(childCard) {
+                const childId = childCard.dataset.childId;
+                const routineCard = differentiatedRoutinesContainer.querySelector(`[data-routine-id="${childId}"]`);
+                if (routineCard) {
+                    const childName = childCard.querySelector('.child-name-input').value || `Figlio/a ${childCard.querySelector('.child-number').textContent}`;
+                    routineCard.querySelector('.routine-title').textContent = `Routine Specifica per ${childName}`;
+                }
+            }
+
+
+            function addChild() {
+                childIdCounter++;
+                const newChild = childTemplate.cloneNode(true);
+                const childCard = newChild.querySelector('.child-card');
+                childCard.dataset.childId = childIdCounter;
+                
+                childCard.querySelector('.child-number').textContent = document.querySelectorAll('#children-section .child-card').length + 1;
+                
+                const removeBtn = childCard.querySelector('.remove-child-btn');
+                removeBtn.addEventListener('click', () => {
+                    const idToRemove = childCard.dataset.childId;
+                    childCard.remove();
+                    // Rimuovi la routine corrispondente se differenziata
+                    differentiatedRoutinesContainer.querySelector(`[data-routine-id="${idToRemove}"]`)?.remove();
+                    // Rinumera i figli rimasti
+                    document.querySelectorAll('#children-section .child-card').forEach((card, index) => {
+                        card.querySelector('.child-number').textContent = index + 1;
+                        updateRoutineTitle(card);
+                    });
+                    updateRoutineDisplay();
+                });
+                
+                childCard.querySelector('.child-name-input').addEventListener('input', () => updateRoutineTitle(childCard));
+                
+                childrenSection.appendChild(newChild);
+                updateRoutineDisplay();
+            }
+
+            addChild(); // Aggiunge il primo figlio all'avvio
+
+            jointPlanCheckbox.addEventListener('change', () => {
+                parent2Section.classList.toggle('hidden', !jointPlanCheckbox.checked);
+                const parentSectionsContainer = parent2Section.parentElement;
+                if (jointPlanCheckbox.checked) {
+                    parentSectionsContainer.classList.add('md:grid-cols-2');
+                    parentSectionsContainer.classList.remove('md:grid-cols-1');
+                } else {
+                    parentSectionsContainer.classList.remove('md:grid-cols-2');
+                    parentSectionsContainer.classList.add('md:grid-cols-1');
+                }
+            });
+
+            addChildBtn.addEventListener('click', addChild);
+            differentiateRoutineCheckbox.addEventListener('change', updateRoutineDisplay);
+
+            generateRtfBtn.addEventListener('click', () => {
+                const getVal = (id) => document.getElementById(id)?.value || '';
+
+                const rtfSanitize = (text) => {
+                    if (!text) return '';
+                    text = text.replace(/\\/g, '\\\\');
+                    text = text.replace(/{/g, '\\{');
+                    text = text.replace(/}/g, '\\}');
+                    text = text.replace(/\n/g, ' \\par ');
+                    let result = '';
+                    for (let i = 0; i < text.length; i++) {
+                        const charCode = text.charCodeAt(i);
+                        if (charCode > 127) {
+                            result += `\\'${charCode.toString(16).padStart(2, '0')}`;
+                        } else {
+                            result += text[i];
+                        }
+                    }
+                    return result;
+                };
+
+                const createSection = (title, content) => {
+                    if (!content || content.trim() === '') return '';
+                    return `{\\pard\\sa200\\sl276\\slmult1\\b\\fs28 ${rtfSanitize(title)}\\par}\\pard{\\b0\\fs24 ${rtfSanitize(content)}\\par}\\par\n`;
+                };
+                
+                const createSubSection = (title, content) => {
+                    if (!content || content.trim() === '') return '';
+                    return `{\\pard\\sa100\\sl276\\slmult1\\b\\fs24 ${rtfSanitize(title)}\\par}\\pard{\\b0\\fs22 ${rtfSanitize(content)}\\par}\\par\n`;
+                };
+
+                let rtfContent = '{\\rtf1\\ansi\\deff0\\nouicompat{\\fonttbl{\\f0\\fnil\\fcharset0 Calibri;}{\\f1\\fnil\\fcharset2 Symbol;}}\n';
+                rtfContent += '{\\*\\generator Gemini WebApp;}\\viewkind4\\uc1\\pard\\sa200\\sl276\\slmult1\\f0\\fs22\n';
+
+                // INTESTAZIONE PROCEDIMENTO
+                rtfContent += `{\\pard\\b\\fs24 ${rtfSanitize(getVal('tribunale') || 'TRIBUNALE DI ...')}\\par}`;
+                if (getVal('sezione')) rtfContent += `{\\pard\\b\\fs24 ${rtfSanitize(getVal('sezione'))}\\par}`;
+                if (getVal('giudice')) rtfContent += `{\\pard\\b0\\fs24 Giudice: ${rtfSanitize(getVal('giudice'))}\\par}`;
+                if (getVal('rg_number')) rtfContent += `{\\pard\\b0\\fs24 R.G. n. ${rtfSanitize(getVal('rg_number'))}\\par}`;
+                rtfContent += `{\\pard\\par}`;
+                if (getVal('ricorrente')) rtfContent += `{\\pard\\b0\\fs24 Ricorrente: ${rtfSanitize(getVal('ricorrente'))}\\par}`;
+                if (getVal('resistente')) rtfContent += `{\\pard\\b0\\fs24 Resistente: ${rtfSanitize(getVal('resistente'))}\\par}`;
+                rtfContent += `{\\pard\\par\\par}`;
+
+                rtfContent += `{\\pard\\qc\\b\\fs40 PIANO GENITORIALE\\par}\\par\n`;
+                rtfContent += `{\\pard\\qc\\b0\\fs24 redatto ai sensi dell'art. 473-bis.12, ultimo comma, c.p.c.\\par}\\par\n`;
+
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs32 I GENITORI\\par}\\par\n`;
+                
+                const p1_name = getVal('p1_name');
+                const p1_birthdate_val = getVal('p1_birthdate');
+                const p1_birthdate = p1_birthdate_val ? new Date(p1_birthdate_val).toLocaleDateString('it-IT') : 'N.D.';
+                let p1_info = `${p1_name || 'Genitore 1'}, nato/a il ${p1_birthdate}`;
+                rtfContent += createSection('Genitore 1:', p1_info);
+                
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs26 Informazioni Economico-Patrimoniali\\par}\\pard\n`;
+                rtfContent += createSubSection('a) Attività lavorativa e fonti di reddito:', getVal('p1_lavoro'));
+                rtfContent += createSubSection('b) Proprietà immobiliari e beni mobili registrati:', getVal('p1_immobili'));
+                rtfContent += createSubSection('c) Rapporti bancari e finanziari:', getVal('p1_bancari'));
+                rtfContent += createSubSection('d) Passività (mutui, finanziamenti):', getVal('p1_passivita'));
+                rtfContent += '{\\pard\\par}';
+
+                if (jointPlanCheckbox.checked) {
+                    const p2_name = getVal('p2_name');
+                    const p2_birthdate_val = getVal('p2_birthdate');
+                    const p2_birthdate = p2_birthdate_val ? new Date(p2_birthdate_val).toLocaleDateString('it-IT') : 'N.D.';
+                    let p2_info = `${p2_name || 'Genitore 2'}, nato/a il ${p2_birthdate}`;
+                    rtfContent += createSection('Genitore 2:', p2_info);
+                    
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs26 Informazioni Economico-Patrimoniali\\par}\\pard\n`;
+                    rtfContent += createSubSection('a) Attività lavorativa e fonti di reddito:', getVal('p2_lavoro'));
+                    rtfContent += createSubSection('b) Proprietà immobiliari e beni mobili registrati:', getVal('p2_immobili'));
+                    rtfContent += createSubSection('c) Rapporti bancari e finanziari:', getVal('p2_bancari'));
+                    rtfContent += createSubSection('d) Passività (mutui, finanziamenti):', getVal('p2_passivita'));
+                    rtfContent += '{\\pard\\par}';
+                }
+
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs32 I FIGLI\\par}\\par\n`;
+                
+                document.querySelectorAll('#children-section .child-card').forEach((childCard, index) => {
+                    const getChildVal = (name) => childCard.querySelector(`[name="${name}"]`)?.value || '';
+                    
+                    const childName = getChildVal('child_name');
+                    const childBirthdateVal = getChildVal('child_birthdate');
+                    const formattedBirthdate = childBirthdateVal ? new Date(childBirthdateVal).toLocaleDateString('it-IT') : 'N.D.';
+                    
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs28 Per il/la figlio/a: ${rtfSanitize(childName || `Figlio/a ${index + 1}`)}, nato/a il ${formattedBirthdate}\\par}\\par\n`;
+
+                    rtfContent += createSubSection('Scuola e Percorso Educativo:', getChildVal('child_school'));
+                    rtfContent += createSubSection('Attività Extrascolastiche:', getChildVal('child_extracurricular'));
+                    rtfContent += createSubSection('Frequentazioni Abituali:', getChildVal('child_social'));
+                    rtfContent += createSubSection('Condizioni di Salute:', getChildVal('child_health'));
+                    rtfContent += createSubSection('Vacanze:', getChildVal('child_holidays'));
+                });
+                
+                // ROUTINE SETTIMANALE
+                const isDifferentiated = differentiateRoutineCheckbox.checked;
+                const hasChildren = document.querySelectorAll('#children-section .child-card').length > 0;
+
+                if(hasChildren){
+                    const routineSectionTitle = '{\\pard\\sa200\\sl276\\slmult1\\b\\fs32 ROUTINE SETTIMANALE E ACCORDI DI FREQUENTAZIONE\\par}\\par\n';
+                    let routineContent = '';
+                    
+                    if(isDifferentiated){
+                         document.querySelectorAll('#differentiated-routines-container .routine-card-instance').forEach(routineCard => {
+                             const childId = routineCard.dataset.routineId;
+                             const childCard = document.querySelector(`.child-card[data-child-id="${childId}"]`);
+                             const childName = childCard.querySelector('[name="child_name"]').value || `Figlio/a ${childCard.querySelector('.child-number').textContent}`;
+                             
+                             routineContent += `{\\pard\\sa200\\sl276\\slmult1\\b\\fs28 Per il/la figlio/a: ${rtfSanitize(childName)}\\par}\\par\n`;
+                             
+                             const getRoutineVal = (name) => routineCard.querySelector(`[name="${name}"]`)?.value || '';
+                             routineContent += createSubSection('Casa familiare assegnata a:', getRoutineVal('routine_casa_familiare'));
+                             routineContent += createSubSection('Collocamento prevalente presso:', getRoutineVal('routine_collocamento'));
+                             routineContent += createSubSection('Frequentazione infrasettimanale:', getRoutineVal('routine_infrasettimanale'));
+                             routineContent += createSubSection('Frequentazione weekend:', getRoutineVal('routine_weekend'));
+                             routineContent += createSubSection('Accompagnamento a scuola:', getRoutineVal('routine_accompagnamento_scuola'));
+                             routineContent += createSubSection('Accompagnamento attività extrascolastiche:', getRoutineVal('routine_accompagnamento_extra'));
+                         });
+                    } else {
+                        const generalRoutineCard = document.querySelector('#general-routine-section .routine-card-instance');
+                        if (generalRoutineCard) {
+                             const getRoutineVal = (name) => generalRoutineCard.querySelector(`[name="${name}"]`)?.value || '';
+                             routineContent += createSubSection('Casa familiare assegnata a:', getRoutineVal('routine_casa_familiare'));
+                             routineContent += createSubSection('Collocamento prevalente dei figli presso:', getRoutineVal('routine_collocamento'));
+                             routineContent += createSubSection('Frequentazione infrasettimanale:', getRoutineVal('routine_infrasettimanale'));
+                             routineContent += createSubSection('Frequentazione weekend:', getRoutineVal('routine_weekend'));
+                             routineContent += createSubSection('Accompagnamento a scuola:', getRoutineVal('routine_accompagnamento_scuola'));
+                             routineContent += createSubSection('Accompagnamento attività extrascolastiche:', getRoutineVal('routine_accompagnamento_extra'));
+                        }
+                    }
+
+                    if(routineContent.trim() !== '') {
+                        rtfContent += routineSectionTitle + routineContent;
+                    }
+                }
+
+
+                // FIRME
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\par\\par\\par\\par}`;
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 Letto, confermato e sottoscritto.\\par}`;
+                rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 Luogo e data _________________________\\par\\par\\par}`;
+                
+                const p2_name = getVal('p2_name');
+                if (jointPlanCheckbox.checked) {
+                    const p1_sign = rtfSanitize(p1_name || 'Genitore 1');
+                    const p2_sign = rtfSanitize(p2_name || 'Genitore 2');
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 ${p1_sign} \\tab\\tab\\tab\\tab\\tab ${p2_sign}\\par}`;
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 _________________________ \\tab\\tab\\tab\\tab\\tab _________________________\\par}`;
+                } else {
+                    const p1_sign = rtfSanitize(p1_name || 'Il Genitore');
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 ${p1_sign}\\par}`;
+                    rtfContent += `{\\pard\\sa200\\sl276\\slmult1\\fs22 _________________________\\par}`;
+                }
+
+                rtfContent += '\\par}';
+
+                const blob = new Blob([rtfContent], { type: 'application/rtf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'piano_genitoriale.rtf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
+
+</body>
+</html>

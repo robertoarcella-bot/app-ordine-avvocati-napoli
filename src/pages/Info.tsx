@@ -26,19 +26,16 @@ const Info: React.FC = () => {
       </IonHeader>
       <IonContent fullscreen>
         <div style={{ textAlign: 'center', padding: '24px 16px 8px' }}>
-          <div style={{
-            width: 96, height: 96, margin: '0 auto 12px',
-            borderRadius: 16,
-            background: 'var(--ion-color-primary)',
-            color: 'var(--ion-color-primary-contrast)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 28, fontWeight: 700, fontFamily: 'serif',
-          }}>
-            COA<br />NA
-          </div>
-          <h2 style={{ marginBottom: 4 }}>App COA Napoli</h2>
+          <img
+            src="/logo.jpg"
+            alt="Consiglio dell'Ordine degli Avvocati di Napoli"
+            style={{ maxWidth: 240, width: '70%', height: 'auto', marginBottom: 12 }}
+          />
+          <h2 style={{ marginBottom: 4, fontSize: 18, lineHeight: 1.2 }}>
+            Consiglio dell'Ordine<br />degli Avvocati di Napoli
+          </h2>
           <IonText color="medium">
-            <small>Versione {APP_VERSION}</small>
+            <small>App ufficiale — Versione {APP_VERSION}</small>
           </IonText>
         </div>
 

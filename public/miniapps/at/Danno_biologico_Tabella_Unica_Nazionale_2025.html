@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Danno alla Persona - TUN (D.P.R. 12/2025) - v2</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative; /* Needed for absolute positioning of the link */
+        }
+         .back-link {
+            position: absolute;
+            top: 15px;
+            left: 25px;
+            font-size: 0.9em;
+            text-decoration: none;
+            color: #007bff;
+         }
+         .back-link:hover {
+            text-decoration: underline;
+         }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-top: 20px; /* Add padding to avoid overlap with back link */
+        }
+         h3 {
+             margin-top: 25px;
+             margin-bottom: 15px;
+             border-bottom: 1px solid #eee;
+             padding-bottom: 5px;
+             color: #444;
+         }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+         input[type="number"] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+         }
+         input::-webkit-outer-spin-button,
+         input::-webkit-inner-spin-button {
+           -webkit-appearance: none;
+           margin: 0;
+         }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-group label {
+            flex-basis: 100px;
+             margin-bottom: 0;
+        }
+         .input-group input[type="number"]{
+            flex-grow: 1;
+            width: auto;
+         }
+        .input-group span {
+             flex-basis: 20px;
+             text-align: right;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 10px;
+            min-width: 100px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button#calcolaBtn {
+             display: block;
+             width: 100%;
+             padding: 12px;
+             font-size: 16px;
+             margin-top: 20px;
+             margin-right: 0;
+        }
+
+        #riepilogo {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        #riepilogo h2 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+             padding-top: 0; /* Reset padding top for riepilogo h2 */
+        }
+        #riepilogo p {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        #riepilogo strong {
+            color: #000;
+        }
+         #riepilogo .danno-details { /* Renamed class */
+             font-size: 0.85em;
+             color: #666;
+             margin-left: 15px;
+             margin-bottom: 10px;
+             padding-left: 10px;
+             border-left: 2px solid #ddd;
+         }
+        #riepilogo .totale {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #aaa;
+        }
+         #riepilogo pre {
+             white-space: pre-wrap;
+             word-wrap: break-word;
+             background: #fff;
+             padding: 10px;
+             border: 1px solid #eee;
+             margin-top: 5px;
+             margin-bottom: 8px;
+         }
+        .riepilogo-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+            text-align: center;
+        }
+         .riepilogo-actions button {
+            background-color: #6c757d;
+         }
+         .riepilogo-actions button:hover {
+            background-color: #5a6268;
+         }
+
+        .disclaimer {
+            margin-top: 20px;
+             margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+        }
+         .author {
+            text-align: right;
+            margin-top: 20px;
+            font-style: italic;
+            font-size: 0.9em;
+            color: #666;
+         }
+         .inline-percent {
+             display: flex;
+             align-items: center;
+             gap: 5px;
+         }
+         .inline-percent input[type="number"] {
+             width: 70px;
+         }
+         .inline-percent span {
+             margin-left: 2px;
+         }
+         .options-group { /* Generic class for options like morale */
+             display: flex;
+             gap: 15px;
+             align-items: center;
+             flex-wrap: wrap;
+         }
+         .options-group label {
+            flex-basis: auto;
+            margin-bottom: 0; /* Reset */
+         }
+         .options-group select {
+             min-width: 100px;
+             flex-grow: 1;
+         }
+          .options-group input[type="number"] {
+             width: 80px;
+             flex-grow: 0;
+         }
+         .options-group span {
+              flex-basis: auto;
+         }
+         .error {
+             color: red;
+             font-weight: bold;
+             margin-top: 10px;
+             text-align: center;
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://avvocatotelematico.studiolegalearcella.it/apps/" class="back-link">&lt; Torna alle app</a>
+        <h1>Calcolo Danno alla Persona - TUN (D.P.R. 12/2025)</h1>
+        <p style="text-align: center; font-size: 0.9em; color: #555;">Basato sulla metodologia TUN e tabelle D.P.R. 12/2025.</p>
+
+        <div class="disclaimer">
+            <strong>Attenzione:</strong> Questo strumento implementa il calcolo del danno biologico permanente e morale secondo la metodologia e le tabelle del D.P.R. 12/2025, utilizzando il valore punto base aggiornato (€ 947,30) e l'indennità giornaliera base ITT (€ 55,24). Include l'opzione per la maggiorazione del danno morale temporaneo (Art. 3 c.2). I risultati sono da intendersi come indicativi. Si raccomanda sempre una verifica e una consulenza legale/medico-legale professionale per la liquidazione definitiva. Il salvataggio in formato RTF non è supportato.
+        </div>
+
+        <form id="calcoloForm">
+            <h3>Dati del Danneggiato</h3>
+            <div class="form-group">
+                <label for="datiDanneggiato">Note / Dati Identificativi:</label>
+                <textarea id="datiDanneggiato" placeholder="Es. Nome Cognome, data nascita, note sul sinistro..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="eta">Età del danneggiato al momento del sinistro:</label>
+                <input type="number" id="eta" min="0" max="100" step="1" placeholder="Anni (0-100)" required>
+            </div>
+
+            <h3>Danno Permanente</h3>
+             <div class="form-group">
+                <label for="puntiInvalidita">Punti di Invalidità Permanente (%):</label>
+                <input type="number" id="puntiInvalidita" min="10" max="100" step="1" placeholder="Percentuale (10-100)" required>
+                 <small>Inserire un valore tra 10 e 100.</small>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" id="includiMoralePermanente" style="margin-right: 5px;" checked>
+                <label for="includiMoralePermanente" style="display: inline;">Includi Danno Morale Permanente (Tab. 2)?</label>
+            </div>
+            <div id="opzioniMoralePermanente" class="form-group options-group">
+                 <label for="tipoMoralePermanente">Livello:</label>
+                 <select id="tipoMoralePermanente">
+                     <option value="min">Minimo (Tabella 2)</option>
+                     <option value="medio" selected>Medio (Tabella 2)</option>
+                     <option value="max">Massimo (Tabella 2)</option>
+                     <option value="custom">Personalizzato (%)</option>
+                 </select>
+                 <input type="number" id="percMoralePermanenteCustom" min="0" step="0.1" value="0" style="width: 80px; display: none;" title="Percentuale personalizzata aggiuntiva sul Danno Biologico">
+                 <span id="percMoralePermanenteCustomLabel" style="display: none;">%</span>
+            </div>
+
+             <h3>Danno Temporaneo</h3>
+              <p style="font-size: 0.9em; color: #666;">Indennità giornaliera base per ITT (100%) usata: € <span id="ittBase">55.24</span></p>
+             <div class="form-group">
+                <input type="checkbox" id="includiMoraleTemporaneo" style="margin-right: 5px;" checked>
+                <label for="includiMoraleTemporaneo" style="display: inline;">Includi Danno Morale Temporaneo (Art. 3 c.2)?</label>
+            </div>
+             <div id="opzioniMoraleTemporaneo" class="form-group options-group">
+                 <label for="tipoMoraleTemporaneo">Livello (% su indennità base):</label>
+                 <select id="tipoMoraleTemporaneo">
+                     <option value="30">Minimo (30%)</option>
+                     <option value="45" selected>Medio (45%)</option>
+                     <option value="60">Massimo (60%)</option>
+                     <option value="custom">Personalizzato (%)</option>
+                 </select>
+                 <input type="number" id="percMoraleTemporaneoCustom" min="0" max="100" step="0.1" value="0" style="width: 80px; display: none;" title="Percentuale personalizzata aggiuntiva sull'indennità giornaliera base">
+                 <span id="percMoraleTemporaneoCustomLabel" style="display: none;">%</span>
+             </div>
+             <hr style="margin: 20px 0;">
+            <div class="form-group input-group">
+                <label for="giorniITT">ITT (100%):</label>
+                <input type="number" id="giorniITT" min="0" step="1" value="0">
+                <span>gg</span>
+            </div>
+             <div class="form-group input-group inline-percent">
+                 <label for="giorniITP1">ITP:</label>
+                 <input type="number" id="percITP1" min="0" max="100" step="0.1" value="75"><span>%</span>
+                 <span>per</span>
+                 <input type="number" id="giorniITP1" min="0" step="1" value="0">
+                 <span>gg</span>
+             </div>
+            <div class="form-group input-group inline-percent">
+                 <label for="giorniITP2">ITP:</label>
+                 <input type="number" id="percITP2" min="0" max="100" step="0.1" value="50"><span>%</span>
+                 <span>per</span>
+                 <input type="number" id="giorniITP2" min="0" step="1" value="0">
+                 <span>gg</span>
+             </div>
+             <div class="form-group input-group inline-percent">
+                 <label for="giorniITP3">ITP:</label>
+                 <input type="number" id="percITP3" min="0" max="100" step="0.1" value="25"><span>%</span>
+                 <span>per</span>
+                 <input type="number" id="giorniITP3" min="0" step="1" value="0">
+                 <span>gg</span>
+             </div>
+
+
+            <h3>Spese Sostenute</h3>
+            <div class="form-group">
+                <label for="speseMediche">Spese Mediche Documentate (€):</label>
+                <input type="number" id="speseMediche" min="0" step="0.01" value="0">
+            </div>
+            <div class="form-group">
+                <label for="altreSpese">Altre Spese Documentate (€):</label>
+                <input type="number" id="altreSpese" min="0" step="0.01" value="0">
+            </div>
+
+            <button type="button" id="calcolaBtn" onclick="calcola()">Calcola Riepilogo</button>
+             <div id="errorMessage" class="error" style="display: none;"></div>
+        </form>
+
+        <div id="riepilogo" style="display: none;">
+            <h2>Riepilogo Liquidazione Danno</h2>
+            <div id="riepilogoContent"> <p><strong>Data Liquidazione:</strong> <span id="dataLiquidazione"></span></p>
+                <p><strong>Dati Danneggiato:</strong></p>
+                <pre id="outputDatiDanneggiato"></pre>
+                <p><strong>Età al Sinistro:</strong> <span id="outputEta"></span> anni</p>
+                <hr>
+                <p><strong>Invalidità Permanente:</strong> <span id="outputPunti"></span> %</p>
+                <p><strong>Liquidazione Danno Non Patrimoniale Permanente:</strong> € <span id="outputDannoPermanenteTot"></span></p>
+                <div class="danno-details">
+                    <p><em>Dettaglio Calcolo Permanente:</em></p>
+                    <p><em> - Danno Biologico Base: € <span id="outputDannoBiologico"></span></em></p>
+                    <p id="rigaDannoMoralePermanente" style="display: none;"><em> - Maggiorazione Danno Morale (<span id="outputTipoMoralePerm"></span>): € <span id="outputDannoMoralePermVal"></span> (<span id="outputCoeffMoralePerm"></span>)</em></p>
+                     <p><em> - (Valore Punto Base: € <span id="vb"></span>; Coeff. Bio [<span id="cp"></span>%]: <span id="cb"></span>; Punti: <span id="cp_rpt"></span>; Coeff. Età [<span id="ce"></span> anni]: <span id="ca"></span>)</em></p>
+                </div>
+                 <hr>
+                 <p><strong>Liquidazione Danno Temporaneo:</strong> € <span id="outputDannoTemporaneo"></span></p>
+                 <div class="danno-details" id="dettaglioDannoTemporaneo">
+                     <p><em>Dettaglio Calcolo Temporaneo:</em></p>
+                     <p><em> - Indennità Giornaliera Applicata: € <span id="outputDailyRate"></span></em></p>
+                     <p id="rigaDannoMoraleTemporaneo" style="display: none;"><em> - (Include Maggiorazione Morale <span id="outputPercMoraleTemp"></span>%)</em></p>
+                 </div>
+                 <hr>
+                <p><strong>Spese Mediche:</strong> € <span id="outputSpeseMediche"></span></p>
+                <p><strong>Altre Spese:</strong> € <span id="outputAltreSpese"></span></p>
+                <p class="totale"><strong>TOTALE LIQUIDAZIONE: € <span id="outputTotale"></span></strong></p>
+            </div><div class="riepilogo-actions">
+                <button type="button" onclick="stampaRiepilogo()">Stampa</button>
+                <button type="button" onclick="copiaRiepilogoTxt()">Copia TXT</button>
+                <button type="button" onclick="salvaRiepilogoTxt()">Salva TXT</button>
+            </div>
+        </div>
+
+        <div class="author">
+            Tool creato da: Avv. Roberto Arcella
+        </div>
+    </div>
+
+    <script>
+        const ITT_BASE_VALUE = 55.24; // Valore giornaliero ITT 100% aggiornato (DM 16/07/2024)
+        const BASE_POINT_VALUE = 947.30; // Valore punto base aggiornato (ex Art. 139 / DM 16/07/2024)
+
+        // --- DATA FROM TABLES (Parsed from PDF content provided) ---
+
+        // Tavola 1.A: Coefficiente Moltiplicatore Biologico
+        const coeffBiologico = {
+            10: 2.75773, 11: 2.91941, 12: 3.07459, 13: 3.22456, 14: 3.37024, 15: 3.51230, 16: 3.65125, 17: 3.78749, 18: 3.92129, 19: 4.05292, 20: 4.18254, 21: 4.31033, 22: 4.43640, 23: 4.56086, 24: 4.68379, 25: 4.80527, 26: 4.92536, 27: 5.04411, 28: 5.16157, 29: 5.27777, 30: 5.39275, 31: 5.50654, 32: 5.61916, 33: 5.73064, 34: 5.84099, 35: 5.95024, 36: 6.05840, 37: 6.16548, 38: 6.27149, 39: 6.37645, 40: 6.48037, 41: 6.58326, 42: 6.68512, 43: 6.78596, 44: 6.88578, 45: 6.98461, 46: 7.08243, 47: 7.17926, 48: 7.27510, 49: 7.36995, 50: 7.46382, 51: 7.55671, 52: 7.64863, 53: 7.73958, 54: 7.82955, 55: 7.91857, 56: 8.00661, 57: 8.09370, 58: 8.17983, 59: 8.26500, 60: 8.34922, 61: 8.43248, 62: 8.51480, 63: 8.59616, 64: 8.67657, 65: 8.75604, 66: 8.83456, 67: 8.91214, 68: 8.98877, 69: 9.06446, 70: 9.13921, 71: 9.21302, 72: 9.28588, 73: 9.35781, 74: 9.42881, 75: 9.49886, 76: 9.56798, 77: 9.63616, 78: 9.70341, 79: 9.76972, 80: 9.83510, 81: 9.89954, 82: 9.96305, 83: 10.02563, 84: 10.08728, 85: 10.14799, 86: 10.20778, 87: 10.26663, 88: 10.32456, 89: 10.38155, 90: 10.43762, 91: 10.49275, 92: 10.54696, 93: 10.60023, 94: 10.65258, 95: 10.70401, 96: 10.75450, 97: 10.80407, 98: 10.85270, 99: 10.90042, 100: 10.94720
+        };
+
+        // Tavola 1.B: Coefficiente Riduzione Età
+        const coeffEta = {
+             0: 1.000,  1: 1.000,  2: 0.995,  3: 0.990,  4: 0.985,  5: 0.980,  6: 0.975,  7: 0.970,  8: 0.965,  9: 0.960, 10: 0.955, 11: 0.950, 12: 0.945, 13: 0.940, 14: 0.935, 15: 0.930, 16: 0.925, 17: 0.920, 18: 0.915, 19: 0.910, 20: 0.905, 21: 0.901, 22: 0.896, 23: 0.891, 24: 0.886, 25: 0.881, 26: 0.876, 27: 0.871, 28: 0.866, 29: 0.861, 30: 0.856, 31: 0.851, 32: 0.846, 33: 0.841, 34: 0.836, 35: 0.831, 36: 0.826, 37: 0.821, 38: 0.816, 39: 0.811, 40: 0.806, 41: 0.801, 42: 0.797, 43: 0.792, 44: 0.787, 45: 0.782, 46: 0.777, 47: 0.772, 48: 0.767, 49: 0.762, 50: 0.757, 51: 0.752, 52: 0.747, 53: 0.742, 54: 0.738, 55: 0.733, 56: 0.728, 57: 0.723, 58: 0.718, 59: 0.713, 60: 0.708, 61: 0.703, 62: 0.698, 63: 0.694, 64: 0.689, 65: 0.684, 66: 0.679, 67: 0.674, 68: 0.669, 69: 0.664, 70: 0.660, 71: 0.655, 72: 0.650, 73: 0.645, 74: 0.640, 75: 0.636, 76: 0.631, 77: 0.626, 78: 0.621, 79: 0.617, 80: 0.612, 81: 0.607, 82: 0.602, 83: 0.598, 84: 0.593, 85: 0.588, 86: 0.584, 87: 0.579, 88: 0.574, 89: 0.570, 90: 0.565, 91: 0.560, 92: 0.556, 93: 0.551, 94: 0.547, 95: 0.542, 96: 0.537, 97: 0.533, 98: 0.529, 99: 0.525, 100: 0.522
+        };
+
+        // Tavola 2: Coefficiente Moltiplicatore Danno Morale (chiavi: min, medio, max)
+        const coeffMorale = {
+            10: { min: 0.210, medio: 0.260, max: 0.310 }, 11: { min: 0.241, medio: 0.291, max: 0.341 },
+            12: { min: 0.253, medio: 0.303, max: 0.353 }, 13: { min: 0.263, medio: 0.313, max: 0.363 },
+            14: { min: 0.271, medio: 0.321, max: 0.371 }, 15: { min: 0.278, medio: 0.328, max: 0.378 },
+            16: { min: 0.285, medio: 0.335, max: 0.385 }, 17: { min: 0.291, medio: 0.341, max: 0.391 },
+            18: { min: 0.296, medio: 0.346, max: 0.396 }, 19: { min: 0.302, medio: 0.352, max: 0.402 },
+            20: { min: 0.307, medio: 0.357, max: 0.407 }, 21: { min: 0.311, medio: 0.361, max: 0.411 },
+            22: { min: 0.316, medio: 0.366, max: 0.416 }, 23: { min: 0.320, medio: 0.370, max: 0.420 },
+            24: { min: 0.324, medio: 0.374, max: 0.424 }, 25: { min: 0.328, medio: 0.378, max: 0.428 },
+            26: { min: 0.332, medio: 0.382, max: 0.432 }, 27: { min: 0.336, medio: 0.386, max: 0.436 },
+            28: { min: 0.340, medio: 0.390, max: 0.440 }, 29: { min: 0.343, medio: 0.393, max: 0.443 },
+            30: { min: 0.347, medio: 0.397, max: 0.447 }, 31: { min: 0.350, medio: 0.400, max: 0.450 },
+            32: { min: 0.353, medio: 0.403, max: 0.453 }, 33: { min: 0.357, medio: 0.407, max: 0.457 },
+            34: { min: 0.360, medio: 0.410, max: 0.460 }, 35: { min: 0.363, medio: 0.413, max: 0.463 },
+            36: { min: 0.366, medio: 0.416, max: 0.466 }, 37: { min: 0.369, medio: 0.419, max: 0.469 },
+            38: { min: 0.372, medio: 0.422, max: 0.472 }, 39: { min: 0.375, medio: 0.425, max: 0.475 },
+            40: { min: 0.377, medio: 0.427, max: 0.477 }, 41: { min: 0.380, medio: 0.430, max: 0.480 },
+            42: { min: 0.383, medio: 0.433, max: 0.483 }, 43: { min: 0.386, medio: 0.436, max: 0.486 },
+            44: { min: 0.388, medio: 0.438, max: 0.488 }, 45: { min: 0.391, medio: 0.441, max: 0.491 },
+            46: { min: 0.393, medio: 0.443, max: 0.493 }, 47: { min: 0.396, medio: 0.446, max: 0.496 },
+            48: { min: 0.398, medio: 0.448, max: 0.498 }, 49: { min: 0.401, medio: 0.451, max: 0.501 },
+            50: { min: 0.403, medio: 0.453, max: 0.503 }, 51: { min: 0.406, medio: 0.456, max: 0.506 },
+            52: { min: 0.408, medio: 0.458, max: 0.508 }, 53: { min: 0.410, medio: 0.460, max: 0.510 },
+            54: { min: 0.413, medio: 0.463, max: 0.513 }, 55: { min: 0.415, medio: 0.465, max: 0.515 },
+            56: { min: 0.417, medio: 0.467, max: 0.517 }, 57: { min: 0.420, medio: 0.470, max: 0.520 },
+            58: { min: 0.422, medio: 0.472, max: 0.522 }, 59: { min: 0.424, medio: 0.474, max: 0.524 },
+            60: { min: 0.426, medio: 0.476, max: 0.526 }, 61: { min: 0.428, medio: 0.478, max: 0.528 },
+            62: { min: 0.430, medio: 0.480, max: 0.530 }, 63: { min: 0.433, medio: 0.483, max: 0.533 },
+            64: { min: 0.435, medio: 0.485, max: 0.535 }, 65: { min: 0.437, medio: 0.487, max: 0.537 },
+            66: { min: 0.439, medio: 0.489, max: 0.539 }, 67: { min: 0.441, medio: 0.491, max: 0.541 },
+            68: { min: 0.443, medio: 0.493, max: 0.543 }, 69: { min: 0.445, medio: 0.495, max: 0.545 },
+            70: { min: 0.447, medio: 0.497, max: 0.547 }, 71: { min: 0.449, medio: 0.499, max: 0.549 },
+            72: { min: 0.451, medio: 0.501, max: 0.551 }, 73: { min: 0.453, medio: 0.503, max: 0.553 },
+            74: { min: 0.455, medio: 0.505, max: 0.555 }, 75: { min: 0.456, medio: 0.506, max: 0.556 },
+            76: { min: 0.458, medio: 0.508, max: 0.558 }, 77: { min: 0.460, medio: 0.510, max: 0.560 },
+            78: { min: 0.462, medio: 0.512, max: 0.562 }, 79: { min: 0.464, medio: 0.514, max: 0.564 },
+            80: { min: 0.466, medio: 0.516, max: 0.566 }, 81: { min: 0.468, medio: 0.518, max: 0.568 },
+            82: { min: 0.469, medio: 0.519, max: 0.569 }, 83: { min: 0.471, medio: 0.521, max: 0.571 },
+            84: { min: 0.473, medio: 0.523, max: 0.573 }, 85: { min: 0.475, medio: 0.525, max: 0.575 },
+            86: { min: 0.476, medio: 0.526, max: 0.576 }, 87: { min: 0.478, medio: 0.528, max: 0.578 },
+            88: { min: 0.480, medio: 0.530, max: 0.580 }, 89: { min: 0.482, medio: 0.532, max: 0.582 },
+            90: { min: 0.483, medio: 0.533, max: 0.583 }, 91: { min: 0.485, medio: 0.535, max: 0.585 },
+            92: { min: 0.487, medio: 0.537, max: 0.587 }, 93: { min: 0.488, medio: 0.538, max: 0.588 },
+            94: { min: 0.490, medio: 0.540, max: 0.590 }, 95: { min: 0.492, medio: 0.542, max: 0.592 },
+            96: { min: 0.493, medio: 0.543, max: 0.593 }, 97: { min: 0.495, medio: 0.545, max: 0.595 },
+            98: { min: 0.497, medio: 0.547, max: 0.597 }, 99: { min: 0.498, medio: 0.548, max: 0.598 },
+           100: { min: 0.500, medio: 0.550, max: 0.600 }
+        };
+        // --- END DATA ---
+
+        document.getElementById('ittBase').textContent = ITT_BASE_VALUE.toFixed(2);
+
+        // --- Get Elements ---
+        const includiMoralePermCheckbox = document.getElementById('includiMoralePermanente');
+        const opzioniMoralePermDiv = document.getElementById('opzioniMoralePermanente');
+        const tipoMoralePermSelect = document.getElementById('tipoMoralePermanente');
+        const percMoralePermCustomInput = document.getElementById('percMoralePermanenteCustom');
+        const percMoralePermCustomLabel = document.getElementById('percMoralePermanenteCustomLabel');
+
+        const includiMoraleTempCheckbox = document.getElementById('includiMoraleTemporaneo');
+        const opzioniMoraleTempDiv = document.getElementById('opzioniMoraleTemporaneo');
+        const tipoMoraleTempSelect = document.getElementById('tipoMoraleTemporaneo');
+        const percMoraleTempCustomInput = document.getElementById('percMoraleTemporaneoCustom');
+        const percMoraleTempCustomLabel = document.getElementById('percMoraleTemporaneoCustomLabel');
+
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // --- Event Listeners ---
+        includiMoralePermCheckbox.addEventListener('change', function() {
+            opzioniMoralePermDiv.style.display = this.checked ? 'flex' : 'none';
+             updateMoralePermCustomVisibility(); // Update visibility based on checkbox and select
+        });
+        tipoMoralePermSelect.addEventListener('change', updateMoralePermCustomVisibility);
+
+        includiMoraleTempCheckbox.addEventListener('change', function() {
+            opzioniMoraleTempDiv.style.display = this.checked ? 'flex' : 'none';
+             updateMoraleTempCustomVisibility(); // Update visibility based on checkbox and select
+        });
+        tipoMoraleTempSelect.addEventListener('change', updateMoraleTempCustomVisibility);
+
+
+        // --- Helper Functions ---
+         function updateMoralePermCustomVisibility() {
+             const showCustom = tipoMoralePermSelect.value === 'custom' && includiMoralePermCheckbox.checked;
+             percMoralePermCustomInput.style.display = showCustom ? 'inline-block' : 'none';
+             percMoralePermCustomLabel.style.display = showCustom ? 'inline-block' : 'none';
+             if (showCustom && document.activeElement !== percMoralePermCustomInput) { // Avoid stealing focus if already typing
+                 // percMoralePermCustomInput.focus(); // Optional: auto-focus
+             }
+         }
+
+          function updateMoraleTempCustomVisibility() {
+             const showCustom = tipoMoraleTempSelect.value === 'custom' && includiMoraleTempCheckbox.checked;
+             percMoraleTempCustomInput.style.display = showCustom ? 'inline-block' : 'none';
+             percMoraleTempCustomLabel.style.display = showCustom ? 'inline-block' : 'none';
+              if (showCustom && document.activeElement !== percMoraleTempCustomInput) {
+                 // percMoraleTempCustomInput.focus(); // Optional: auto-focus
+             }
+         }
+
+        function mostraErrore(messaggio) {
+             errorMessageDiv.textContent = messaggio;
+             errorMessageDiv.style.display = 'block';
+             document.getElementById('riepilogo').style.display = 'none';
+         }
+
+         function nascondiErrore() {
+             errorMessageDiv.style.display = 'none';
+         }
+
+        // --- Main Calculation Function ---
+        function calcola() {
+            nascondiErrore();
+            // --- Lettura Input ---
+            const datiDanneggiato = document.getElementById('datiDanneggiato').value;
+            const eta = parseInt(document.getElementById('eta').value);
+            const puntiInvalidita = parseInt(document.getElementById('puntiInvalidita').value);
+
+            const includeMoralePerm = includiMoralePermCheckbox.checked;
+            const tipoMoralePerm = tipoMoralePermSelect.value; // min, medio, max, custom
+            const percMoralePermCustom = parseFloat(percMoralePermCustomInput.value) || 0;
+
+            const includeMoraleTemp = includiMoraleTempCheckbox.checked;
+            const tipoMoraleTemp = tipoMoraleTempSelect.value; // 30, 45, 60, custom
+            const percMoraleTempCustom = parseFloat(percMoraleTempCustomInput.value) || 0;
+
+            const giorniITT = parseInt(document.getElementById('giorniITT').value) || 0;
+            const percITP1 = parseFloat(document.getElementById('percITP1').value) || 0;
+            const giorniITP1 = parseInt(document.getElementById('giorniITP1').value) || 0;
+            const percITP2 = parseFloat(document.getElementById('percITP2').value) || 0;
+            const giorniITP2 = parseInt(document.getElementById('giorniITP2').value) || 0;
+            const percITP3 = parseFloat(document.getElementById('percITP3').value) || 0;
+            const giorniITP3 = parseInt(document.getElementById('giorniITP3').value) || 0;
+
+            const speseMediche = parseFloat(document.getElementById('speseMediche').value) || 0;
+            const altreSpese = parseFloat(document.getElementById('altreSpese').value) || 0;
+
+            // --- Validazione Input ---
+            if (isNaN(eta) || eta < 0 || eta > 100) { mostraErrore("Inserire un'Età valida (0-100)."); return; }
+            if (isNaN(puntiInvalidita) || puntiInvalidita < 10 || puntiInvalidita > 100) { mostraErrore("Inserire Punti Invalidità validi (10-100)."); return; }
+            if (includeMoralePerm && tipoMoralePerm === 'custom' && (isNaN(percMoralePermCustom) || percMoralePermCustom < 0)) { mostraErrore("Inserire Percentuale Personalizzata valida per Danno Morale Permanente (>= 0)."); return; }
+             if (includeMoraleTemp && tipoMoraleTemp === 'custom' && (isNaN(percMoraleTempCustom) || percMoraleTempCustom < 0 || percMoraleTempCustom > 100)) { mostraErrore("Inserire Percentuale Personalizzata valida per Danno Morale Temporaneo (0-100)."); return; }
+
+
+            // --- Recupero Coefficienti ---
+             const cBiologico = coeffBiologico[puntiInvalidita];
+             const cEta = coeffEta[eta];
+             let coeffMoralePermEffettivo = 0; // Coefficiente (non %) da applicare a danno biologico base
+             let tipoMoralePermDesc = "N/A";
+             let coeffMoralePermDisplay = "N/A"; // Valore da mostrare nel riepilogo (coeff o %)
+
+             if (!cBiologico) { mostraErrore(`Coefficiente biologico non trovato per ${puntiInvalidita} punti.`); return; }
+             if (cEta === undefined || cEta === null) { mostraErrore(`Coefficiente età non trovato per ${eta} anni.`); return; }
+
+
+            // --- Calcolo Danno Biologico Permanente (Formula Corretta) ---
+            const dannoBiologicoBase = BASE_POINT_VALUE * cBiologico * puntiInvalidita * cEta;
+
+
+            // --- Calcolo Danno Morale Permanente (se incluso) ---
+             let dannoPermanenteTotale = dannoBiologicoBase;
+             let dannoMoralePermValore = 0;
+
+             if (includeMoralePerm) {
+                 if (tipoMoralePerm === 'custom') {
+                     coeffMoralePermEffettivo = percMoralePermCustom / 100;
+                     tipoMoralePermDesc = `Personalizzato (${percMoralePermCustom.toFixed(1)}%)`;
+                     coeffMoralePermDisplay = `${percMoralePermCustom.toFixed(1)}%`;
+                 } else {
+                     const moraleData = coeffMorale[puntiInvalidita];
+                     if (!moraleData || moraleData[tipoMoralePerm] === undefined) {
+                          mostraErrore(`Coefficiente morale permanente (${tipoMoralePerm}) non trovato per ${puntiInvalidita} punti.`);
+                          return;
+                     }
+                     coeffMoralePermEffettivo = moraleData[tipoMoralePerm];
+                     tipoMoralePermDesc = `${tipoMoralePerm.charAt(0).toUpperCase() + tipoMoralePerm.slice(1)} (Tab. 2)`;
+                     coeffMoralePermDisplay = coeffMoralePermEffettivo.toFixed(3);
+                 }
+                 // Applica il coefficiente morale al danno biologico base
+                 dannoMoralePermValore = dannoBiologicoBase * coeffMoralePermEffettivo;
+                 dannoPermanenteTotale = dannoBiologicoBase + dannoMoralePermValore;
+             } else {
+                 tipoMoralePermDesc = "Non incluso";
+             }
+
+
+            // --- Calcolo Danno Temporaneo (con Morale opzionale) ---
+             let percMoraleTempEffettiva = 0;
+             let dailyRateApplicata = ITT_BASE_VALUE;
+
+             if (includeMoraleTemp) {
+                 if (tipoMoraleTemp === 'custom') {
+                     percMoraleTempEffettiva = percMoraleTempCustom;
+                 } else {
+                     percMoraleTempEffettiva = parseFloat(tipoMoraleTemp); // Valori sono 30, 45, 60
+                 }
+                 dailyRateApplicata = ITT_BASE_VALUE * (1 + percMoraleTempEffettiva / 100);
+             }
+
+             let dannoTemporaneoLiquidato = 0;
+             dannoTemporaneoLiquidato += giorniITT * dailyRateApplicata;
+             dannoTemporaneoLiquidato += giorniITP1 * (dailyRateApplicata * percITP1 / 100);
+             dannoTemporaneoLiquidato += giorniITP2 * (dailyRateApplicata * percITP2 / 100);
+             dannoTemporaneoLiquidato += giorniITP3 * (dailyRateApplicata * percITP3 / 100);
+
+
+            // --- Calcolo Totale ---
+            const totaleLiquidazione = dannoPermanenteTotale + dannoTemporaneoLiquidato + speseMediche + altreSpese;
+
+            // --- Output nel Riepilogo ---
+            document.getElementById('dataLiquidazione').textContent = new Date().toLocaleDateString('it-IT');
+            document.getElementById('outputDatiDanneggiato').textContent = datiDanneggiato || 'N/D';
+            document.getElementById('outputEta').textContent = eta;
+            document.getElementById('outputPunti').textContent = puntiInvalidita;
+
+             // Dettagli calcolo permanente
+             document.getElementById('vb').textContent = BASE_POINT_VALUE.toFixed(2);
+             document.getElementById('cp').textContent = puntiInvalidita;
+             document.getElementById('cb').textContent = cBiologico.toFixed(5);
+             document.getElementById('cp_rpt').textContent = puntiInvalidita; // Ripeti punti per chiarezza formula
+             document.getElementById('ce').textContent = eta;
+             document.getElementById('ca').textContent = cEta.toFixed(3);
+
+             document.getElementById('outputDannoPermanenteTot').textContent = dannoPermanenteTotale.toFixed(2);
+             document.getElementById('outputDannoBiologico').textContent = dannoBiologicoBase.toFixed(2);
+
+            const rigaMoralePerm = document.getElementById('rigaDannoMoralePermanente');
+            if (includeMoralePerm) {
+                document.getElementById('outputTipoMoralePerm').textContent = tipoMoralePermDesc;
+                document.getElementById('outputCoeffMoralePerm').textContent = coeffMoralePermDisplay; // Mostra coeff o %
+                document.getElementById('outputDannoMoralePermVal').textContent = dannoMoralePermValore.toFixed(2);
+                rigaMoralePerm.style.display = 'block';
+            } else {
+                rigaMoralePerm.style.display = 'none';
+            }
+
+             // Dettagli calcolo temporaneo
+            document.getElementById('outputDannoTemporaneo').textContent = dannoTemporaneoLiquidato.toFixed(2);
+             document.getElementById('outputDailyRate').textContent = dailyRateApplicata.toFixed(2);
+             const rigaMoraleTemp = document.getElementById('rigaDannoMoraleTemporaneo');
+             if(includeMoraleTemp) {
+                  document.getElementById('outputPercMoraleTemp').textContent = percMoraleTempEffettiva.toFixed(1);
+                  rigaMoraleTemp.style.display = 'block';
+             } else {
+                  rigaMoraleTemp.style.display = 'none';
+             }
+
+
+            document.getElementById('outputSpeseMediche').textContent = speseMediche.toFixed(2);
+            document.getElementById('outputAltreSpese').textContent = altreSpese.toFixed(2);
+            document.getElementById('outputTotale').textContent = totaleLiquidazione.toFixed(2);
+
+            document.getElementById('riepilogo').style.display = 'block';
+            document.getElementById('riepilogo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- Funzioni Riepilogo Actions (Aggiornate per nuovi dettagli) ---
+
+        function getRiepilogoText() {
+             const riepilogoDiv = document.getElementById('riepilogoContent');
+             if (!riepilogoDiv) return "";
+
+             let text = "Riepilogo Liquidazione Danno (Metodologia TUN D.P.R. 12/2025)\n";
+             text += "===========================================================\n";
+
+             const dataLiq = riepilogoDiv.querySelector('#dataLiquidazione')?.textContent || 'N/D';
+             text += `Data Liquidazione: ${dataLiq}\n\n`;
+
+             const datiDanneggiato = riepilogoDiv.querySelector('#outputDatiDanneggiato')?.textContent || 'N/D';
+             text += `Dati Danneggiato:\n${datiDanneggiato}\n\n`;
+
+             const eta = riepilogoDiv.querySelector('#outputEta')?.textContent || 'N/D';
+             text += `Età al Sinistro: ${eta} anni\n`;
+
+             const punti = riepilogoDiv.querySelector('#outputPunti')?.textContent || 'N/D';
+             text += `Punti Invalidità Permanente: ${punti} %\n`;
+
+             text += "-----------------------------------------------------------\n";
+             text += `Liquidazione Danno Non Patrimoniale Permanente: € ${riepilogoDiv.querySelector('#outputDannoPermanenteTot')?.textContent || '0.00'}\n`;
+             // Dettaglio Calcolo Permanente
+             const vb = riepilogoDiv.querySelector('#vb')?.textContent || 'N/A';
+             const cp = riepilogoDiv.querySelector('#cp')?.textContent || 'N/A';
+             const cb = riepilogoDiv.querySelector('#cb')?.textContent || 'N/A';
+             const ce = riepilogoDiv.querySelector('#ce')?.textContent || 'N/A';
+             const ca = riepilogoDiv.querySelector('#ca')?.textContent || 'N/A';
+             text += ` Dettaglio Permanente:\n`;
+             text += `  - Danno Biologico Base: € ${riepilogoDiv.querySelector('#outputDannoBiologico')?.textContent || '0.00'}\n`;
+             const rigaMoralePerm = riepilogoDiv.querySelector('#rigaDannoMoralePermanente');
+             if (rigaMoralePerm && rigaMoralePerm.style.display !== 'none') {
+                  const tipoMorale = riepilogoDiv.querySelector('#outputTipoMoralePerm')?.textContent || 'N/A';
+                  const coeffMorale = riepilogoDiv.querySelector('#outputCoeffMoralePerm')?.textContent || 'N/A';
+                  const dannoMoraleVal = riepilogoDiv.querySelector('#outputDannoMoralePermVal')?.textContent || '0.00';
+                  text += `  - Maggiorazione Danno Morale (${tipoMorale}): € ${dannoMoraleVal} (${coeffMorale})\n`;
+             }
+             text += `  - (Formula: VBP € ${vb} * CoeffBio ${cb} * Punti ${cp} * CoeffEtà ${ca})\n`;
+
+             text += "-----------------------------------------------------------\n";
+             text += `Liquidazione Danno Temporaneo: € ${riepilogoDiv.querySelector('#outputDannoTemporaneo')?.textContent || '0.00'}\n`;
+             // Dettaglio Calcolo Temporaneo
+              const dailyRate = riepilogoDiv.querySelector('#outputDailyRate')?.textContent || 'N/A';
+             text += ` Dettaglio Temporaneo:\n`;
+             text += `  - Indennità Giornaliera Applicata: € ${dailyRate}\n`;
+             const rigaMoraleTemp = riepilogoDiv.querySelector('#rigaDannoMoraleTemporaneo');
+              if (rigaMoraleTemp && rigaMoraleTemp.style.display !== 'none') {
+                   const percMoraleTemp = riepilogoDiv.querySelector('#outputPercMoraleTemp')?.textContent || 'N/A';
+                   text += `  - (Include Maggiorazione Morale Temporaneo: ${percMoraleTemp}%)\n`;
+              }
+
+
+             text += "-----------------------------------------------------------\n";
+             const speseMed = riepilogoDiv.querySelector('#outputSpeseMediche')?.textContent || '0.00';
+             text += `Spese Mediche: € ${speseMed}\n`;
+
+             const altreSpese = riepilogoDiv.querySelector('#outputAltreSpese')?.textContent || '0.00';
+             text += `Altre Spese: € ${altreSpese}\n`;
+
+             text += "===========================================================\n";
+             const totale = riepilogoDiv.querySelector('#outputTotale')?.textContent || '0.00';
+             text += `TOTALE LIQUIDAZIONE: € ${totale}\n`;
+             text += "===========================================================\n\n";
+             text += "Nota: Calcolo indicativo basato su tabelle D.P.R. 12/2025.\n";
+             text += "Verificare sempre con consulenza legale/medico-legale.\n";
+              text += `Generato da Tool Avv. Roberto Arcella il ${new Date().toLocaleString('it-IT')}\n`;
+
+             return text;
+         }
+
+        function stampaRiepilogo() {
+            const riepilogoContent = document.getElementById('riepilogo').innerHTML;
+            const printWindow = window.open('', '_blank', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Stampa Riepilogo Danno</title>');
+            printWindow.document.write('<style> body { font-family: sans-serif; line-height: 1.4;} hr {margin: 10px 0; border-top: 1px solid #ccc;} pre { white-space: pre-wrap; word-wrap: break-word; background: #eee; padding: 5px; border: 1px solid #ddd;} .totale {font-weight: bold; font-size: 1.1em; border-top: 1px solid #aaa; padding-top: 5px; margin-top: 10px;} .danno-details {font-size: 0.9em; color: #333; margin-left: 10px; border-left: 2px solid #ddd; padding-left: 10px; margin-top: 5px; margin-bottom: 10px;} .riepilogo-actions { display: none; } </style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(riepilogoContent);
+             printWindow.document.write('<hr><p style="font-size: 0.8em; color: #555;">Disclaimer: Calcolo indicativo basato su tabelle D.P.R. 12/2025. Verificare con consulenza legale/medico-legale.</p>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+             setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
+        }
+
+        function copiaRiepilogoTxt() {
+            const textToCopy = getRiepilogoText();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => { alert('Riepilogo copiato negli appunti!'); })
+                    .catch(err => { alert('Errore nella copia: ' + err); });
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                textArea.style.position = "fixed"; textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.focus(); textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('Riepilogo copiato negli appunti!');
+                } catch (err) {
+                    alert('Errore nella copia. Prova a copiare manualmente.');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function salvaRiepilogoTxt() {
+            const textToSave = getRiepilogoText();
+            const blob = new Blob([textToSave], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Riepilogo_Danno_TUN_${new Date().toISOString().slice(0,10)}.txt`;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+
+        // Inizializza visibilità opzioni morale
+        updateMoralePermCustomVisibility();
+        updateMoraleTempCustomVisibility();
+        opzioniMoralePermDiv.style.display = includiMoralePermCheckbox.checked ? 'flex' : 'none';
+        opzioniMoraleTempDiv.style.display = includiMoraleTempCheckbox.checked ? 'flex' : 'none';
+
+
+    </script>
+</body>
+</html>

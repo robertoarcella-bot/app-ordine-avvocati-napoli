@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Danno Micropermanenti - Metodo Coefficienti - Avv. R. Arcella</title>
+    <style>
+        /* CSS INVARIATO RISPETTO ALLA VERSIONE PRECEDENTE - Ometto per brevità */
+        body { font-family: sans-serif; line-height: 1.6; margin: 20px; background-color: #f4f4f4; }
+        .container { background-color: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 750px; margin: auto; }
+        .header-link { display: block; margin-bottom: 20px; text-align: right; font-size: 0.9em; }
+        h1 { text-align: center; color: #0056b3; margin-top: 0; margin-bottom: 5px; }
+        h2 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 20px; margin-top: 30px; font-size: 1.3em; text-align: center; background-color: #eef; padding-top: 8px; border-radius: 4px; }
+        label { font-weight: bold; color: #555; margin-bottom: 5px; display: inline-block; }
+        input[type="text"], input[type="number"], textarea, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+        input[type="number"] { text-align: right; }
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        textarea { width: 100%; min-height: 60px; resize: vertical; }
+        select { vertical-align: middle; }
+        .form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-row label { flex-shrink: 0; text-align: right; padding-right: 5px; }
+        .form-row input[type="number"], .form-row select { max-width: 120px; }
+        #puntiIP { width: 90px; }
+        #eta { width: 80px; }
+        .itp-row input[type="number"] { width: 90px; }
+        #percMoraleCustom { width: 90px; }
+        #speseMediche, #altreSpese { width: 120px; }
+        .section-danno-permanente, .section-invalidita-temporanea, .section-danno-morale, .section-spese { margin-bottom: 25px; padding: 15px; border: 1px solid #eee; border-radius: 5px; background-color: #fafafa; }
+        .moral-damage-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .moral-damage-row label { width: auto; text-align: left;}
+        .moral-base-calc label { display: block; margin-bottom: 8px; font-weight: normal;}
+        .moral-base-calc input[type="radio"] { margin-right: 5px; vertical-align: middle;}
+        .calculate-button-container { text-align: center; margin-top: 25px; }
+        #btnCalcola { background-color: #28a745; color: white; padding: 12px 30px; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1em; }
+        #btnCalcola:hover { background-color: #218838; }
+        #risultato { margin-top: 30px; background-color: #e9ecef; padding: 20px; border-radius: 5px; border: 1px solid #ced4da; }
+        #risultato h2 { margin-top: 0; color: #0056b3; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+        #risultato p { margin: 8px 0; font-size: 1.1em; }
+        #risultato .calc-detail { padding-left: 20px; font-size: 0.9em; color: #444; }
+        #risultato .totale { font-weight: bold; font-size: 1.3em; margin-top: 15px; color: #dc3545; border-top: 1px solid #ccc; padding-top: 10px; }
+        .action-button-container { margin-top: 25px; padding-top: 15px; border-top: 1px dashed #ccc; text-align: center; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .action-button-container button { background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9em; min-width: 110px; }
+        .action-button-container button:hover { background-color: #5a6268; }
+        .action-button-container button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        .info-update { font-size: 0.9em; color: #666; text-align: center; margin: 15px 0; padding: 10px; background-color: #f8f9fa; border: 1px dashed #ccc; border-radius: 4px; }
+        .hidden { display: none; }
+        .input-error { border: 2px solid red !important; background-color: #fff0f0; }
+        footer { margin-top: 30px; text-align: center; font-size: 0.85em; color: #888; }
+        @media print { /* Stili stampa invariati */ }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://avvocatotelematico.studiolegalearcella.it/apps" class="header-link">&laquo; Torna alle Applicazioni</a>
+
+        <h1>Calcolo Risarcimento Danno Micropermanenti</h1>
+        <p style="text-align:center; font-size:0.9em; margin-top:-10px; margin-bottom:15px;">(Metodologia con Coefficienti Progressivi e Riduzione Età > 10 anni)</p>
+
+        <form id="calcoloForm">
+
+            <div class="form-group">
+                 <label for="decretoRif">Valori Base Punto/Giorno (Seleziona Riferimento):</label>
+                 <select id="decretoRif" name="decretoRif" onchange="updateInfoValues()">
+                     <option value="2024" selected>D.M. 16/07/2024 (valori da Aprile 2024)</option>
+                     <option value="2023">Adeguamento ISTAT 2023</option>
+                     <option value="2022">D.M. 10/06/2022 (valori da Luglio 2022)</option>
+                 </select>
+            </div>
+
+            <div class="info-update" id="infoValoriBase">
+                </div>
+
+             <div class="form-group">
+                <label for="datiDanneggiato">Dati Identificativi Danneggiato/Sinistro:</label>
+                <textarea id="datiDanneggiato" name="datiDanneggiato"></textarea>
+            </div>
+            <div class="section-danno-permanente">
+                <h2>DANNO BIOLOGICO PERMANENTE</h2>
+                <div class="form-row"> <label for="puntiIP">Punti riconosciuti:</label> <input type="number" id="puntiIP" name="puntiIP" min="0" max="9" step="0.01" required oninput="validatePuntiIP(this)" placeholder="es. 7.5"> <span style="font-size:0.85em; color:#666;">(max 9)</span> </div>
+                <div class="form-row"> <label for="eta">Età del danneggiato:</label> <input type="number" id="eta" name="eta" min="0" max="120" required> <span>anni</span> </div>
+                <small style="display:block; text-align: center; margin-top: 10px; font-size: 0.85em;">Nota: Calcolo IP basato su coefficienti progressivi e riduzione età per anni > 10.</small>
+            </div>
+            <div class="section-invalidita-temporanea">
+                <h2>INVALIDITA' TEMPORANEA</h2>
+                <div class="form-row"> <label for="giorniITT">Giorni invalidità totale:</label> <input type="number" id="giorniITT" name="giorniITT" min="0" value="0" required> </div>
+                <div class="form-row itp-row"> <label for="giorniITP1">Giorni invalidità parziale:</label> <input type="number" id="giorniITP1" name="giorniITP1" min="0" value="0" required> <label for="percITP1" style="margin-left: 15px;">Inabilità:</label> <input type="number" id="percITP1" name="percITP1" min="0" max="99" step="0.01" value="75" required><span>%</span> </div>
+                <div class="form-row itp-row"> <label for="giorniITP2">Giorni invalidità parziale:</label> <input type="number" id="giorniITP2" name="giorniITP2" min="0" value="0" required> <label for="percITP2" style="margin-left: 15px;">Inabilità:</label> <input type="number" id="percITP2" name="percITP2" min="0" max="99" step="0.01" value="50" required><span>%</span> </div>
+                <div class="form-row itp-row"> <label for="giorniITP3">Giorni invalidità parziale:</label> <input type="number" id="giorniITP3" name="giorniITP3" min="0" value="0" required> <label for="percITP3" style="margin-left: 15px;">Inabilità:</label> <input type="number" id="percITP3" name="percITP3" min="0" max="99" step="0.01" value="25" required><span>%</span> </div>
+            </div>
+            <div class="section-danno-morale">
+                <h2>DANNO MORALE</h2>
+                <div class="moral-damage-row"> <label for="percMoraleCustom">Perc. riconosciuta:</label> <input type="number" id="percMoraleCustom" name="percMoraleCustom" min="0" step="0.01" value="25"><span>%</span> <small style="margin-left:10px;">(Usare 0 se non richiesto)</small> </div>
+                <div class="moral-base-calc"> <label>Calcola danno morale:</label> <label><input type="radio" name="baseDannoMorale" value="IP+IT"> su invalidità permanente e temporanea</label> <label><input type="radio" name="baseDannoMorale" value="IP" checked> solo su invalidità permanente</label> </div>
+            </div>
+            <div class="section-spese">
+                <h2>SPESE DOCUMENTATE</h2>
+                <div class="form-row"> <label for="speseMediche">Spese mediche €</label> <input type="number" id="speseMediche" name="speseMediche" min="0" step="0.01" value="0"> </div>
+                <div class="form-row"> <label for="altreSpese">Altre spese €</label> <input type="number" id="altreSpese" name="altreSpese" min="0" step="0.01" value="0"> </div>
+            </div>
+            <div class="calculate-button-container"> <button type="button" id="btnCalcola" onclick="calcolaRisarcimento()">Calcola</button> </div>
+
+        </form>
+
+        <div id="risultato" style="display: none;">
+             </div>
+
+        <footer>
+            <p>Applicazione creata da: Avv. Roberto Arcella</p>
+            <p>Disclaimer: Questo strumento fornisce una stima basata sulla metodologia dei coefficienti progressivi e sui parametri selezionati. Non sostituisce una consulenza legale qualificata. Verificare sempre la normativa e la giurisprudenza applicabile al caso specifico.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- Costanti Valori Base (AGGIUNTO 2023) ---
+        const VALORI_BASE = {
+            "2024": { punto: 947.30, giorno: 55.24, desc: "D.M. 16/07/2024 (G.U. 25/07/24)" },
+            "2023": { punto: 939.78, giorno: 54.80, desc: "Adeguamento ISTAT 2023 (rif. DM 16/10/23 Resp. Sanitaria)" }, // Valori 2023 aggiunti
+            "2022": { punto: 870.97, giorno: 50.90, desc: "D.M. 10/06/2022 (G.U. 12/07/22)" }
+        };
+
+        // --- Coefficienti Moltiplicatori per IP (Invariato) ---
+        const COEFF_MOLTIPLICATORI = {
+            0: 0.0, 1: 1.0, 2: 1.1, 3: 1.2, 4: 1.3, 5: 1.5, 6: 1.7, 7: 1.9, 8: 2.1, 9: 2.3
+        };
+
+        // --- Elementi DOM (Invariato) ---
+        const puntiIPInput = document.getElementById('puntiIP');
+        const risultatoDiv = document.getElementById('risultato');
+        const infoValoriBaseDiv = document.getElementById('infoValoriBase');
+        const percMoraleCustomInput = document.getElementById('percMoraleCustom');
+
+        // --- Variabile per testo riepilogo (Invariato) ---
+        let plainTextSummary = "";
+
+        // --- Funzioni Ausiliarie (Invariate) ---
+        function formatCurrency(value) { if (isNaN(value)) return "N/A"; return value.toLocaleString('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function validatePuntiIP(inputElement) { const value = parseFloat(inputElement.value.replace(',', '.')); if (isNaN(value) || value < 0 || value > 9) { inputElement.classList.add('input-error'); return false; } else { inputElement.classList.remove('input-error'); return true; } }
+        function updateInfoValues() { const selectedDecreto = document.getElementById('decretoRif').value; const valori = VALORI_BASE[selectedDecreto]; if (valori) { infoValoriBaseDiv.innerHTML = `Valori di riferimento (${valori.desc}):<br> Valore Punto Base IP: ${formatCurrency(valori.punto)} | Indennità Giornaliera ITT: ${formatCurrency(valori.giorno)}`; } else { infoValoriBaseDiv.innerHTML = `Selezionare un riferimento valido.`; } }
+        function getCoeffMoltiplicatore(punti) { if (punti <= 0) return 0; if (punti >= 9) return COEFF_MOLTIPLICATORI[9]; const puntiFloor = Math.floor(punti); const puntiCeil = Math.ceil(punti); if (puntiFloor === punti) { return COEFF_MOLTIPLICATORI[punti]; } else { const coeffFloor = COEFF_MOLTIPLICATORI[puntiFloor]; const coeffCeil = COEFF_MOLTIPLICATORI[puntiCeil]; const decimalPart = punti - puntiFloor; const interpolatedCoeff = coeffFloor + decimalPart * (coeffCeil - coeffFloor); return interpolatedCoeff; } }
+
+        // --- Funzione Principale di Calcolo (Invariata) ---
+        function calcolaRisarcimento() {
+            if (!validatePuntiIP(puntiIPInput)) { alert("Il punteggio di invalidità permanente deve essere compreso tra 0 e 9."); puntiIPInput.focus(); resetResultAndButtons(); return; }
+            const selectedDecreto = document.getElementById('decretoRif').value;
+            const valori = VALORI_BASE[selectedDecreto];
+             if (!valori) { alert("Selezionare un riferimento valido per i valori base."); resetResultAndButtons(); return; }
+            const VALORE_PUNTO_BASE = valori.punto;
+            const INDENNITA_GIORNALIERA_ITT = valori.giorno;
+            const datiDanneggiato = document.getElementById('datiDanneggiato').value;
+            const eta = parseInt(document.getElementById('eta').value);
+            const puntiIP = parseFloat(puntiIPInput.value.replace(',', '.'));
+            const giorniITT = parseInt(document.getElementById('giorniITT').value) || 0;
+            const percITP1 = parseFloat(document.getElementById('percITP1').value) || 0;
+            const giorniITP1 = parseInt(document.getElementById('giorniITP1').value) || 0;
+            const percITP2 = parseFloat(document.getElementById('percITP2').value) || 0;
+            const giorniITP2 = parseInt(document.getElementById('giorniITP2').value) || 0;
+            const percITP3 = parseFloat(document.getElementById('percITP3').value) || 0;
+            const giorniITP3 = parseInt(document.getElementById('giorniITP3').value) || 0;
+            const percMoraleCustomValue = parseFloat(document.getElementById('percMoraleCustom').value) || 0;
+            const baseDannoMorale = document.querySelector('input[name="baseDannoMorale"]:checked').value;
+            const speseMediche = parseFloat(document.getElementById('speseMediche').value) || 0;
+            const altreSpese = parseFloat(document.getElementById('altreSpese').value) || 0;
+             if (isNaN(eta) || eta < 0) { alert("Inserire un'età valida."); resetResultAndButtons(); return; }
+             if (isNaN(percITP1) || percITP1 < 0 || percITP1 >= 100 || isNaN(percITP2) || percITP2 < 0 || percITP2 >= 100 || isNaN(percITP3) || percITP3 < 0 || percITP3 >= 100) { alert("Inserire percentuali di ITP valide (da 0 a 99)."); resetResultAndButtons(); return; }
+             if (isNaN(percMoraleCustomValue) || percMoraleCustomValue < 0) { alert("Inserire una percentuale di danno morale valida (>= 0)."); resetResultAndButtons(); return; }
+             const percMoraleSelezionata = percMoraleCustomValue / 100;
+            const coeffMoltiplicatore = getCoeffMoltiplicatore(puntiIP);
+            const valoreLordoPunto = VALORE_PUNTO_BASE * coeffMoltiplicatore;
+            const anniOltre10 = Math.max(0, eta - 10);
+            const riduzioneEtaPerc = 0.005 * anniOltre10;
+            const coeffEtaNuovo = 1 - riduzioneEtaPerc;
+            const valoreNettoPunto = valoreLordoPunto * coeffEtaNuovo;
+            const dannoPermanente = valoreNettoPunto * puntiIP;
+            const dannoITT = giorniITT * INDENNITA_GIORNALIERA_ITT;
+            const dannoITP1 = giorniITP1 * INDENNITA_GIORNALIERA_ITT * (percITP1 / 100);
+            const dannoITP2 = giorniITP2 * INDENNITA_GIORNALIERA_ITT * (percITP2 / 100);
+            const dannoITP3 = giorniITP3 * INDENNITA_GIORNALIERA_ITT * (percITP3 / 100);
+            const dannoTemporaneo = dannoITT + dannoITP1 + dannoITP2 + dannoITP3;
+            let baseCalcoloMorale = dannoPermanente;
+            if (baseDannoMorale === 'IP+IT') { baseCalcoloMorale += dannoTemporaneo; }
+            const dannoMorale = baseCalcoloMorale * percMoraleSelezionata;
+            const totaleRisarcimento = dannoPermanente + dannoMorale + dannoTemporaneo + speseMediche + altreSpese;
+            const oggi = new Date();
+            const dataLiquidazione = oggi.toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });
+            const localeTimeString = oggi.toLocaleTimeString('it-IT');
+            const existingButtonContainer = risultatoDiv.querySelector('.action-button-container');
+            if(existingButtonContainer) { existingButtonContainer.remove(); }
+            let riepilogoHTML = `<h2>Riepilogo Liquidazione Danno</h2> <p><strong>Data e Ora Calcolo:</strong> ${dataLiquidazione}, ${localeTimeString}</p> <p><strong>Valori Base Usati:</strong> ${valori.desc}</p> <p><strong>Dati Danneggiato/Sinistro:</strong><br>${datiDanneggiato.replace(/\n/g, '<br>') || 'N/D'}</p> <hr> <h3>Parametri di Calcolo:</h3> <p>Età al Sinistro: ${eta} anni</p> <p>Punti Invalidità Permanente: ${puntiIP.toLocaleString('it-IT')} %</p> <p>Giorni ITT (100%): ${giorniITT}</p> <p>Giorni ITP (${percITP1}%): ${giorniITP1}</p> <p>Giorni ITP (${percITP2}%): ${giorniITP2}</p> <p>Giorni ITP (${percITP3}%): ${giorniITP3}</p> <p>Percentuale Danno Morale Applicata: ${percMoraleCustomValue.toLocaleString('it-IT')}%</p> <hr> <h3>Liquidazione:</h3> <p>Danno Biologico Permanente (IP): ${formatCurrency(dannoPermanente)}</p> <p class="calc-detail"><em>Calcolo: ValoreBase(${formatCurrency(VALORE_PUNTO_BASE)}) * CoeffMolt.(${coeffMoltiplicatore.toFixed(3)}) * CoeffEtà(>10anni)(${coeffEtaNuovo.toFixed(3)}) * Punti(${puntiIP.toLocaleString('it-IT')})</em></p>`;
+            if (dannoMorale > 0) { const baseMoraleDisplay = (baseDannoMorale === 'IP+IT') ? "su IP+IT" : "su IP"; riepilogoHTML += `<p>Maggiorazione Danno Morale (${percMoraleCustomValue.toLocaleString('it-IT')}% ${baseMoraleDisplay}): ${formatCurrency(dannoMorale)}</p>`; }
+            else { riepilogoHTML += `<p>Maggiorazione Danno Morale: Non richiesta o 0%</p>`; }
+            riepilogoHTML += `<p>Danno Biologico Temporaneo (ITT + ITP): ${formatCurrency(dannoTemporaneo)}</p> <p class="calc-detail"><em> - di cui ITT (@ ${formatCurrency(INDENNITA_GIORNALIERA_ITT)}/gg): ${formatCurrency(dannoITT)}</em></p> <p class="calc-detail"><em> - di cui ITP ${percITP1}%: ${formatCurrency(dannoITP1)}</em></p> <p class="calc-detail"><em> - di cui ITP ${percITP2}%: ${formatCurrency(dannoITP2)}</em></p> <p class="calc-detail"><em> - di cui ITP ${percITP3}%: ${formatCurrency(dannoITP3)}</em></p> <p>Spese Mediche Documentate: ${formatCurrency(speseMediche)}</p> <p>Altre Spese Documentate: ${formatCurrency(altreSpese)}</p> <hr> <p class="totale">TOTALE RISARCIMENTO STIMATO: ${formatCurrency(totaleRisarcimento)}</p> <div class="action-button-container"> <button type="button" id="btnSalvaTxt">Salva TXT</button> <button type="button" id="btnCopiaTxt">Copia TXT</button> <button type="button" id="btnStampa">Stampa Riepilogo</button> </div>`;
+            risultatoDiv.innerHTML = riepilogoHTML;
+            risultatoDiv.style.display = 'block';
+            addResultButtonListeners();
+            generatePlainTextSummary(dataLiquidazione, localeTimeString, valori, datiDanneggiato, eta, puntiIP, coeffMoltiplicatore, coeffEtaNuovo, giorniITT, percITP1, giorniITP1, percITP2, giorniITP2, percITP3, giorniITP3, dannoPermanente, dannoMorale, percMoraleSelezionata, percMoraleCustomValue, baseDannoMorale, dannoTemporaneo, dannoITT, dannoITP1, dannoITP2, dannoITP3, speseMediche, altreSpese, totaleRisarcimento);
+        }
+
+        // --- Funzione resetResultAndButtons (Invariata) ---
+        function resetResultAndButtons() { risultatoDiv.style.display = 'none'; risultatoDiv.innerHTML = ''; plainTextSummary = ""; }
+
+        // --- Funzione per generare testo semplice (Invariata) ---
+        function generatePlainTextSummary(dataLiquidazione, localeTimeString, valori, datiDanneggiato, eta, puntiIP, coeffMoltiplicatore, coeffEtaNuovo, giorniITT, percITP1, giorniITP1, percITP2, giorniITP2, percITP3, giorniITP3, dannoPermanente, dannoMorale, percMoraleSelezionata, percMoraleCustomValue, baseDannoMorale, dannoTemporaneo, dannoITT, dannoITP1, dannoITP2, dannoITP3, speseMediche, altreSpese, totaleRisarcimento) {
+             let summary = `RIEPILOGO LIQUIDAZIONE DANNO\n(Metodologia Coefficienti Progressivi)\n=============================\nData e Ora Calcolo: ${dataLiquidazione}, ${localeTimeString}\nValori Base Usati: ${valori.desc}\nDati Danneggiato/Sinistro:\n${datiDanneggiato || 'N/D'}\n-----------------------------\nPARAMETRI DI CALCOLO:\nEtà al Sinistro: ${eta} anni\nPunti Invalidità Permanente: ${puntiIP.toLocaleString('it-IT')} %\nGiorni ITT (100%): ${giorniITT}\nGiorni ITP (${percITP1}%): ${giorniITP1}\nGiorni ITP (${percITP2}%): ${giorniITP2}\nGiorni ITP (${percITP3}%): ${giorniITP3}\nPercentuale Danno Morale Applicata: ${percMoraleCustomValue.toLocaleString('it-IT')}%\n-----------------------------\nLIQUIDAZIONE:\nDanno Biologico Permanente (IP): ${formatCurrency(dannoPermanente)}\n  (Calcolo: ValBase(${formatCurrency(valori.punto)}) * CoeffMolt(${coeffMoltiplicatore.toFixed(3)}) * CoeffEtà(>10)(${coeffEtaNuovo.toFixed(3)}) * Punti(${puntiIP.toLocaleString('it-IT')}))\n`;
+             if (dannoMorale > 0) { const baseMoraleDisplay = (baseDannoMorale === 'IP+IT') ? "su IP+IT" : "su IP"; summary += `Maggiorazione Danno Morale (${percMoraleCustomValue.toLocaleString('it-IT')}% ${baseMoraleDisplay}): ${formatCurrency(dannoMorale)}\n`; } else { summary += `Maggiorazione Danno Morale: Non richiesta o 0%\n`; }
+             summary += `Danno Biologico Temporaneo (ITT + ITP): ${formatCurrency(dannoTemporaneo)}\n  - di cui ITT (@ ${formatCurrency(valori.giorno)}/gg): ${formatCurrency(dannoITT)}\n  - di cui ITP ${percITP1}%: ${formatCurrency(dannoITP1)}\n  - di cui ITP ${percITP2}%: ${formatCurrency(dannoITP2)}\n  - di cui ITP ${percITP3}%: ${formatCurrency(dannoITP3)}\nSpese Mediche Documentate: ${formatCurrency(speseMediche)}\nAltre Spese Documentate: ${formatCurrency(altreSpese)}\n-----------------------------\nTOTALE RISARCIMENTO STIMATO: ${formatCurrency(totaleRisarcimento)}\n=============================\nDisclaimer: Stima basata sui parametri inseriti e metodologia coefficienti progressivi. Verificare normativa e giurisprudenza.\nApplicazione creata da: Avv. Roberto Arcella\n`;
+            plainTextSummary = summary;
+        }
+
+        // --- Funzione per aggiungere Listener ai bottoni nel risultato (Invariata) ---
+         function addResultButtonListeners() {
+            const btnSalvaRes = document.getElementById('btnSalvaTxt');
+            const btnCopiaRes = document.getElementById('btnCopiaTxt');
+            const btnStampaRes = document.getElementById('btnStampa');
+             if(btnSalvaRes) { btnSalvaRes.addEventListener('click', () => { if (!plainTextSummary) return; try { const blob = new Blob([plainTextSummary], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); const oggi = new Date().toISOString().slice(0, 10); link.download = `riepilogo_danno_coeff_${oggi}.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(link.href); } catch (err) { console.error("Errore salvataggio file:", err); alert("Impossibile salvare il file."); } }); }
+             if(btnCopiaRes) { btnCopiaRes.addEventListener('click', () => { if (!plainTextSummary) return; if (!navigator.clipboard) { alert("Funzione Copia non supportata."); return; } navigator.clipboard.writeText(plainTextSummary).then(() => { const originalText = btnCopiaRes.textContent; btnCopiaRes.textContent = 'Copiato!'; setTimeout(() => { btnCopiaRes.textContent = originalText; }, 2000); }).catch(err => { console.error('Errore copia: ', err); alert('Errore nel copiare il testo.'); }); }); }
+             if(btnStampaRes) { btnStampaRes.addEventListener('click', () => { if (risultatoDiv.style.display !== 'none') { window.print(); } else { alert("Nessun risultato da stampare."); } }); }
+        }
+
+        // --- Inizializzazione all'avvio (Invariata) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateInfoValues();
+            resetResultAndButtons();
+            const defaultBaseMorale = document.querySelector('input[name="baseDannoMorale"][value="IP"]');
+            if(defaultBaseMorale) defaultBaseMorale.checked = true;
+        });
+
+    </script>
+
+</body>
+</html>

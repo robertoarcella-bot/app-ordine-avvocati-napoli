@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calcolo Contributo Unificato</title>
+  <style>
+    :root {
+      --primary-color: #0056b3;
+      --accent-color: #007bff;
+      --bg-light: #f4f4f4;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-light);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 16px;   /* dimensione di base adatta al mobile */
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: var(--primary-color);
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    header img { width: 36px; height: 36px; }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      text-align: center;
+    }
+
+    .container {
+      width: min(100% - 2rem, 700px); /* si adatta allo schermo con 1rem di margine per lato */
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem 1.25rem;
+      border-radius: var(--radius);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    select,
+    button {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.875rem 0.75rem; /* >44px di altezza tattile cumulate su font+padding */
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: var(--radius);
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color .2s ease;
+    }
+
+    button:hover,
+    button:focus {
+      background-color: #0056b3;
+    }
+
+    .output {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #e2e2e2;
+      border-radius: var(--radius);
+      font-weight: 600;
+      white-space: pre-line;
+      font-size: 1rem;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      margin: 2rem 0;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    /* Regole specifiche per schermi piccoli */
+    @media (max-width: 480px) {
+      header h1   { font-size: 1.25rem; }
+      header img  { width: 28px; height: 28px; }
+      .container  { padding: 1.25rem 1rem; }
+      select,
+      button      { font-size: 1rem; }
+      .note       { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://img.icons8.com/ios-filled/50/money.png" alt="Pagamento">
+    <h1>Calcolo Contributo Unificato</h1>
+  </header>
+<a id="back-link" href="https://avvocatotelematico.studiolegalearcella.it/public_html/apps/" title="Torna all'elenco delle applicazioni">← Torna alle applicazioni</a>
+  <div class="container">
+    <label for="ambito">Ambito:</label>
+    <select id="ambito" onchange="aggiornaCampi()">
+      <option value="civile">Civile</option>
+      <option value="amministrativo">Amministrativo</option>
+      <option value="tributario">Tributario</option>
+    </select>
+
+    <div id="campoFase"></div>
+    <div id="campoValore"></div>
+    <div id="opzioniCivile"></div>
+
+    <button onclick="calcolaContributo()">Calcola</button>
+
+    <div class="output" id="risultato"></div>
+    <div class="note" id="nota"></div>
+  </div>
+
+  <footer>
+    Realizzato dall'Avv. Roberto Arcella
+  </footer>
+
+<script>
+function aggiornaCampi() {
+  const ambito = document.getElementById('ambito').value;
+  const campoFase = document.getElementById('campoFase');
+  const campoValore = document.getElementById('campoValore');
+  const opzioniCivile = document.getElementById('opzioniCivile');
+  const nota = document.getElementById('nota');
+  campoFase.innerHTML = '';
+  campoValore.innerHTML = '';
+  opzioniCivile.innerHTML = '';
+  nota.innerHTML = '';
+
+  if (ambito === 'civile') {
+    campoFase.innerHTML = `
+      <label for="fase">Fase processuale:</label>
+      <select id="fase">
+        <option value="primo_grado">Primo grado</option>
+        <option value="appello">Appello</option>
+        <option value="cassazione">Cassazione</option>
+      </select>`;
+
+    campoValore.innerHTML = `
+      <label for="scaglioneCivile">Scaglione di valore della causa:</label>
+      <select id="scaglioneCivile">
+        <option value="43">Fino a € 1.100</option>
+        <option value="98">da € 1.100,01 a € 5.200</option>
+        <option value="237">da € 5.200,01 a € 26.000</option>
+        <option value="518">da € 26.000,01 a € 52.000</option>
+        <option value="759">da € 52.000,01 a € 260.000</option>
+        <option value="1214">da € 260.000,01 a € 520.000</option>
+        <option value="1686">oltre € 520.000</option>
+        <option value="518">Valore indeterminabile</option>
+      </select>`;
+
+    opzioniCivile.innerHTML = `
+      <label><input type="checkbox" id="marca"> Applicazione marca da bollo € 27,00</label><br>
+      <label><input type="checkbox" id="dimezzato"> Contributo unificato dimidiato (vedi nota)</label>`;
+
+    nota.innerHTML = `
+      <strong>Nota marca:</strong> Ai sensi dell'art. 10 D.P.R. 115/2002 la marca da € 27 è dovuta salvo esenzioni di legge.<br>
+      <strong>Nota dimezzamento:</strong> Il contributo è ridotto della metà nei casi previsti dall'art. 13, comma 1, lett. a-bis), a-ter), a-quater) D.P.R. 115/2002.`;
+  } else if (ambito === 'amministrativo') {
+    campoValore.innerHTML = `
+      <label for="valoreAmministrativo">Tipologia del ricorso:</label>
+      <select id="valoreAmministrativo">
+        <option value="650">Ricorsi ordinari</option>
+        <option value="300">Accesso ai documenti amministrativi</option>
+        <option value="300">Ricorsi avverso il silenzio</option>
+        <option value="300">Cittadinanza e residenza</option>
+        <option value="300">Soggiorno o ingresso</option>
+        <option value="300">Esecuzione sentenza / ottemperanza</option>
+        <option value="0">Accesso in materia ambientale (esente)</option>
+        <option value="325">Pubblico impiego</option>
+        <option value="1800">Rito abbreviato</option>
+        <option value="2000">Appalti ≤ € 200.000</option>
+        <option value="4000">Appalti tra € 200.001 e € 1.000.000</option>
+        <option value="6000">Appalti > € 1.000.000</option>
+        <option value="650">Ricorso Straordinario al Presidente della Repubblica</option>
+        <option value="6000">Mancata dichiarazione di valore</option>
+      </select>`;
+  } else if (ambito === 'tributario') {
+    campoFase.innerHTML = `
+      <label for="fase">Grado:</label>
+      <select id="fase">
+        <option value="primo">Corte di Giustizia Tributaria di Primo Grado</option>
+        <option value="secondo">Corte di Giustizia Tributaria di Secondo Grado</option>
+      </select>`;
+
+    campoValore.innerHTML = `
+      <label for="scaglioneTributario">Scaglione di valore della controversia:</label>
+      <select id="scaglioneTributario">
+        <option value="30">Fino a € 2.582,28</option>
+        <option value="60">da € 2.582,29 a € 5.164,57</option>
+        <option value="120">da € 5.164,58 a € 25.822,84</option>
+        <option value="250">da € 25.822,85 a € 51.645,69</option>
+        <option value="500">da € 51.645,70 a € 103.291,38</option>
+        <option value="1500">oltre € 103.291,38</option>
+        <option value="500">Valore indeterminabile</option>
+      </select>`;
+
+    nota.innerHTML = `
+      <strong>Nota:</strong> Il valore della controversia, ai sensi dell'art. 12, comma 2, del D. Lgs. n. 546/1992, è l'importo del tributo al netto di interessi e sanzioni. In caso di sole sanzioni, vale la somma delle stesse. Ex art. 14, comma 3-bis, D.P.R. n. 115/2002, il valore deve risultare da apposita dichiarazione nel ricorso.`;
+  }
+}
+
+function calcolaContributo() {
+  const ambito = document.getElementById('ambito').value;
+  let contributo = 0;
+  let aggiuntivo = 0;
+  let marca = 0;
+
+  if (ambito === 'civile') {
+    const base = parseFloat(document.getElementById('scaglioneCivile').value);
+    const fase = document.getElementById('fase').value;
+    contributo = document.getElementById('dimezzato').checked ? base / 2 : base;
+    if (fase === 'appello') contributo *= 1.5;
+    if (fase === 'cassazione') { contributo *= 2; aggiuntivo = 200; }
+    if (document.getElementById('marca').checked) marca = 27;
+  } else if (ambito === 'amministrativo') {
+    contributo = parseFloat(document.getElementById('valoreAmministrativo').value);
+  } else if (ambito === 'tributario') {
+    contributo = parseFloat(document.getElementById('scaglioneTributario').value);
+  }
+
+  const totale = contributo + aggiuntivo + marca;
+  let output = `Contributo unificato: € ${contributo.toFixed(2)}\n`;
+  if (aggiuntivo > 0) output += `Contributo aggiuntivo Cassazione: € ${aggiuntivo.toFixed(2)}\n`;
+  if (marca > 0) output += `Marca da bollo: € ${marca.toFixed(2)}\n`;
+  output += `Totale: € ${totale.toFixed(2)}`;
+  document.getElementById('risultato').innerText = output;
+}
+
+aggiornaCampi();
+</script>
+</body>
+</html>

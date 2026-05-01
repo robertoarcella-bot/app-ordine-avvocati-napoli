@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contributo Unificato Famiglia (Schede)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0; /* Rimosso padding per container full-width su mobile */
+            background-color: #f0f2f5; /* Leggermente diverso per sfondo */
+            color: #333;
+        }
+        .container {
+            max-width: 900px; /* Mantiene una larghezza massima su desktop */
+            margin: 15px auto;
+            padding: 5px 15px; /* Padding laterale per contenuto */
+        }
+        h1, h2 {
+            color: #0056b3;
+            padding-bottom: 5px;
+            margin-top: 1.5em;
+            margin-left: 10px; /* Allinea con padding schede */
+             margin-right: 10px;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.8em;
+             border-bottom: none; /* Rimuoviamo bordo sotto titolo principale */
+        }
+        h2 {
+            font-size: 1.4em;
+             border-bottom: 2px solid #dee2e6;
+             margin-bottom: 1em;
+        }
+        .update-info {
+            font-size: 0.9em;
+            color: #6c757d;
+            text-align: center;
+            margin: 15px 10px; /* Margine laterale */
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        /* Stili per la ricerca */
+        .search-container {
+            margin: 15px 10px 25px 10px; /* Margine laterale */
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .search-container label {
+            font-weight: bold;
+            margin-right: 10px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        #searchInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        /* Stili per le schede */
+        .cards-container {
+            display: block; /* Contenitore semplice, le schede vanno a capo naturalmente */
+        }
+        .procedure-card {
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 0 10px 15px 10px; /* Margine laterale e inferiore */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transition: box-shadow 0.2s ease-in-out;
+            /* Nascondiamo le schede filtrate */
+            display: block; /* Default display */
+        }
+        .procedure-card:hover {
+             box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+        }
+        .procedure-card h3 {
+            font-size: 1.15em;
+            color: #343a40;
+            margin-top: 0;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .procedure-card p {
+            margin: 8px 0;
+            font-size: 0.95em;
+            color: #495057;
+        }
+        .procedure-card .data-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 120px; /* Larghezza minima etichetta */
+            display: inline-block; /* Affianca etichetta e valore */
+        }
+        .procedure-card .note {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee; /* Separatore per le note */
+            white-space: normal; /* Permette alle note di andare a capo */
+        }
+        .procedure-card .note .data-label {
+             display: block; /* Etichetta "Note:" sopra il testo */
+             margin-bottom: 3px;
+             min-width: auto;
+        }
+        .procedure-card .currency {
+            white-space: nowrap;
+        }
+        .procedure-card .esente {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .procedure-card .importo {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Nascondiamo le schede filtrate tramite Javascript */
+         .hidden-card {
+             display: none !important; /* Usa !important per sovrascrivere altri display */
+         }
+
+         .nb-note {
+            margin: 20px 10px; /* Margine laterale */
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            border-radius: 4px;
+         }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 0.8em;
+            color: #6c757d;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+<a id="back-link" href="https://avvocatotelematico.studiolegalearcella.it/public_html/apps/" title="Torna all'elenco delle applicazioni">← Torna alle applicazioni</a>
+<div class="container">
+
+    <h1>Regime fiscale dei procedimenti in materia di famiglia</h1>
+
+    <div class="update-info">
+        Aggiornato con le disposizioni del D.Lgs. 31/10/2024 N. 164<br>
+        (Rif: Circ. Min. Giustizia - D.A.G., del 19/12/2024)
+    </div>
+
+    <div class="search-container">
+        <label for="searchInput">Cerca nei procedimenti:</label>
+        <input type="text" id="searchInput" oninput="filterContent()" placeholder="Inserisci testo per filtrare...">
+    </div>
+
+    <section id="separazione-divorzio">
+        <h2>A. Separazione, divorzio e unioni civili</h2>
+        <div class="cards-container">
+            <div class="procedure-card">
+                <h3>Domanda congiunta di separazione/divorzio</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">43,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. a) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+            <div class="procedure-card">
+                <h3>Domanda congiunta cumulatas separazione e divorzio</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">43,00 € + 43,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Due contributi per cumulo oggettivo; Art. 19 L. 74/1987</p>
+            </div>
+            <div class="procedure-card">
+                <h3>Separazione/divorzio contenzioso</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">98,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. b) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                <h3>Separazione/divorzio contenzioso cumulato</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">98,00 € + 98,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Due contributi per cumulo oggettivo; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                <h3>Domanda riconvenzionale in separazione/divorzio</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">98,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Stesso regime della domanda principale; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                <h3>Modifica condizioni consensuale - solo rapporti tra coniugi</h3>
+                <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">43,00 €</span></p>
+                <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. a) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni consensuale - include prole</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">43,00 €</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. a) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni consensuale - solo prole</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni contenzioso - solo rapporti tra coniugi</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">98,00 €</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. b) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni contenzioso - include prole</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="currency importo">98,00 €</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 13 c.1 lett. b) DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni contenzioso - solo prole</h3>
+                  <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+            </div>
+    </section>
+
+    <section id="filiazione">
+        <h2>B. Filiazione fuori dal matrimonio</h2>
+        <div class="cards-container">
+             <div class="procedure-card">
+                 <h3>Regolamentazione responsabilità genitoriale - consensuale</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Regolamentazione responsabilità genitoriale - contenzioso</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                  <h3>Modifica condizioni consensuale</h3>
+                  <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Modifica condizioni contenzioso</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Domande riconvenzionali</h3>
+                  <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002; poiché riguardanti per natura solo la prole</p>
+            </div>
+             </div>
+    </section>
+
+    <section id="disposizioni-comuni">
+        <h2>C. Disposizioni comuni</h2>
+        <div class="cards-container">
+            <div class="procedure-card">
+                 <h3>Garanzie a tutela del credito da mantenimento matrimoniale</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Garanzie a tutela del credito da mantenimento figli fuori matrimonio</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Attuazione provvedimenti affidamento minori da matrimonio</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002; Art. 19 L. 74/1987</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Attuazione provvedimenti affidamento minori fuori matrimonio</h3>
+                  <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                 <p><span class="data-label">Altre Spese:</span> <span class="currency importo">27,00 €</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 10 c.2 DPR 115/2002</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Violenza domestica o di genere (come parte di altro procedimento)</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> Nessun contributo aggiuntivo</p>
+                 <p><span class="data-label">Altre Spese:</span> -</p>
+                 <p class="note"><span class="data-label">Note:</span> Si applica il contributo del procedimento principale</p>
+            </div>
+             <div class="procedure-card">
+                 <h3>Ordini di protezione contro abusi familiari</h3>
+                 <p><span class="data-label">Contributo Unificato:</span> <span class="esente">Esente</span></p>
+                  <p><span class="data-label">Altre Spese:</span> <span class="esente">Esente</span></p>
+                 <p class="note"><span class="data-label">Note:</span> Art. 7 L. 154/2001</p>
+            </div>
+            </div>
+    </section>
+
+    <div class="nb-note">
+        <strong>N.B:</strong> Per "prole" si intendono sia i figli minorenni che i maggiorenni non economicamente autosufficienti.
+    </div>
+
+    <footer>
+        Dati estratti dal documento PDF fornito (RobertoArcella@2024). Si consiglia di verificare sempre le normative vigenti per conferma ufficiale.<br>
+        Ultima verifica: 18 Aprile 2025
+    </footer>
+
+</div>
+
+<script>
+    function filterContent() {
+        // Prende l'input di ricerca e il valore inserito (in minuscolo)
+        const searchInput = document.getElementById('searchInput');
+        const filter = searchInput.value.toLowerCase();
+
+        // Prende tutte le schede nel documento
+        const cards = document.querySelectorAll('.procedure-card');
+
+        // Itera su ogni scheda
+        cards.forEach(card => {
+            // Prende tutto il testo contenuto nella scheda
+            const cardText = card.textContent || card.innerText;
+
+            // Converte il testo della scheda in minuscolo e controlla se include il filtro
+            if (cardText.toLowerCase().includes(filter)) {
+                // Se include, mostra la scheda rimuovendo la classe 'hidden-card' (o impostando display)
+                card.style.display = "block"; // Mostra la scheda
+                // card.classList.remove('hidden-card'); // Alternativa con classe CSS
+            } else {
+                // Se non include, nasconde la scheda aggiungendo la classe 'hidden-card' (o impostando display)
+                card.style.display = "none"; // Nasconde la scheda
+                // card.classList.add('hidden-card'); // Alternativa con classe CSS
+            }
+        });
+    }
+
+    // Assicura che la funzione filterContent sia disponibile globalmente
+    window.filterContent = filterContent;
+</script>
+
+</body>
+</html>

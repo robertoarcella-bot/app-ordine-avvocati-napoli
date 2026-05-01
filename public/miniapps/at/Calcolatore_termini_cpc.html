@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Termini c.p.c. Cartabia [v3.2 Debug]</title>
+    <style>
+        /* CSS Completo (invariato) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+                "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 700px;
+            margin: 20px auto;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #dee2e6;
+            position: relative;
+        }
+
+        .link-home {
+            display: block;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #0056b3;
+            text-decoration: none;
+        }
+
+        .link-home:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.8em;
+        }
+
+        #rito_label {
+            text-align: center;
+            color: #007bff;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 1.2em;
+            font-size: 1.1em;
+            border: 1px dashed #80bdff;
+            padding: 5px 0;
+            border-radius: 4px;
+            background-color: #e7f3ff;
+        }
+
+        #rito_label:empty {
+            border: none;
+            padding: 0;
+            margin-bottom: 0;
+            min-height: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.95em;
+        }
+
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #fff;
+            font-size: 1em;
+            color: #495057;
+        }
+
+        input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #risultato {
+            margin-top: 10px;
+            padding: 18px 20px;
+            border: 1px solid #adb5bd;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-weight: 600;
+            min-height: 40px;
+            text-align: left;
+            font-size: 1.1em;
+            color: #343a40;
+            line-height: 1.5;
+        }
+
+        #risultato ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        #risultato li {
+            margin-bottom: 8px;
+            font-size: 1em;
+            font-weight: normal;
+        }
+
+        #risultato li strong {
+            font-weight: 600;
+            color: #0056b3;
+            margin-right: 5px;
+        }
+
+        #risultato small {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        #risultato small.assumption {
+            color: #e85d04;
+            font-weight: 500;
+        }
+
+        .options-container {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .options-container>label {
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .options {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .options:last-child {
+            margin-bottom: 0;
+        }
+
+        .options label {
+            display: inline-block;
+            margin-bottom: 0;
+            margin-left: 8px;
+            font-weight: normal;
+            color: #495057;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+
+        .options input[type="checkbox"],
+        .options input[type="radio"] {
+            width: auto;
+            margin: 0;
+            vertical-align: middle;
+            height: 1.1em;
+            width: 1.1em;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: -15px;
+            margin-bottom: 15px;
+            min-height: 1.2em;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .proroga-info {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .data-originaria {
+            color: #dc3545;
+            text-decoration: line-through;
+            font-weight: normal;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            font-size: 0.9em;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="https://avvocatotelematico.studiolegalearcella.it/public_html/apps/" class="link-home">&laquo; Torna alle Applicazioni</a>
+        <h1>Calcolo termini c.p.c. Cartabia</h1>
+        <div id="rito_label"></div>
+
+        <form id="calcoloForm">
+            <div>
+                <label for="tipo_calcolo">Tipo di Calcolo:</label>
+                <select id="tipo_calcolo" onchange="gestisciTipoCalcolo()">
+                    <optgroup label="Cognizione Ordinaria">
+                        <option value="163bis">Termini a Comparire Art. 163-bis</option>
+                        <option value="171ter">Memorie Art. 171-ter</option>
+                        <option value="189">Conclusioni Art. 189</option>
+                        <option value="275bis">Discussione Orale Art. 275-bis</option>
+                        <option value="281duodecies">Memorie Art. 281-duodecies, co. 4</option>
+                    </optgroup>
+                    <optgroup label="Impugnazioni">
+                        <option value="impugn_breve">Termine Breve (Art. 325)</option>
+                        <option value="impugn_lungo">Termine Lungo (Art. 327)</option>
+                    </optgroup>
+                    <optgroup label="Rito Famiglia e Persone">
+                        <option value="473bis17">Memorie Art. 473-bis.17</option>
+                        <option value="reclamo_473bis24">Reclamo Provv. Temp. Art. 473-bis.24</option>
+                        <option value="473bis28">Rimessione Decisione Art. 473-bis.28</option>
+                    </optgroup>
+                    <optgroup label="Procedimenti Speciali">
+                        <option value="reclamo_669terdecies">Reclamo Provv. Cautelari Art. 669-terdecies</option>
+                    </optgroup>
+                    <optgroup label="Manuale">
+                        <option value="standard" selected>Calcolo Termini Manuale</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div>
+                <label for="data_riferimento" id="label_data_riferimento">Data di Riferimento:</label>
+                <input type="date" id="data_riferimento" required>
+                <small id="desc_data_riferimento" style="font-size: 0.8em; color: #6c757d;">
+                    (Per calcolo manuale avanti/indietro)
+                </small>
+            </div>
+
+            <div id="inputs_163bis" class="hidden">
+                <div>
+                    <label for="direzione_163bis">Calcola:</label>
+                    <select id="direzione_163bis">
+                        <option value="avanti" selected>Prima Udienza Utile (da data notifica)</option>
+                        <option value="ritroso">Ultima Data Notifica Utile (da data udienza)</option>
+                    </select>
+                </div>
+                <div class="options-container" style="padding: 10px 15px; margin-bottom: 10px;">
+                    <label>Luogo Notifica:</label>
+                    <div class="options">
+                        <input type="radio" id="notifica_italia" name="luogo_notifica" value="120" checked>
+                        <label for="notifica_italia">Italia (120gg liberi)</label>
+                    </div>
+                    <div class="options">
+                        <input type="radio" id="notifica_estero" name="luogo_notifica" value="150">
+                        <label for="notifica_estero">Estero (150gg liberi)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="inputs_281duodecies" class="hidden">
+                <div>
+                    <label for="durata1_281">Termine 1 (max 20gg):</label>
+                    <input type="number" id="durata1_281" min="1" max="20" value="20">
+                </div>
+                <div>
+                    <label for="durata2_281">Termine 2 (ulteriore, max 10gg):</label>
+                    <input type="number" id="durata2_281" min="1" max="10" value="10">
+                </div>
+            </div>
+
+            <div id="standard_inputs">
+                <div id="standard_durata_unita">
+                    <div>
+                        <label for="durata">Durata Termine:</label>
+                        <input type="number" id="durata" min="1" placeholder="Es: 30">
+                    </div>
+                    <div>
+                        <label for="unita">Unità di Tempo:</label>
+                        <select id="unita">
+                            <option value="giorni">Giorni</option>
+                            <option value="mesi">Mesi</option>
+                            <option value="anni">Anni</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="standard_direzione">
+                    <label for="direzione">Direzione Calcolo:</label>
+                    <select id="direzione">
+                        <option value="avanti" selected>In Avanti</option>
+                        <option value="ritroso">A Ritroso</option>
+                    </select>
+                </div>
+                <div class="options-container" style="padding: 10px 15px; margin-bottom: 10px;">
+                    <div class="options">
+                        <input type="checkbox" id="termini_liberi">
+                        <label for="termini_liberi">Termine Libero</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <label>Opzioni Generali:</label>
+                <div class="options">
+                    <input type="checkbox" id="sospensione_feriale">
+                    <label for="sospensione_feriale">Applica Sospensione Feriale (1 - 31 Agosto)</label>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error"></div>
+            <button type="button" id="calcolaBtn">Calcola</button>
+
+            <div style="margin-top: 25px;">
+                <label for="risultato">Data Calcolata / Scadenze:</label>
+                <div id="risultato">-- / -- / ----</div>
+            </div>
+        </form>
+    </div>
+
+    <footer>
+        <p>Applicazione realizzata dall'Avv. Roberto Arcella.</p>
+        <p><strong>Attenzione:</strong> Si raccomanda di verificare sempre i risultati ottenuti. Questo strumento è
+            fornito a scopo puramente indicativo e non sostituisce la consulenza legale professionale o la verifica
+            ufficiale dei termini.</p>
+    </footer>
+
+    <script>
+    "use strict";
+    console.log("Blocco JavaScript integrato caricato correttamente.");
+
+    // --- Funzioni Helper (invariate) ---
+    const formattaData = (d) => {
+        if (!d || isNaN(d.getTime())) return "--/--/----";
+        const gg = d.getDate().toString().padStart(2, '0');
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+        const aaaa = d.getFullYear();
+        return `${gg}/${mm}/${aaaa}`;
+    };
+
+    function calcolaPasquaPasquetta(anno) { /* ... */ }
+    function isFestivoOSabDom(data) {
+        // Restituisce true se la data cade in un giorno festivo nazionale, in domenica
+        // oppure in sabato (prefestivo), applicando la regola dell'art. 155 c.p.c.
+        if (!(data instanceof Date) || isNaN(data.getTime())) return false;
+
+        const dow = data.getDay(); // 0 = Domenica, 6 = Sabato
+        if (dow === 0 || dow === 6) return true;
+
+        const day = data.getDate();
+        const month = data.getMonth() + 1; // gennaio = 1
+
+        // Feste nazionali a data fissa (formato D-M)
+        const festeFisse = [
+            '1-1',   // Capodanno
+            '6-1',   // Epifania
+            '25-4',  // Festa della Liberazione
+            '1-5',   // Festa del Lavoro
+            '2-6',   // Festa della Repubblica
+            '15-8',  // Ferragosto
+            '1-11',  // Ognissanti
+            '8-12',  // Immacolata Concezione
+            '25-12', // Natale
+            '26-12'  // Santo Stefano
+        ];
+        if (festeFisse.includes(day + '-' + month)) return true;
+
+        // Pasqua e Pasquetta
+        const anno = data.getFullYear();
+        const pasquaPasquetta = calcolaPasquaPasquetta(anno);
+        if (Array.isArray(pasquaPasquetta) && pasquaPasquetta.length === 2) {
+            const pasqua = pasquaPasquetta[0];
+            const pasquetta = pasquaPasquetta[1];
+            if (pasqua.toDateString() === data.toDateString() ||
+                pasquetta.toDateString() === data.toDateString()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // --- FUNZIONE CALCOLO SINGOLO (CON DEBUG AGGIUNTIVO) ---
+    function eseguiCalcoloSingolo(dataBase, durata, unita, direzione, isLibero, applicaSospensione) {
+        console.log(">> eseguiCalcoloSingolo START", {
+            dataBase: formattaData(dataBase),
+            durata,
+            unita,
+            direzione,
+            isLibero,
+            applicaSospensione
+        });
+
+        if (!(dataBase instanceof Date) || isNaN(dataBase.getTime())) {
+            console.error("!!! Errore Interno: Data base non valida passata a eseguiCalcoloSingolo");
+            return null;
+        }
+
+        let dCalc = new Date(dataBase); // Lavora su una copia
+        let durEff = parseInt(durata, 10);
+        if (isNaN(durEff) || durEff <= 0) {
+            console.error(`!!! Errore Interno: Durata non valida (${durata}) passata a eseguiCalcoloSingolo`);
+            return null;
+        }
+        if (isLibero) {
+            durEff += 1;
+            console.log("   Termine libero: durata effettiva diventa", durEff);
+        }
+
+        let dataCalcolataProvvisoria = new Date(dCalc); // Usata per il calcolo base
+
+        // CALCOLO BASE
+        console.log("   Calcolo base...");
+        try {
+            if (direzione === 'avanti') {
+                if (unita === 'giorni') {
+                    dataCalcolataProvvisoria.setDate(dataCalcolataProvvisoria.getDate() + durEff);
+                } else if (unita === 'mesi') {
+                    const dO = dCalc.getDate();
+                    dataCalcolataProvvisoria.setMonth(dataCalcolataProvvisoria.getMonth() + durEff);
+                    if (dataCalcolataProvvisoria.getDate() < dO) {
+                        dataCalcolataProvvisoria.setDate(0);
+                    }
+                } else if (unita === 'anni') {
+                    dataCalcolataProvvisoria.setFullYear(dataCalcolataProvvisoria.getFullYear() + durEff);
+                }
+            } else { // ritroso
+                if (unita === 'giorni') {
+                    dataCalcolataProvvisoria.setDate(dataCalcolataProvvisoria.getDate() - durEff);
+                } else if (unita === 'mesi') {
+                    const dO = dCalc.getDate();
+                    dataCalcolataProvvisoria.setMonth(dataCalcolataProvvisoria.getMonth() - durEff);
+                    if (dataCalcolataProvvisoria.getDate() < dO) {
+                        dataCalcolataProvvisoria.setDate(0);
+                    }
+                } else if (unita === 'anni') {
+                    dataCalcolataProvvisoria.setFullYear(dataCalcolataProvvisoria.getFullYear() - durEff);
+                }
+            }
+            // Verifica se la data risultante è valida
+            if (isNaN(dataCalcolataProvvisoria.getTime())) {
+                throw new Error("Data non valida dopo calcolo base");
+            }
+            console.log("   > Data dopo calcolo base (provvisoria):", formattaData(dataCalcolataProvvisoria));
+        } catch (e) {
+            console.error("!!! Errore durante il calcolo base:", e);
+            return null; // Interrompi se il calcolo base fallisce
+        }
+
+        dCalc = new Date(dataCalcolataProvvisoria); // Usa come base per sospensione/proroga
+
+        // SOSPENSIONE FERIALE
+        console.log("   Controllo sospensione feriale...");
+        if (applicaSospensione) {
+            try {
+                let giorniSospensioneDaApplicare = 0;
+                const iS = 1, fS = 31;
+                const meseSosp = 7;
+
+                if (direzione === 'avanti') {
+                    let dI = new Date(dataBase);
+                    let dF = new Date(dCalc);
+                    dI.setHours(12, 0, 0, 0);
+                    dF.setHours(12, 0, 0, 0);
+                    let dC = new Date(dI);
+                    dC.setDate(dC.getDate() + 1);
+
+                    let maxIter = 5000, iter = 0;
+                    while (dC < dF && iter < maxIter) {
+                        const mese = dC.getMonth();
+                        if (mese === meseSosp && dC.getDate() >= iS && dC.getDate() <= fS) {
+                            giorniSospensioneDaApplicare++;
+                        }
+                        dC.setDate(dC.getDate() + 1);
+                        iter++;
+                    }
+                    if (iter >= maxIter) console.warn("Max iterazioni sospensione (avanti).");
+
+                    if (giorniSospensioneDaApplicare > 0) {
+                        dCalc.setDate(dCalc.getDate() + giorniSospensioneDaApplicare);
+                        console.log(`   > Applicati ${giorniSospensioneDaApplicare} giorni sosp. (Avanti). Data ora:`, formattaData(dCalc));
+                    } else {
+                        console.log("   > Nessun giorno di sospensione applicabile (Avanti).");
+                    }
+                } else { // Direzione 'ritroso'
+                    let giorniEffettiviScalati = 0;
+                    let giorniFerialiSaltati = 0;
+                    let dataCorrente = new Date(dataBase);
+                    let maxIter = 10000;
+                    let iter = 0;
+
+                    while (giorniEffettiviScalati < durEff && iter < maxIter) {
+                        dataCorrente.setDate(dataCorrente.getDate() - 1);
+                        iter++;
+                        const mese = dataCorrente.getMonth();
+                        const giorno = dataCorrente.getDate();
+                        if (mese === meseSosp && giorno >= iS && giorno <= fS) {
+                            giorniFerialiSaltati++;
+                            continue;
+                        }
+                        giorniEffettiviScalati++;
+                    }
+                    if (iter >= maxIter) console.warn("Max iterazioni sospensione (ritroso)");
+                    dCalc = dataCorrente;
+                    console.log(`   > Sospensione (Ritroso): Scalati ${giorniEffettiviScalati}gg effettivi, saltati ${giorniFerialiSaltati}gg feriali. Data ora:`, formattaData(dCalc));
+                }
+
+                if (isNaN(dCalc.getTime())) {
+                    throw new Error("Data non valida dopo applicazione sospensione");
+                }
+            } catch (e) {
+                console.error("!!! Errore durante l'applicazione della sospensione:", e);
+                return null;
+            }
+        } else {
+            console.log("   > Sospensione feriale non applicata.");
+        }
+
+        // PROROGA
+        console.log("   Controllo proroga...");
+        const dTeorica = new Date(dCalc); // Data prima della proroga
+        let maxIterP = 30,
+            iterP = 0;
+        try {
+            if (direzione === 'avanti') {
+                while (iterP < maxIterP && isFestivoOSabDom(dCalc)) {
+                    dCalc.setDate(dCalc.getDate() + 1);
+                    iterP++;
+                }
+            } else {
+                while (iterP < maxIterP && isFestivoOSabDom(dCalc)) {
+                    dCalc.setDate(dCalc.getDate() - 1);
+                    iterP++;
+                }
+            }
+            if (iterP >= maxIterP) console.warn("Max iterazioni proroga.");
+            if (isNaN(dCalc.getTime())) {
+                throw new Error("Data non valida dopo applicazione proroga");
+            }
+        } catch (e) {
+            console.error("!!! Errore durante l'applicazione della proroga:", e);
+            return null;
+        }
+
+        const prorogaAvvenuta = dCalc.getTime() !== dTeorica.getTime();
+        console.log("   > Data finale dopo proroga:", formattaData(dCalc), "Proroga avvenuta:", prorogaAvvenuta);
+        console.log("<< eseguiCalcoloSingolo END");
+
+        return {
+            dataFinale: dCalc,
+            dataTeorica: dTeorica,
+            prorogaAvvenuta: prorogaAvvenuta
+        };
+    }
+
+    // --- Funzione Principale Chiamata dal Bottone ---
+    function calcolaTermine() {
+        console.log("Funzione calcolaTermine() INIZIO.");
+        const risultatoDiv = document.getElementById('risultato');
+        const errorDiv = document.getElementById('errorMessage');
+        if (!risultatoDiv || !errorDiv) {
+            console.error("Elementi risultato/errore mancanti!");
+            return;
+        }
+        risultatoDiv.innerHTML = '-- / -- / ----';
+        errorDiv.textContent = '';
+        let outputHtml = "";
+        let hasErrors = false;
+
+        try {
+            const tipoCalcoloElement = document.getElementById('tipo_calcolo');
+            const dataRiferimentoElement = document.getElementById('data_riferimento');
+            const sospensioneElement = document.getElementById('sospensione_feriale');
+
+            if (!tipoCalcoloElement || !dataRiferimentoElement || !sospensioneElement)
+                throw new Error("Elementi base del form mancanti.");
+
+            const tipoCalcolo = tipoCalcoloElement.value;
+            const dataRiferimentoStr = dataRiferimentoElement.value;
+            // La checkbox può essere disabilitata da gestisciTipoCalcolo, ma leggiamo comunque lo stato (se non disabilitata)
+            let applicaSospensione = sospensioneElement.checked;
+
+            console.log(`Tipo calcolo selezionato: ${tipoCalcolo}`);
+            console.log(`Data riferimento stringa: ${dataRiferimentoStr}`);
+            console.log(`Applica sospensione: ${applicaSospensione}`);
+
+            if (!dataRiferimentoStr) {
+                if (errorDiv) errorDiv.textContent = 'Inserire la Data di Riferimento.';
+                return;
+            }
+            const dataRiferimento = new Date(dataRiferimentoStr);
+            dataRiferimento.setHours(12, 0, 0, 0);
+            if (isNaN(dataRiferimento.getTime())) {
+                if (errorDiv) errorDiv.textContent = 'Data di Riferimento non valida.';
+                return;
+            }
+            console.log(`Data riferimento Date object: ${dataRiferimento}`);
+
+            // --- Logica per Tipo di Calcolo ---
+            if (tipoCalcolo === 'standard') {
+                console.log("Blocco calcolo: standard");
+                const durataElement = document.getElementById('durata');
+                const unitaElement = document.getElementById('unita');
+                const direzioneElement = document.getElementById('direzione');
+                const liberoElement = document.getElementById('termini_liberi');
+
+                if (!durataElement || !unitaElement || !direzioneElement || !liberoElement)
+                    throw new Error("Elementi mancanti per calcolo standard");
+
+                const durataInput = durataElement.value;
+                const unita = unitaElement.value;
+                const direzione = direzioneElement.value;
+                const isTermineLibero = liberoElement.checked;
+
+                if (!durataInput) {
+                    if (errorDiv) errorDiv.textContent = 'Inserire la Durata.';
+                    return;
+                }
+                const durata = parseInt(durataInput, 10);
+                if (isNaN(durata) || durata <= 0) {
+                    if (errorDiv) errorDiv.textContent = 'La Durata non è valida.';
+                    return;
+                }
+
+                console.log("   Chiamo eseguiCalcoloSingolo per standard...");
+                const res = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    durata,
+                    unita,
+                    direzione,
+                    isTermineLibero,
+                    applicaSospensione
+                );
+                console.log("   Risultato da eseguiCalcoloSingolo (standard):", res);
+
+                if (res) {
+                    const rFF = formattaData(res.dataFinale);
+                    outputHtml = rFF;
+                    if (res.prorogaAvvenuta) {
+                        const rTF = formattaData(res.dataTeorica);
+                        outputHtml += `<span class="proroga-info">(Originariamente: <span class="data-originaria">${rTF}</span>, modificata per festivo/prefestivo)</span>`;
+                    }
+                } else {
+                    outputHtml = "Errore nel calcolo.";
+                    hasErrors = true;
+                }
+            }
+            else if (
+                tipoCalcolo === '171ter' ||
+                tipoCalcolo === '189' ||
+                tipoCalcolo === '275bis' ||
+                tipoCalcolo === '473bis17' ||
+                tipoCalcolo === '473bis28'
+            ) {
+                console.log(`Blocco calcolo: ${tipoCalcolo}`);
+                let scadenze = [];
+                let titoloNota = "";
+                let notaAggiuntiva = "";
+
+                if (tipoCalcolo === '171ter') {
+                    scadenze = [
+                        { label: "Memoria N.1", giorni: 40 },
+                        { label: "Memoria N.2", giorni: 20 },
+                        { label: "Memoria N.3", giorni: 10 }
+                    ];
+                    titoloNota = "Art. 171-ter";
+                } else if (tipoCalcolo === '189') {
+                    scadenze = [
+                        { label: "Prec. Conclusioni", giorni: 60 },
+                        { label: "Comp. Conclusionali", giorni: 30 },
+                        { label: "Memorie Replica", giorni: 15 }
+                    ];
+                    titoloNota = "Art. 189";
+                } else if (tipoCalcolo === '275bis') {
+                    scadenze = [
+                        { label: "Note Precisazione Conclusioni", giorni: 30 },
+                        { label: "Note Conclusionali", giorni: 15 }
+                    ];
+                    titoloNota = "Art. 275-bis";
+                } else if (tipoCalcolo === '473bis17') {
+                    scadenze = [
+                        { label: "Memoria 1° Attore", giorni: 20 },
+                        { label: "Memoria 2° Convenuto", giorni: 10 },
+                        { label: "Memoria 3° Attore", giorni: 5 }
+                    ];
+                    titoloNota = "Art. 473-bis.17";
+                } else if (tipoCalcolo === '473bis28') {
+                    scadenze = [
+                        { label: "Prec. Conclusioni", giorni: 60 },
+                        { label: "Comp. Conclusionali", giorni: 30 },
+                        { label: "Memorie Replica", giorni: 15 }
+                    ];
+                    titoloNota = "Art. 473-bis.28";
+                }
+
+                outputHtml = "<ul>";
+                let note = `<small>(Termini ${titoloNota} c.p.c. calcolati a ritroso dalla data udienza)</small>`;
+
+                for (const scadenza of scadenze) {
+                    console.log(`   Calcolo scadenza ${scadenza.label} (${scadenza.giorni}gg)...`);
+                    const risultato = eseguiCalcoloSingolo(
+                        dataRiferimento,
+                        scadenza.giorni,
+                        'giorni',
+                        'ritroso',
+                        false,
+                        applicaSospensione
+                    );
+                    console.log(`   Risultato ${scadenza.label}:`, risultato);
+
+                    if (risultato) {
+                        const dFmt = formattaData(risultato.dataFinale);
+                        let lbl = `${scadenza.label} (${scadenza.giorni}gg prima)`;
+                        outputHtml += `<li><strong>${lbl}:</strong> ${dFmt}`;
+                        if (risultato.prorogaAvvenuta) {
+                            const dTFmt = formattaData(risultato.dataTeorica);
+                            outputHtml += ` <span class="proroga-info">(orig. <span class="data-originaria">${dTFmt}</span>)</span>`;
+                        }
+                        outputHtml += `</li>`;
+                    } else {
+                        outputHtml += `<li><strong>${scadenza.label} (${scadenza.giorni}gg prima):</strong> Errore</li>`;
+                        hasErrors = true;
+                    }
+                }
+
+                if (tipoCalcolo === '473bis28') {
+                    console.log("   Calcolo scadenza Deposito Sentenza...");
+                    const resSentenza = eseguiCalcoloSingolo(
+                        dataRiferimento,
+                        60,
+                        'giorni',
+                        'avanti',
+                        false,
+                        applicaSospensione
+                    );
+                    console.log(`   Risultato Deposito Sentenza:`, resSentenza);
+
+                    if (resSentenza) {
+                        const dSFmt = formattaData(resSentenza.dataFinale);
+                        outputHtml += `<li><strong>Deposito Sentenza (60gg dopo):</strong> ${dSFmt}`;
+                        if (resSentenza.prorogaAvvenuta) {
+                            const dTSeFmt = formattaData(resSentenza.dataTeorica);
+                            outputHtml += ` <span class="proroga-info">(orig. <span class="data-originaria">${dTSeFmt}</span>)</span>`;
+                        }
+                        outputHtml += `</li>`;
+                        notaAggiuntiva = "<small>Il termine per il deposito della sentenza è calcolato in avanti dall'udienza.</small>";
+                    } else {
+                        outputHtml += `<li><strong>Deposito Sentenza (60gg dopo):</strong> Errore</li>`;
+                        hasErrors = true;
+                    }
+                }
+
+                outputHtml += "</ul>" + note + notaAggiuntiva;
+            }
+            else if (tipoCalcolo === 'impugn_breve') {
+                console.log("Blocco calcolo: impugn_breve");
+                const scadenze = [
+                    { label: "Appello / Revocazione / Opp. Terzo (1° grado)", giorni: 30 },
+                    { label: "Revocazione / Opp. Terzo (Appello)", giorni: 30 },
+                    { label: "Ricorso per Cassazione", giorni: 60 }
+                ];
+
+                outputHtml = "<ul>";
+                let note = "<small>(Termini Art. 325 c.p.c. calcolati in avanti dalla data notifica provvedimento)</small>";
+
+                for (const scadenza of scadenze) {
+                    console.log(`   Calcolo scadenza ${scadenza.label} (${scadenza.giorni}gg)...`);
+                    const risultato = eseguiCalcoloSingolo(
+                        dataRiferimento,
+                        scadenza.giorni,
+                        'giorni',
+                        'avanti',
+                        false,
+                        applicaSospensione
+                    );
+                    console.log(`   Risultato ${scadenza.label}:`, risultato);
+
+                    if (risultato) {
+                        const dFmt = formattaData(risultato.dataFinale);
+                        outputHtml += `<li><strong>${scadenza.label} (${scadenza.giorni}gg):</strong> ${dFmt}`;
+                        if (risultato.prorogaAvvenuta) {
+                            const dTFmt = formattaData(risultato.dataTeorica);
+                            outputHtml += ` <span class="proroga-info">(orig. <span class="data-originaria">${dTFmt}</span>)</span>`;
+                        }
+                        outputHtml += `</li>`;
+                    } else {
+                        outputHtml += `<li><strong>${scadenza.label}:</strong> Errore</li>`;
+                        hasErrors = true;
+                    }
+                }
+                outputHtml += "</ul>" + note;
+            }
+            else if (tipoCalcolo === 'impugn_lungo') {
+                console.log("Blocco calcolo: impugn_lungo");
+                const risultato = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    6,
+                    'mesi',
+                    'avanti',
+                    false,
+                    applicaSospensione
+                );
+                console.log("   Risultato da eseguiCalcoloSingolo (impugn_lungo):", risultato);
+
+                if (risultato) {
+                    const resFinaleFmt = formattaData(risultato.dataFinale);
+                    outputHtml = `<strong>Appello / Cassazione / Revocazione (art. 395 n.4,5):</strong> ${resFinaleFmt}`;
+                    if (risultato.prorogaAvvenuta) {
+                        const resTeoricoFmt = formattaData(risultato.dataTeorica);
+                        outputHtml += `<span class="proroga-info">(Originariamente: <span class="data-originaria">${resTeoricoFmt}</span>, mod. per festivo/prefestivo)</span>`;
+                    }
+                    outputHtml += `<br><small>(Termine di 6 mesi Art. 327 c.p.c. calcolato in avanti dalla data pubblicazione sentenza)</small>`;
+                } else {
+                    outputHtml = "Errore nel calcolo.";
+                    hasErrors = true;
+                }
+            }
+            else if (tipoCalcolo === 'reclamo_473bis24') {
+                console.log("Blocco calcolo: reclamo_473bis24");
+                // BUG #1: Disabilitare sempre sospensione feriale
+                applicaSospensione = false;
+
+                const dR = 10;
+                const res = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    dR,
+                    'giorni',
+                    'avanti',
+                    false,
+                    false
+                );
+                console.log("   Risultato da eseguiCalcoloSingolo (reclamo_473bis24):", res);
+
+                if (res) {
+                    const rFF = formattaData(res.dataFinale);
+                    outputHtml = `<strong>Termine Reclamo (${dR}gg):</strong> ${rFF}`;
+                    if (res.prorogaAvvenuta) {
+                        const rTF = formattaData(res.dataTeorica);
+                        outputHtml += `<span class="proroga-info">(Originariamente: <span class="data-originaria">${rTF}</span>, mod. per festivo/prefestivo)</span>`;
+                    }
+                    outputHtml += `<br><small>(Termine Art. 473-bis.24 c.p.c. calcolato in avanti - Sosp. Feriale NON applicabile)</small>`;
+                } else {
+                    outputHtml = "Errore nel calcolo.";
+                    hasErrors = true;
+                }
+            }
+            else if (tipoCalcolo === 'reclamo_669terdecies') {
+                console.log("Blocco calcolo: reclamo_669terdecies");
+                // Sospensione MAI applicabile, come già previsto
+                applicaSospensione = false;
+
+                const dR = 15;
+                const res = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    dR,
+                    'giorni',
+                    'avanti',
+                    false,
+                    false
+                );
+                console.log("   Risultato da eseguiCalcoloSingolo (reclamo_669terdecies):", res);
+
+                if (res) {
+                    const rFF = formattaData(res.dataFinale);
+                    outputHtml = `<strong>Termine Reclamo (${dR}gg):</strong> ${rFF}`;
+                    if (res.prorogaAvvenuta) {
+                        const rTF = formattaData(res.dataTeorica);
+                        outputHtml += `<span class="proroga-info">(Originariamente: <span class="data-originaria">${rTF}</span>, mod. per festivo/prefestivo)</span>`;
+                    }
+                    outputHtml += `<br><small>(Termine Art. 669-terdecies c.p.c. calcolato in avanti - Sosp. Feriale NON applicabile)</small>`;
+                } else {
+                    outputHtml = "Errore nel calcolo.";
+                    hasErrors = true;
+                }
+            }
+            else if (tipoCalcolo === '163bis') {
+                console.log("Blocco calcolo: 163bis");
+                const direzione163Element = document.getElementById('direzione_163bis');
+                const luogoNotificaRadio = document.querySelector('input[name="luogo_notifica"]:checked');
+
+                if (!direzione163Element)
+                    throw new Error("Elemento mancante: direzione_163bis");
+                if (!luogoNotificaRadio) {
+                    if (errorDiv) errorDiv.textContent = 'Selezionare il luogo di notifica (Italia/Estero).';
+                    return;
+                }
+
+                const direzione163 = direzione163Element.value;
+                const durata163 = parseInt(luogoNotificaRadio.value, 10);
+
+                console.log(`   direzione163: ${direzione163}, durata163: ${durata163}`);
+                const res = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    durata163,
+                    'giorni',
+                    direzione163,
+                    true,
+                    applicaSospensione
+                );
+                console.log("   Risultato da eseguiCalcoloSingolo (163bis):", res);
+
+                if (res) {
+                    const rFF = formattaData(res.dataFinale);
+                    let lblRes = "";
+                    if (direzione163 === 'avanti') {
+                        lblRes = `Prima Udienza Utile (${durata163}gg liberi):`;
+                    } else {
+                        lblRes = `Ultima Data Notifica Utile (${durata163}gg liberi):`;
+                    }
+                    outputHtml = `<strong>${lblRes}</strong> ${rFF}`;
+                    if (res.prorogaAvvenuta) {
+                        const rTF = formattaData(res.dataTeorica);
+                        outputHtml += `<span class="proroga-info">(Originariamente: <span class="data-originaria">${rTF}</span>, modificata per festivo/prefestivo)</span>`;
+                    }
+                    outputHtml += `<br><small>(Termine libero Art. 163-bis c.p.c. calcolato ${direzione163 === 'avanti' ? 'in avanti' : 'a ritroso'})</small>`;
+                } else {
+                    outputHtml = "Errore nel calcolo.";
+                    hasErrors = true;
+                }
+            }
+            else if (tipoCalcolo === '281duodecies') {
+                console.log("Blocco calcolo: 281duodecies");
+                const durata1Input = document.getElementById('durata1_281');
+                const durata2Input = document.getElementById('durata2_281');
+                if (!durata1Input || !durata2Input)
+                    throw new Error("Elementi mancanti per 281duodecies");
+
+                const durata1 = parseInt(durata1Input.value || '20', 10);
+                const durata2 = parseInt(durata2Input.value || '10', 10);
+
+                if (isNaN(durata1) || durata1 <= 0 || durata1 > 20) {
+                    if (errorDiv) errorDiv.textContent = 'Termine 1 deve essere tra 1 e 20 giorni.';
+                    return;
+                }
+                if (isNaN(durata2) || durata2 <= 0 || durata2 > 10) {
+                    if (errorDiv) errorDiv.textContent = 'Termine 2 deve essere tra 1 e 10 giorni.';
+                    return;
+                }
+
+                outputHtml = "<ul>";
+                let note = `<small>(Termini Art. 281-duodecies, co. 4 calcolati in avanti dalla data provvedimento)</small>`;
+
+                // Calcolo Termine 1
+                const res1 = eseguiCalcoloSingolo(
+                    dataRiferimento,
+                    durata1,
+                    'giorni',
+                    'avanti',
+                    false,
+                    applicaSospensione
+                );
+                let dataBasePerTermine2 = null;
+
+                if (res1) {
+                    const dF1 = formattaData(res1.dataFinale);
+                    dataBasePerTermine2 = res1.dataFinale;
+                    outputHtml += `<li><strong>Termine 1 (${durata1}gg):</strong> ${dF1}`;
+                    if (res1.prorogaAvvenuta) {
+                        const dT1 = formattaData(res1.dataTeorica);
+                        outputHtml += ` <span class="proroga-info">(orig. <span class="data-originaria">${dT1}</span>)</span>`;
+                    }
+                    outputHtml += `</li>`;
+                } else {
+                    outputHtml += `<li><strong>Termine 1 (${durata1}gg):</strong> Errore</li>`;
+                    hasErrors = true;
+                }
+
+                // Calcolo Termine 2
+                if (!hasErrors && dataBasePerTermine2) {
+                    const res2 = eseguiCalcoloSingolo(
+                        dataBasePerTermine2,
+                        durata2,
+                        'giorni',
+                        'avanti',
+                        false,
+                        applicaSospensione
+                    );
+                    if (res2) {
+                        const dF2 = formattaData(res2.dataFinale);
+                        outputHtml += `<li><strong>Termine 2 (ult. ${durata2}gg):</strong> ${dF2}`;
+                        if (res2.prorogaAvvenuta) {
+                            const dT2 = formattaData(res2.dataTeorica);
+                            outputHtml += ` <span class="proroga-info">(orig. <span class="data-originaria">${dT2}</span>)</span>`;
+                        }
+                        outputHtml += `</li>`;
+                    } else {
+                        outputHtml += `<li><strong>Termine 2 (ult. ${durata2}gg):</strong> Errore</li>`;
+                        hasErrors = true;
+                    }
+                } else if (!hasErrors) {
+                    outputHtml += `<li><strong>Termine 2 (ult. ${durata2}gg):</strong> Impossibile calcolare</li>`;
+                    hasErrors = true;
+                }
+
+                outputHtml += "</ul>" + note;
+            }
+            else {
+                console.error("Tipo di calcolo non riconosciuto o escluso:", tipoCalcolo);
+                outputHtml = "Tipo di calcolo non implementato o errore logico.";
+                hasErrors = true;
+            }
+
+            // Aggiorna Output Finale
+            if (risultatoDiv) {
+                risultatoDiv.innerHTML = outputHtml;
+                console.log("Output HTML aggiornato.");
+            } else {
+                console.error("Impossibile aggiornare l'output: elemento risultatoDiv non trovato alla fine.");
+            }
+            if (hasErrors && errorDiv && !errorDiv.textContent) {
+                errorDiv.textContent = 'Si sono verificati errori durante il calcolo.';
+            }
+        } catch (error) {
+            console.error("ERRORE CATTURATO in calcolaTermine:", error);
+            if (errorDiv) errorDiv.textContent = `Errore imprevisto: ${error.message}. Controlla la console (F12).`;
+            if (risultatoDiv) {
+                risultatoDiv.innerHTML = `<span style="color: red;">ERRORE: ${error.message}</span>`;
+            }
+        }
+        console.log("Funzione calcolaTermine() FINE.");
+    }
+
+    // --- Funzione per gestire la UI al cambio del tipo di calcolo ---
+    function gestisciTipoCalcolo() {
+        console.log("Chiamata gestisciTipoCalcolo");
+        try {
+            const tipoCalcoloElement = document.getElementById('tipo_calcolo');
+            const standardInputsDiv = document.getElementById('standard_inputs');
+            const inputs163bisDiv = document.getElementById('inputs_163bis');
+            const inputs281duodeciesDiv = document.getElementById('inputs_281duodecies');
+            const labelDataRiferimento = document.getElementById('label_data_riferimento');
+            const descDataRiferimento = document.getElementById('desc_data_riferimento');
+            const durataInputStd = document.getElementById('durata');
+            const ritoLabelDiv = document.getElementById('rito_label');
+            const ferialeChk = document.getElementById('sospensione_feriale');
+
+            const elementiMancanti = [
+                !tipoCalcoloElement && 'tipo_calcolo',
+                !standardInputsDiv && 'standard_inputs',
+                !inputs163bisDiv && 'inputs_163bis',
+                !inputs281duodeciesDiv && 'inputs_281duodecies',
+                !labelDataRiferimento && 'label_data_riferimento',
+                !descDataRiferimento && 'desc_data_riferimento',
+                !durataInputStd && 'durata',
+                !ritoLabelDiv && 'rito_label',
+                !ferialeChk && 'sospensione_feriale'
+            ].filter(Boolean);
+
+            if (elementiMancanti.length > 0) {
+                throw new Error(`Elementi UI mancanti: ${elementiMancanti.join(', ')}`);
+            }
+
+            const tipoCalcolo = tipoCalcoloElement.value;
+            console.log(`Gestione UI per tipo: ${tipoCalcolo}`);
+
+            // Reset iniziale
+            standardInputsDiv.classList.add('hidden');
+            inputs163bisDiv.classList.add('hidden');
+            inputs281duodeciesDiv.classList.add('hidden');
+            durataInputStd.required = false;
+            ritoLabelDiv.textContent = "";
+            // Rimuove la disabilitazione di default dal checkbox
+            ferialeChk.disabled = false;
+
+            // Logica specifica per tipo
+            if (tipoCalcolo === 'standard') {
+                standardInputsDiv.classList.remove('hidden');
+                labelDataRiferimento.textContent = 'Data di Riferimento:';
+                descDataRiferimento.textContent = '(Per calcolo manuale avanti/indietro)';
+                durataInputStd.required = true;
+            }
+            else if (tipoCalcolo === '163bis') {
+                inputs163bisDiv.classList.remove('hidden');
+                const dir163Sel = document.getElementById('direzione_163bis');
+                if (dir163Sel) {
+                    if (!dir163Sel.dataset.listenerAdded) {
+                        dir163Sel.addEventListener('change', gestisciTipoCalcolo);
+                        dir163Sel.dataset.listenerAdded = 'true';
+                    }
+                    if (dir163Sel.value === 'avanti') {
+                        labelDataRiferimento.textContent = 'Data Notifica Citazione:';
+                        descDataRiferimento.textContent = '(Per calcolare la prima udienza utile)';
+                    } else {
+                        labelDataRiferimento.textContent = 'Data Udienza Fissata:';
+                        descDataRiferimento.textContent = '(Per calcolare l\'ultima data notifica utile)';
+                    }
+                }
+            }
+            else if (tipoCalcolo === '281duodecies') {
+                inputs281duodeciesDiv.classList.remove('hidden');
+                labelDataRiferimento.textContent = 'Data Provvedimento Giudice:';
+                descDataRiferimento.textContent = '(Data da cui decorrono i termini assegnati)';
+            }
+            else {
+                // Per gli altri tipi
+                if (
+                    tipoCalcolo === '171ter' ||
+                    tipoCalcolo === '189' ||
+                    tipoCalcolo === '473bis17' ||
+                    tipoCalcolo === '473bis28' ||
+                    tipoCalcolo === '275bis'
+                ) {
+                    labelDataRiferimento.textContent = 'Data Udienza:';
+                    descDataRiferimento.textContent = '(Inserire la data della futura udienza)';
+                }
+                else if (tipoCalcolo === 'impugn_breve') {
+                    labelDataRiferimento.textContent = 'Data Notifica Provvedimento:';
+                    descDataRiferimento.textContent = '(Inserire la data di notifica)';
+                }
+                else if (tipoCalcolo === 'impugn_lungo') {
+                    labelDataRiferimento.textContent = 'Data Pubblicazione Sentenza:';
+                    descDataRiferimento.textContent = '(Inserire la data di pubblicazione)';
+                }
+                else if (tipoCalcolo === 'reclamo_473bis24') {
+                    labelDataRiferimento.textContent = 'Data Pronuncia / Comunicazione / Notifica Provv.:';
+                    descDataRiferimento.textContent = '(Inserire la data rilevante per il reclamo famiglia)';
+                    ritoLabelDiv.textContent = "Rito famiglia e persone";
+                    // Inibisce sempre il flag sospensione feriale
+                    ferialeChk.disabled = true;
+                    ferialeChk.checked = false;
+                }
+                else if (tipoCalcolo === 'reclamo_669terdecies') {
+                    labelDataRiferimento.textContent = 'Data Pronuncia / Comunicazione / Notifica Ordinanza:';
+                    descDataRiferimento.textContent = '(Inserire la data rilevante per il reclamo cautelare)';
+                    // Inibisce sempre il flag sospensione feriale
+                    ferialeChk.disabled = true;
+                    ferialeChk.checked = false;
+                }
+            }
+
+            // Mostra/nascondi etichetta "Rito famiglia e persone"
+            if (
+                tipoCalcolo === '473bis17' ||
+                tipoCalcolo === '473bis28' ||
+                tipoCalcolo === 'reclamo_473bis24'
+            ) {
+                ritoLabelDiv.textContent = "Rito famiglia e persone";
+            }
+        } catch (error) {
+            console.error("Errore in gestisciTipoCalcolo:", error);
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) {
+                errorDiv.textContent = `Errore interfaccia: ${error.message}`;
+            }
+        } finally {
+            const risultatoDiv = document.getElementById('risultato');
+            const errorDiv = document.getElementById('errorMessage');
+            if (risultatoDiv) risultatoDiv.innerHTML = '-- / -- / ----';
+            if (errorDiv && !errorDiv.textContent) errorDiv.textContent = '';
+        }
+    }
+
+    // --- Inizializzazione UI e Event Listener Bottone ---
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM caricato. Inizializzazione UI.");
+        try {
+            gestisciTipoCalcolo(); // Imposta stato iniziale corretto
+            const calcolaButton = document.getElementById('calcolaBtn');
+            if (calcolaButton) {
+                calcolaButton.addEventListener('click', calcolaTermine);
+                console.log("Event listener aggiunto al pulsante Calcola.");
+            } else {
+                throw new Error("Pulsante 'calcolaBtn' non trovato!");
+            }
+            const direzione163Select = document.getElementById('direzione_163bis');
+            if (direzione163Select && !direzione163Select.dataset.listenerAdded) {
+                direzione163Select.addEventListener('change', gestisciTipoCalcolo);
+                direzione163Select.dataset.listenerAdded = 'true';
+                console.log("Event listener aggiunto a direzione_163bis.");
+            }
+        } catch (error) {
+            console.error("Errore durante l'inizializzazione:", error);
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) {
+                errorDiv.textContent = `Errore critico nell'inizializzazione: ${error.message}`;
+            }
+        }
+    });
+    </script>
+</body>
+</html>

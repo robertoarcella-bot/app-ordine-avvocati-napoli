@@ -1,0 +1,499 @@
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Avv. Roberto Arcella">
+    <title>Analisi Atti Processuali v2.3 (Filtro Lunghezza Keyword Aggiornato)</title>
+    <style>
+        /* CSS (INVARIATO - Ometto per brevità) */
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;padding:20px;background-color:#f9f9f9;color:#333;display:flex;flex-direction:column;align-items:center}.container{background-color:#fff;padding:25px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1);width:90%;max-width:900px;margin-bottom:20px}h1,h2,h3{text-align:center;color:#2c3e50;margin-bottom:20px}#drop-zone{border:3px dashed #3498db;border-radius:10px;padding:40px;text-align:center;color:#555;background-color:#ecf0f1;margin-bottom:25px;transition:background-color .3s,border-color .3s;cursor:pointer}#drop-zone.dragover{background-color:#dbeffc;border-color:#2980b9}.analysis-section{margin-top:25px;padding:20px;border:1px solid #ddd;border-radius:5px;background-color:#fff}.analysis-section h3{margin-top:0;color:#0056b3;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:15px;text-align:left}#extracted-text{width:100%;height:200px;font-family:monospace;font-size:.9em;border:1px solid #ccc;border-radius:4px;padding:10px;box-sizing:border-box;resize:vertical;background-color:#fdfdfd;margin-top:10px}.analysis-section p,#keywords-list li{margin:8px 0;font-size:1.05em}#keywords-list{list-style-type:decimal;padding-left:25px;max-height:300px;overflow-y:auto}#keywords-list li span{font-weight:700;color:#333}#keywords-list li small{color:#777;margin-left:5px}#final-judgment{font-weight:700;font-size:1.2em;padding:12px;border-radius:4px;margin-top:15px;text-align:center}.judgment-ottimo{background-color:#d4edda;color:#155724;border:1px solid #c3e6cb}.judgment-buono{background-color:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}.judgment-discreto{background-color:#fff3e0;color:#ef6c00;border:1px solid #ffcc80}.judgment-migliorabile{background-color:#ffebee;color:#c62828;border:1px solid #ef9a9a}#spinner{display:none;border:4px solid #f3f3f3;border-top:4px solid #3498db;border-radius:50%;width:30px;height:30px;animation:spin 1s linear infinite;margin:20px auto}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.error{color:#c0392b;font-weight:700;text-align:center;margin-top:15px}.info{text-align:center;color:#7f8c8d;margin-top:10px;font-size:.9em}small{font-size:.8em;color:#95a5a6}strong{color:#3498db}.limit-ok{color:#28a745;font-weight:700}.limit-exceeded{color:#dc3545;font-weight:700}
+        .credits { text-align: center; font-size: 0.85em; color: #777; margin-top: 25px; margin-bottom: 15px; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.18/mammoth.browser.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <a href="https://avvocatotelematico.studiolegalearcella.it/public_html/apps/" class="link-home">&laquo; Torna alle Applicazioni</a>        
+        <h1>Analisi Atti Processuali</h1>
+        <p class="info">Carica un file PDF o DOCX per l'analisi del rispetto dei requisiti dimensionali previsti dal DM 110/2023 e per una verifica della chiarezza dell'atto</p>
+
+        <div id="drop-zone">
+            Trascina qui il tuo file PDF o DOCX<br>
+            <em>(o clicca per selezionare)</em><br>
+            <small>(Elaborazione locale nel browser)</small>
+        </div>
+
+        <div id="spinner"></div>
+        <p id="error-message" class="error"></p>
+        <p id="status-message" class="info"></p>
+
+        <div id="output-area" class="analysis-section" style="display: none;">
+            <h3>Testo Estratto</h3>
+             <p id="file-info-general">-</p>
+            <textarea id="extracted-text" readonly>...</textarea>
+        </div>
+        <div id="results-sinteticita" class="analysis-section" style="display: none;">
+             <h3>Analisi Sinteticità (Limiti DM 110/2023 Art. 3)</h3>
+             <p id="char-count"></p>
+             <p>Limite 80.000 caratteri (Atti introduttivi/Impugnazioni/Conclusionali): <strong id="limit-80k-status">-</strong></p>
+             <p>Limite 50.000 caratteri (Memorie/Altri atti): <strong id="limit-50k-status">-</strong></p>
+             <p>Limite 10.000 caratteri (Note ex art. 127-ter cpc): <strong id="limit-10k-status">-</strong></p>
+             <p>Valutazione Sinteticità Generale (Rispetto Limite 80k): <strong id="sinteticita-overall">-</strong></p>
+         </div>
+        <div id="results-chiarezza" class="analysis-section" style="display: none;">
+            <h3>Analisi Chiarezza</h3>
+             <p>Lunghezza Media Frase: <strong id="avg-sentence-length">-</strong> parole <small>(Valori bassi indicano frasi più corte)</small></p>
+        </div>
+        <div id="keywords-section" class="analysis-section" style="display: none;">
+            <h3>Parole Chiave Principali (Top 30)</h3>
+             <p id="keywords-info" class="info"></p>
+            <ol id="keywords-list"> </ol>
+        </div>
+        <div id="results-final" class="analysis-section" style="display: none;">
+            <h3>Valutazione Complessiva</h3>
+            <p>Giudizio Complessivo (Basato su Sinteticità e Chiarezza):</p>
+             <div id="final-judgment" class="judgment-fair">-</div>
+        </div>
+
+    </div> <p class="credits">Realizzato dall'Avv. Roberto Arcella</p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM caricato e pronto.");
+            // --- Configurazione e Selezione Elementi DOM ---
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+            const dropZone = document.getElementById('drop-zone');
+            const outputAreaDiv = document.getElementById('output-area');
+            const resultsSinteticitaDiv = document.getElementById('results-sinteticita');
+            const resultsChiarezzaDiv = document.getElementById('results-chiarezza');
+            const keywordsSectionDiv = document.getElementById('keywords-section');
+            const resultsFinalDiv = document.getElementById('results-final');
+            const fileInfoGeneralP = document.getElementById('file-info-general');
+            const extractedTextTarea = document.getElementById('extracted-text');
+            const charCountP = document.getElementById('char-count');
+            const limit80kStatusEl = document.getElementById('limit-80k-status');
+            const limit50kStatusEl = document.getElementById('limit-50k-status');
+            const limit10kStatusEl = document.getElementById('limit-10k-status');
+            const sinteticitaOverallEl = document.getElementById('sinteticita-overall');
+            const avgSentenceLengthEl = document.getElementById('avg-sentence-length');
+            const keywordsListOl = document.getElementById('keywords-list');
+            const keywordsInfoP = document.getElementById('keywords-info');
+            const finalJudgmentEl = document.getElementById('final-judgment');
+            const errorMessageP = document.getElementById('error-message');
+            const statusMessageP = document.getElementById('status-message');
+            const spinner = document.getElementById('spinner');
+
+             if (!dropZone) {
+                 console.error("ERRORE CRITICO: Elemento #drop-zone non trovato!");
+                 alert("Errore di inizializzazione: l'area di caricamento non è stata trovata.");
+                 return;
+             }
+             console.log("Elementi DOM selezionati.");
+            // --- Costanti Configurabili ---
+            const HEADING_WEIGHT_MULTIPLIER = 3; // Peso per parole nei titoli (per keywords)
+             // *** MODIFICA: Aggiornata lunghezza minima parola per keywords ***
+            const MIN_WORD_LENGTH = 4;
+            const TOP_N_KEYWORDS = 30;
+            const SENTENCE_LENGTH_GOOD = 25;
+            const SENTENCE_LENGTH_FAIR = 35;
+            const CHAR_LIMIT_CONCISE = 80000; // Limite generale per sinteticità (usato per giudizio overall)
+            const PDF_HEADING_HEIGHT_FACTOR = 1.35; // Fattore per euristica titoli PDF (per keywords)
+            const PDF_MIN_HEIGHT_CONSIDERED = 5; // Ignora elementi PDF molto piccoli per calcolo moda altezza
+
+            // --- Liste Stop Words ---
+            // *** MODIFICA: Aggiunte parole a italianStopWordsBase ***
+             const italianStopWordsBase = [
+                'a', 'ad', 'al', 'allo', 'ai', 'agli', 'alla', 'alle', 'con', 'col', 'coi', 'da', 'dal', 'dallo', 'dai', 'dagli', 'dalla', 'dalle', 'di', 'del', 'dello', 'dei', 'degli', 'della', 'delle', 'in', 'nel', 'nello', 'nei', 'negli', 'nella', 'nelle', 'su', 'sul', 'sullo', 'sui', 'sugli', 'sulla', 'sulle', 'per', 'tra', 'fra', 'e', 'ed', 'o', 'od', 'ma', 'però', 'tuttavia', 'anche', 'inoltre', 'pure', 'neanche', 'nemmeno', 'oppure', 'ovvero', 'cioè', 'infatti', 'quindi', 'perciò', 'pertanto', 'allora', 'dunque', 'mentre', 'quando', 'finché', 'purché', 'sebbene', 'benché', 'nonostante', 'come', 'così', 'quasi',
+                'il', 'lo', 'i', 'gli', 'la', 'le', 'un', 'uno', 'una', 'un\'',
+                'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra',
+                'che', 'cui', 'chi', 'quale', 'quali', 'quanto', 'quanta', 'quanti', 'quante',
+                'questo', 'questa', 'questi', 'queste', 'quello', 'quella', 'quelli', 'quelle', 'ciò',
+                'esso', 'essa', 'essi', 'esse', 'lui', 'lei', 'loro',
+                'mio', 'tuo', 'suo', 'nostro', 'vostro', 'loro',
+                'mi', 'ti', 'si', 'ci', 'vi', 'lo', 'la', 'li', 'le', 'ne', 'me', 'te', 'sé', 'noi', 'voi',
+                'è', 'sono', 'era', 'erano', 'fui', 'fosti', 'fu', 'fummo', 'foste', 'furono', 'sarà', 'saranno', 'sia', 'siano', 'stato', 'stata', 'stati', 'state', 'essere',
+                'ho', 'hai', 'ha', 'abbiamo', 'avete', 'hanno', 'avevo', 'avevi', 'aveva', 'avevamo', 'avevate', 'avevano', 'ebbi', 'avesti', 'ebbe', 'avemmo', 'aveste', 'ebbero', 'avrò', 'avrai', 'avrà', 'avremo', 'avrete', 'avranno', 'abbia', 'abbiano', 'avuto', 'avuta', 'avuti', 'avute', 'avere',
+                'faccio', 'fai', 'fa', 'facciamo', 'fate', 'fanno', 'facevo', 'facevi', 'faceva', 'facevamo', 'facevate', 'facevano', 'feci', 'facesti', 'fece', 'facemmo', 'faceste', 'fecero', 'farò', 'farai', 'farà', 'faremo', 'farete', 'faranno', 'faccia', 'facciano', 'fatto', 'fatta', 'fatti', 'fatte', 'fare',
+                'sto', 'stai', 'sta', 'stiamo', 'state', 'stanno', 'stavo', 'stavi', 'stava', 'stavamo', 'stavate', 'stavano', 'stetti', 'stesti', 'stette', 'stemmo', 'steste', 'stettero', 'starò', 'starai', 'starà', 'staremo', 'starete', 'staranno', 'stia', 'stiano', 'stare',
+                'non', 'più', 'meno', 'molto', 'poco', 'tanto', 'troppo', 'ogni', 'alcuni', 'alcune', 'nessuno', 'nessuna', 'altro', 'altra', 'altri', 'altre', 'sempre', 'mai', 'già', 'ancora', 'qui', 'qua', 'lì', 'là', 'sopra', 'sotto', 'dentro', 'fuori', 'prima', 'dopo', 'poi', 'presto', 'tardi', 'bene', 'male', 'meglio', 'peggio', 'circa', 'verso', 'contro', 'durante', 'fino', 'oltre', 'senza', 'secondo', 'ecc', 'etc',
+                'art', 'cpc', 'cpp', 'ex', 'n', 'comma', 'codice', 'decreto', 'legge', 'fig', 'pag', 'doc', 'allegato', 'all', 'tribunale', 'corte', 'appello', 'cassazione', 'cass', 'civile', 'penale',
+                'attore', 'convenuto', 'attori', 'attrice', 'attrici', 'convenuti', 'debitore', 'debitori', 'esecutato', 'esecutati', 'terzo', 'terzi', 'tale', 'dell\'',
+                'atto', 'atti', 'citazione', 'ricorso' // <-- Parole aggiunte
+             ].filter(Boolean);
+
+            const commonFirstNamesStopWords = [ /* ... lista nomi invariata ... */ 'giuseppe', 'giovanni', 'antonio', 'mario', 'luigi', 'francesco', 'angelo', 'vincenzo', 'pietro', 'salvatore', 'carlo', 'nicola', 'domenico', 'bruno', 'paolo', 'michele', 'giorgio', 'aldo', 'sergio', 'luciano', 'marco', 'roberto', 'andrea', 'stefano', 'alessandro', 'riccardo', 'claudio', 'maurizio', 'guido', 'enzo', 'massimo', 'renato', 'franco', 'tommaso', 'giancarlo', 'umberto', 'emilio', 'gennaro', 'pasquale', 'armando', 'alfredo', 'fernando', 'filippo', 'edoardo', 'ruggero', 'ettore', 'adriano', 'augusto', 'dario', 'gerardo', 'raffaele', 'lorenzo', 'davide', 'leonardo', 'mattia', 'gabriele', 'simone', 'federico', 'daniele', 'emanuele', 'diego', 'christian', 'samuele', 'alessio', 'luca', 'giacomo', 'cristiano', 'jacopo', 'mirko', 'alberto', 'fabio', 'ivan', 'walter', 'mauro', 'elena', 'anna', 'maria', 'rosa', 'giovanna', 'teresa', 'lucia', 'carmela', 'caterina', 'francesca', 'antonietta', 'carla', 'rita', 'paola', 'annamaria', 'giuseppina', 'angela', 'margherita', 'daniela', 'vincenza', 'patrizia', 'luisa', 'cristina', 'concetta', 'silvana', 'matilde', 'laura', 'donatella', 'adele', 'barbara', 'beatrice', 'cinzia', 'claudia', 'elisabetta', 'emanuela', 'enrica', 'eva', 'federica', 'fiorella', 'gabriella', 'gianna', 'giorgia', 'giulia', 'graziella', 'ilaria', 'isabella', 'loredana', 'loretta', 'manuela', 'marcella', 'marina', 'marta', 'michela', 'milena', 'monica', 'nadia', 'nicoletta', 'ornella', 'raffaella', 'roberta', 'rossana', 'rossella', 'sabrina', 'sandra', 'sara', 'serena', 'simona', 'sonia', 'stefania', 'susanna', 'tiziana', 'valeria', 'vanessa', 'veronica', 'vilma', 'viola', 'virginia', 'sofia', 'aurora', 'ginevra', 'alice', 'emma', 'greta', 'vittoria', 'bianca', 'chiara', 'gaia', 'martina', 'nicole', 'alessia', 'camilla', 'ludovica', 'rebecca', 'adam', 'ahmed', 'ali', 'amir', 'anis', 'ayan', 'bilal', 'david', 'daniel', 'denis', 'elias', 'emil', 'eric', 'gabriel', 'hamza', 'hassan', 'ibrahim', 'ilario', 'ilyas', 'isaac', 'ismail', 'joseph', 'karim', 'kevin', 'khaled', 'leon', 'liam', 'luis', 'malik', 'manuel', 'mateo', 'matteo', 'max', 'maxim', 'mohamed', 'mohammad', 'mohammed', 'mustafa', 'nathan', 'nicolas', 'noah', 'omar', 'oscar', 'rayan', 'reda', 'ryan', 'samir', 'samuel', 'sofiane', 'theo', 'thomas', 'yassin', 'yassine', 'youssef', 'younes', 'zakaria', 'aicha', 'aisha', 'ala', 'alba', 'alina', 'alma', 'amelia', 'amina', 'ana', 'anastasia', 'anita', 'arianna', 'asia', 'aya', 'beatriz', 'celeste', 'chloe', 'clara', 'dalila', 'dalia', 'diana', 'elisa', 'elodie', 'emilia', 'esther', 'fatima', 'fatma', 'hafsa', 'hana', 'helena', 'hiba', 'imane', 'ines', 'iris', 'jana', 'jasmine', 'julia', 'kawtar', 'khadija', 'lara', 'layla', 'lea', 'leila', 'lena', 'lina', 'linda', 'lisa', 'livia', 'lucy', 'luna', 'malak', 'manar', 'maram', 'mariya', 'maryam', 'maya', 'melissa', 'mia', 'mila', 'mina', 'mira', 'miriam', 'nadia', 'nina', 'noemi', 'nour', 'olivia', 'romina', 'romy', 'salma', 'sarah', 'selena', 'selma', 'siria', 'soraya', 'stella', 'tania', 'tea', 'valentina', 'victoria', 'yasmin', 'yasmina', 'yasmine', 'zainab', 'zara', 'zoe', 'juan', 'carlos', 'pedro', 'javier', 'miguel', 'angel', 'josé', 'luis', 'alejandro', 'jorge', 'enrique', 'adrian', 'carmen', 'isabel', 'paula', 'irene', 'natalia', 'rocio', 'pierre', 'alain', 'bernard', 'patrick', 'laurent', 'stephane', 'thierry', 'frederic', 'julien', 'sebastien', 'sophie', 'nathalie', 'sylvie', 'catherine', 'martine', 'valerie', 'christine', 'veronique', 'sandrine', 'stephanie', 'celine', 'laurence', 'anne', 'francoise', 'chantal', 'brigitte', 'john', 'james', 'william', 'charles', 'matthew', 'anthony', 'mark', 'donald', 'steven', 'paul', 'andrew', 'joshua', 'mary', 'patricia', 'linda', 'elizabeth', 'jennifer', 'susan', 'margaret', 'dorothy', 'nancy', 'karen', 'betty', 'helen', 'donna', 'carol', 'ruth', 'sharon', 'hans', 'peter', 'klaus', 'wolfgang', 'jürgen', 'uwe', 'manfred', 'helmut', 'dieter', 'matthias', 'frank', 'bernd', 'werner', 'markus', 'sabine', 'susanne', 'petra', 'ursula', 'birgit', 'renate', 'karin', 'helga', 'gisela', 'ingrid', 'ulrike', 'angelika', 'heike', 'vasile', 'gheorghe', 'constantin', 'nicolae', 'florin', 'mihai', 'alexandru', 'marius', 'cristian', 'andrei', 'petru', 'sorin', 'radu', 'george', 'dumitru', 'ioana', 'mihaela', 'florentina', 'nicoleta', 'georgeta', 'daniela', 'adriana', 'monica', 'alina', 'andreea', 'vasilica', 'mariana', 'liliana', 'rodica', 'wei', 'jing', 'li', 'wang', 'zhang', 'liu', 'yang', 'huang', 'zhao', 'wu', 'xu', 'sun', 'hu', 'zhu', 'gao', 'lin', 'he', 'guo', 'ma'].filter(Boolean);
+            const italianCityStopWords = [ /* ... lista città invariata ... */ 'roma', 'milano', 'napoli', 'torino', 'palermo', 'genova', 'bologna', 'firenze', 'bari', 'catania', 'venezia', 'verona', 'messina', 'padova', 'trieste', 'brescia', 'parma', 'taranto', 'modena', 'reggio', 'calabria', 'emilia', 'perugia', 'ravenna', 'livorno', 'cagliari', 'foggia', 'rimini', 'salerno', 'ferrara', 'sassari', 'latina', 'monza', 'siracusa', 'pescara', 'bergamo', 'forlì', 'trento', 'vicenza', 'terni', 'bolzano', 'novara', 'piacenza', 'ancona', 'andria', 'arezzo', 'udine', 'cesena', 'spezia', 'lecce', 'pesaro', 'barletta', 'alessandria', 'pistoia', 'pisa', 'catanzaro', 'como', 'lucca', 'brindisi', 'guidonia', 'montecelio', 'torre', 'greco', 'annunziata', 'treviso', 'busto', 'arsizio', 'marsala', 'grosseto', 'sesto', 'giovanni', 'pozzuoli', 'varese', 'caserta', 'cinisello', 'balsamo', 'asti', 'casoria', 'ragusa', 'gela', 'pavia', 'cremona', 'quartu', 'elena', 'lamezia', 'terme', 'altamura', 'imola', 'massa', 'trapani', 'aprilia', 'carpi', 'potenza', 'castellammare', 'stabia', 'viterbo', 'afragola', 'crotone', 'vigevano', 'vittoria', 'savona', 'matera', 'legnano', 'benevento', 'cosenza', 'olbia', 'agrigento', 'faenza', 'caltanissetta', 'acerra', 'molfetta', 'trani', 'bisceglie', 'moncalieri', 'modica', 'ercolano', 'cuneo', 'manfredonia', 'tivoli', 'bagheria', 'san', 'severo', 'giorgio', 'cremano', 'cerignola', 'avellino', 'velletri', 'bitonto', 'portici', 'chieti', 'gallarate', 'rovigo', 'aversa', 'scafati', 'mazara', 'vallo', 'acireale', 'sanremo', 'battipaglia', 'giugliano', 'campania', 'aosta', 'biella', 'verbania', 'sondrio', 'lecco', 'lodi', 'mantova', 'belluno', 'gorizia', 'pordenone', 'imperia', 'prato', 'siena', 'macerata', 'fermo', 'piceno', 'rieti', 'frosinone', 'isernia', 'campobasso', 'aquila', 'teramo', 'vibo', 'valentia', 'enna', 'nuoro', 'oristano', 'sud', 'sardegna' ].filter(Boolean);
+
+            const allStopWordsSet = new Set([
+                ...italianStopWordsBase,
+                ...commonFirstNamesStopWords,
+                ...italianCityStopWords
+            ]);
+            console.log(`Set stop words creato: ${allStopWordsSet.size} elementi.`);
+
+            // --- Funzioni UI Helper ---
+            function resetUI(){errorMessageP.textContent='';statusMessageP.textContent='';outputAreaDiv.style.display='none';resultsSinteticitaDiv.style.display='none';resultsChiarezzaDiv.style.display='none';keywordsSectionDiv.style.display='none';resultsFinalDiv.style.display='none';fileInfoGeneralP.textContent='-';extractedTextTarea.value='';charCountP.textContent='';limit80kStatusEl.textContent='-';limit80kStatusEl.className='';limit50kStatusEl.textContent='-';limit50kStatusEl.className='';limit10kStatusEl.textContent='-';limit10kStatusEl.className='';sinteticitaOverallEl.textContent='-';sinteticitaOverallEl.className='';avgSentenceLengthEl.textContent='-';finalJudgmentEl.textContent='-';finalJudgmentEl.className='judgment-fair';keywordsListOl.innerHTML='';keywordsInfoP.textContent='';spinner.style.display='none'}
+            function showSpinner(e='Analisi in corso...'){resetUI();spinner.style.display='block';statusMessageP.textContent=e}
+            function hideSpinner(){spinner.style.display='none'}
+            function displayError(e){resetUI();spinner.style.display='none';errorMessageP.textContent=`Errore: ${e}`;statusMessageP.textContent=''}
+
+            // --- Funzioni Utility Testo ---
+            function cleanText(text) {
+                 if (!text) return '';
+                let cleaned = text.toLowerCase();
+                cleaned = cleaned.replace(/https?:\/\/[^\s]+/g, ' '); // Rimuove URL
+                cleaned = cleaned.replace(/(\d+)|[.,;:!?(){}[\]"“”«»<>*+/=|_~^%&@#$•–—]/g, ' '); // Rimuove punteggiatura e numeri
+                cleaned = cleaned.replace(/\s+/g, ' ').trim(); // Normalizza spazi
+                return cleaned;
+            }
+            // *** MODIFICA: La costante MIN_WORD_LENGTH ora è 5, quindi questa funzione esclude parole < 5 lettere ***
+             function tokenizeAndFilter(cleanedText, stopWordsSet) {
+                if (!cleanedText) return [];
+                const tokens = cleanedText.split(' ');
+                return tokens.filter(word =>
+                    word.length >= MIN_WORD_LENGTH && // Ora MIN_WORD_LENGTH è 5
+                    !stopWordsSet.has(word) &&
+                    isNaN(word)
+                 );
+            }
+
+            // --- Funzioni Estrazione Keywords con Ponderazione Titoli (per keywords) ---
+            function extractHeadingWordsFromHtml(bodyElement, stopWordsSet) {
+                const headingWords = new Set();
+                if (!bodyElement) return headingWords;
+                const headingTags = bodyElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                headingTags.forEach((tag) => {
+                    const cleanedHeadingText = cleanText(tag.textContent);
+                    const tokens = tokenizeAndFilter(cleanedHeadingText, stopWordsSet); // Usa la nuova logica di filtro
+                    tokens.forEach(token => headingWords.add(token));
+                });
+                return headingWords;
+            }
+             function estimateHeadingWordsFromPdf(textContentItems, stopWordsSet) {
+                const headingWords = new Set();
+                if (!textContentItems || textContentItems.length === 0) return headingWords;
+                const heights = textContentItems.map(item => item.height).filter(h => h > PDF_MIN_HEIGHT_CONSIDERED);
+                if (heights.length === 0) return headingWords;
+
+                const heightCounts = heights.reduce((acc, height) => {
+                    const roundedHeight = Math.round(height);
+                     acc[roundedHeight] = (acc[roundedHeight] || 0) + 1;
+                    return acc;
+                }, {});
+                let modeHeight = 0;
+                let maxCount = 0;
+                for (const height in heightCounts) {
+                    if (heightCounts[height] > maxCount) {
+                        maxCount = heightCounts[height];
+                        modeHeight = parseInt(height, 10);
+                    }
+                }
+                if (modeHeight === 0) return headingWords;
+
+                const headingHeightThreshold = modeHeight * PDF_HEADING_HEIGHT_FACTOR;
+                textContentItems.forEach(item => {
+                     if (item.height > headingHeightThreshold) {
+                         const cleanedItemText = cleanText(item.str);
+                         const tokens = tokenizeAndFilter(cleanedItemText, stopWordsSet); // Usa la nuova logica di filtro
+                         tokens.forEach(token => headingWords.add(token));
+                     }
+                 });
+                return headingWords;
+            }
+            function getWeightedKeywords(allSignificantWords, headingWordsSet) {
+                if (!allSignificantWords || allSignificantWords.length === 0) return [];
+                const frequencyMap = new Map();
+                allSignificantWords.forEach(word => {
+                    frequencyMap.set(word, (frequencyMap.get(word) || 0) + 1);
+                });
+                const weightedScores = [];
+                for (const [word, count] of frequencyMap.entries()) {
+                    let score = count;
+                    if (headingWordsSet.has(word)) {
+                        score *= HEADING_WEIGHT_MULTIPLIER;
+                    }
+                    weightedScores.push({ word: word, originalCount: count, score: score });
+                }
+                 weightedScores.sort((a, b) => {
+                    if (b.score !== a.score) { return b.score - a.score; }
+                    return b.originalCount - a.originalCount; // Tie-breaker sulla frequenza originale
+                });
+                return weightedScores.slice(0, TOP_N_KEYWORDS).map(item => [item.word, item.originalCount]);
+            }
+
+            // --- Funzione Visualizzazione Keywords ---
+            // *** MODIFICA: Aggiornato testo info keyword con riferimento a MIN_WORD_LENGTH ***
+            function displayKeywords(keywords) {
+                 keywordsListOl.innerHTML = "";
+                 if (keywords.length === 0) {
+                     keywordsInfoP.textContent = "Nessuna parola chiave significativa trovata.";
+                 } else {
+                     keywordsInfoP.textContent = `Le ${keywords.length} parole più frequenti (priorità ai titoli, escluse stop words: articoli, preposizioni, nomi comuni, città, termini legali comuni, parole con meno di ${MIN_WORD_LENGTH} lettere):`;
+                     keywords.forEach(([word, count]) => {
+                         const li = document.createElement("li");
+                         const span = document.createElement("span");
+                         span.textContent = word;
+                         const small = document.createElement("small");
+                         small.textContent = ` (${count} occ.)`;
+                         li.appendChild(span);
+                         li.appendChild(small);
+                         keywordsListOl.appendChild(li);
+                     });
+                 }
+                 keywordsSectionDiv.style.display = "block";
+             }
+
+
+            // --- Funzioni Analisi Chiarezza ---
+            function getTextMetrics(e){if(!e||0===e.trim().length)return null;const t=e.match(/[a-zA-ZàèéìòùÀÈÉÌÒÙ]/g),n=t?t.length:0,r=e.trim().split(/\s+/).filter(Boolean),s=r.length;if(0===s)return{letterCount:0,wordCount:0,sentenceCount:0};const o=e.match(/[^.!?…;:]+[.!?…;:](\s+|$)/g);let a=o?o.length:0;return 0===a&&s>0&&(a=1),{letterCount:n,wordCount:s,sentenceCount:a}}
+            function calculateAvgSentenceLength(e,t){return 0===t?NaN:Math.round(e/t)}
+
+            // --- Funzione Giudizio Complessivo (Senza Struttura) ---
+            function formulateJudgment(isConcise, avgLength) {
+                let judgmentText = '';
+                let judgmentClass = 'judgment-migliorabile'; // Default
+                let clarityLevel = 'indefinita';
+                let clarityDesc = "(Lunghezza media frasi non calcolabile)";
+
+                if (!isNaN(avgLength)) {
+                    if (avgLength <= SENTENCE_LENGTH_GOOD) { clarityLevel = 'buona'; clarityDesc = `(${avgLength} parole/frase)`; }
+                    else if (avgLength <= SENTENCE_LENGTH_FAIR) { clarityLevel = 'discreta'; clarityDesc = `(${avgLength} parole/frase)`; }
+                    else { clarityLevel = 'bassa'; clarityDesc = `(${avgLength} parole/frase)`; }
+                }
+
+                if (!isConcise) {
+                    judgmentText = `Atto NON SINTETICO (supera limite ${CHAR_LIMIT_CONCISE.toLocaleString('it-IT')} caratteri).`;
+                    if (clarityLevel !== 'indefinita') judgmentText += ` Chiarezza ${clarityLevel} ${clarityDesc}.`;
+                    judgmentClass = 'judgment-migliorabile';
+                } else {
+                    judgmentText = "Atto SINTETICO.";
+                    if (clarityLevel === 'buona') { judgmentText += ` Molto chiaro ${clarityDesc}.`; judgmentClass = 'judgment-ottimo'; }
+                    else if (clarityLevel === 'discreta') { judgmentText += ` Chiarezza discreta ${clarityDesc}.`; judgmentClass = 'judgment-buono'; }
+                    else if (clarityLevel === 'bassa') { judgmentText += ` Chiarezza bassa ${clarityDesc}.`; judgmentClass = 'judgment-discreto'; }
+                    else { judgmentText += " (Chiarezza non valutabile)."; judgmentClass = 'judgment-discreto'; }
+                }
+                return { judgmentText, judgmentClass };
+            }
+
+            // --- Funzione Visualizzazione Risultati Sinteticità ---
+            function displaySinteticitaResults(characterCount) {
+                charCountP.textContent = `Caratteri totali (spazi esclusi): ${characterCount.toLocaleString('it-IT')}`;
+                const limit80k=8e4, limit50k=5e4, limit10k=1e4;
+                const isUnder80k = characterCount <= limit80k, isUnder50k = characterCount <= limit50k, isUnder10k = characterCount <= limit10k;
+                limit80kStatusEl.textContent=isUnder80k?"Rispettato":"Superato"; limit80kStatusEl.className=isUnder80k?"limit-ok":"limit-exceeded";
+                limit50kStatusEl.textContent=isUnder50k?"Rispettato":"Superato"; limit50kStatusEl.className=isUnder50k?"limit-ok":"limit-exceeded";
+                limit10kStatusEl.textContent=isUnder10k?"Rispettato":"Superato"; limit10kStatusEl.className=isUnder10k?"limit-ok":"limit-exceeded";
+                const isConciseOverall = characterCount <= CHAR_LIMIT_CONCISE; // Usa limite 80k per valutazione generale
+                sinteticitaOverallEl.textContent = isConciseOverall ? 'Sì' : `No (supera ${CHAR_LIMIT_CONCISE.toLocaleString('it-IT')})`;
+                sinteticitaOverallEl.className = isConciseOverall ? 'limit-ok' : 'limit-exceeded';
+                resultsSinteticitaDiv.style.display = "block";
+            }
+
+            // --- Funzione Conteggio Caratteri ---
+            function analyzeCharacterCount(text) {
+                if (!text) return 0;
+                return text.replace(/\s/g, '').length; // Conteggio senza spazi
+            }
+
+             // --- Logica Principale Processamento File ---
+             function performAnalysisAndDisplay(fileName, fullText, headingWordsSet) {
+                try {
+                    console.log("Inizio performAnalysisAndDisplay...");
+                    if (!fullText || fullText.trim().length === 0) { displayError("Testo estratto vuoto o non valido."); return; }
+                    statusMessageP.textContent = "Analisi in corso...";
+                    fileInfoGeneralP.textContent = `File Analizzato: ${fileName}`;
+                    extractedTextTarea.value = fullText;
+                    outputAreaDiv.style.display = 'block';
+
+                    // 1. Sinteticità (DM110)
+                    console.log("Avvio analyzeCharacterCount...");
+                    const charCount = analyzeCharacterCount(fullText);
+                    const isConcise = charCount <= CHAR_LIMIT_CONCISE;
+                    displaySinteticitaResults(charCount);
+
+                    // 2. Chiarezza (Lunghezza Frase)
+                    console.log("Avvio getTextMetrics...");
+                    const metrics = getTextMetrics(fullText);
+                    let avgLength = NaN;
+                    if (metrics && metrics.wordCount > 0 && metrics.sentenceCount > 0) {
+                         avgLength = calculateAvgSentenceLength(metrics.wordCount, metrics.sentenceCount);
+                    }
+                    avgSentenceLengthEl.textContent = isNaN(avgLength) ? 'N/A' : avgLength;
+                    resultsChiarezzaDiv.style.display = 'block';
+
+                    // 3. Keywords Ponderate (usa il nuovo filtro lunghezza e le nuove stop words)
+                    console.log("Avvio analisi keywords...");
+                    const cleanedFullText = cleanText(fullText);
+                    const allSignificantWords = tokenizeAndFilter(cleanedFullText, allStopWordsSet); // Usa il filtro aggiornato
+                    const topKeywords = getWeightedKeywords(allSignificantWords, headingWordsSet);
+                    displayKeywords(topKeywords);
+
+                    // 4. Giudizio Finale (Senza Struttura)
+                    console.log("Avvio formulazione giudizio (senza struttura)...");
+                    const judgmentResult = formulateJudgment(isConcise, avgLength);
+                    finalJudgmentEl.textContent = judgmentResult.judgmentText;
+                    finalJudgmentEl.className = 'final-judgment ' + judgmentResult.judgmentClass;
+                    resultsFinalDiv.style.display = 'block';
+
+                    hideSpinner();
+                    console.log("Analisi completata.");
+                 } catch (error) {
+                    console.error("Errore dettagliato durante l'analisi:", error);
+                    displayError(`Si è verificato un errore durante l'analisi: ${error.message || JSON.stringify(error)}`);
+                    hideSpinner();
+                 }
+            }
+
+            // --- Funzioni processDocx e processPdf (Logica interna invariata) ---
+            function handleFile(file) {
+                 console.log(`handleFile chiamato per: ${file?.name || 'file non valido'}`);
+                 if (!file) { console.error("handleFile: File nullo."); displayError("Nessun file valido ricevuto."); return; }
+                const fileName = file.name;
+                const fileExtension = fileName.split('.').pop()?.toLowerCase();
+                if (!fileExtension) { displayError("Impossibile determinare l'estensione del file."); return; }
+                showSpinner(`Analisi del file: ${fileName}...`);
+                if (fileExtension === 'docx') { processDocx(file); }
+                else if (fileExtension === 'pdf') { processPdf(file); }
+                else { displayError(`Formato file non supportato: .${fileExtension}. Accettati: .docx, .pdf.`); hideSpinner(); }
+            }
+
+            function processDocx(file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                     statusMessageP.textContent = `Estrazione struttura da DOCX...`;
+                     try {
+                         const arrayBuffer = event.target.result;
+                         if (!arrayBuffer) throw new Error("FileReader result (ArrayBuffer) è nullo per DOCX.");
+
+                         mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                            .then(result => {
+                                statusMessageP.textContent = `Analisi DOCX...`;
+                                const parser = new DOMParser();
+                                const docHtml = parser.parseFromString(result.value || "", 'text/html');
+                                const body = docHtml.body;
+                                const fullText = body?.textContent || "";
+                                const headingWordsSet = body ? extractHeadingWordsFromHtml(body, allStopWordsSet) : new Set();
+                                 console.log(`DOCX: Testo completo ${fullText.length} caratteri. Trovati ${headingWordsSet.size} parole uniche nei titoli Hx (per keywords).`);
+                                 performAnalysisAndDisplay(file.name, fullText, headingWordsSet);
+                            })
+                            .catch(mammothError => {
+                                console.warn("Conversione DOCX in HTML fallita:", mammothError);
+                                statusMessageP.textContent = `Conversione HTML fallita, estrazione testo grezzo...`;
+                                mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                                    .then(rawResult => {
+                                         const fullText = rawResult.value || "";
+                                         const headingWordsSet = new Set(); // No heading info from raw text
+                                         console.warn("Analisi DOCX su testo grezzo, senza priorità titoli per keywords.");
+                                         performAnalysisAndDisplay(file.name, fullText, headingWordsSet);
+                                     })
+                                    .catch(rawError => {
+                                         console.error("Errore finale estrazione testo da DOCX:", rawError);
+                                         displayError("Impossibile estrarre testo dal file DOCX."); hideSpinner();
+                                    });
+                            });
+                     } catch (e) {
+                          console.error("Errore sincrono in processDocx:", e);
+                          displayError(`Errore imprevisto elaborazione DOCX: ${e.message}`); hideSpinner();
+                     }
+                };
+                reader.onerror = (e) => { console.error("FileReader error (DOCX):", e); displayError("Errore lettura file DOCX."); hideSpinner(); }
+                reader.readAsArrayBuffer(file);
+            }
+
+            function processPdf(file) {
+                const reader = new FileReader();
+                reader.onload = async function(event) {
+                    let pdf = null;
+                    try {
+                        if (!event.target.result) throw new Error("FileReader result è nullo per PDF.");
+                        const pdfData = new Uint8Array(event.target.result);
+                        statusMessageP.textContent = `Caricamento PDF...`;
+                        pdf = await pdfjsLib.getDocument({ data: pdfData, verbosity: 0 }).promise;
+                        let fullText = ''; let headingWordsSet = new Set(); const allItems = [];
+                        statusMessageP.textContent = `Estrazione testo dalle pagine PDF (0/${pdf.numPages})...`;
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                             if(i % 5 === 0 || i === pdf.numPages) { statusMessageP.textContent = `Estrazione testo - Pagina ${i} di ${pdf.numPages}...`; }
+                            const page = await pdf.getPage(i);
+                            let textContent = null;
+                            try { textContent = await page.getTextContent({ normalizeWhitespace: true, disableCombineTextItems: false }); }
+                            catch (textContentError) { console.warn(`Errore getTextContent pagina ${i}:`, textContentError); textContent = { items: [] }; }
+                            finally { if (page && page.cleanup) page.cleanup(); }
+
+                            if (textContent && textContent.items) {
+                                textContent.items.forEach(item => {
+                                    if (item && item.str) {
+                                        fullText += item.str; if (!/\s$/.test(item.str)) { fullText += ' '; } // Aggiunge spazio se non presente
+                                        if (item.height > 0) { allItems.push(item); } // Raccoglie item con altezza per euristica titoli (keywords)
+                                    }
+                                });
+                            } fullText += '\n'; // Aggiunge newline tra pagine
+                        }
+                        fullText = fullText.trim();
+                        if (allItems.length > 0) {
+                            statusMessageP.textContent = `Analisi euristica titoli PDF (per keywords)...`;
+                            try { headingWordsSet = estimateHeadingWordsFromPdf(allItems, allStopWordsSet); }
+                            catch (heuristicError) { console.error("Errore euristica titoli PDF:", heuristicError); headingWordsSet = new Set(); }
+                        } else { console.warn("Nessun item PDF valido per analisi titoli (keywords)."); headingWordsSet = new Set(); }
+
+                         console.log(`PDF: Testo completo ${fullText.length} caratteri. Stimate ${headingWordsSet.size} parole uniche nei titoli (per keywords).`);
+                         performAnalysisAndDisplay(file.name, fullText, headingWordsSet);
+
+                    } catch (error) {
+                         console.error("Errore durante l'elaborazione PDF:", error);
+                         let errorMsg = "Impossibile elaborare il file PDF.";
+                        if (error.name === 'PasswordException' || (error.message && error.message.includes('Password'))) { errorMsg = "PDF protetto da password."; }
+                        else if (error.message && (error.message.includes('Invalid PDF structure') || error.message.includes('Format error') || error.name === 'InvalidPDFException')) { errorMsg = "Struttura PDF non valida o file corrotto."; }
+                        else if (error.name === 'MissingPDFException') { errorMsg = "File non valido o non è un PDF."; }
+                        else if (error.name === 'UnknownErrorException') { errorMsg = `Errore sconosciuto pdf.js: ${error.message}`; }
+                        else { errorMsg = `Errore imprevisto PDF: ${error.message || error}`; }
+                        displayError(errorMsg);
+                        hideSpinner();
+                    } finally { if (pdf && pdf.destroy) { await pdf.destroy().catch(err => console.error("Errore destroy PDF:", err)); } }
+                };
+                reader.onerror = (e) => { console.error("FileReader error (PDF):", e); displayError("Errore lettura file PDF."); hideSpinner(); }
+                 reader.readAsArrayBuffer(file);
+            }
+
+
+            // --- Inizializzazione e Collegamento Eventi (INVARIATO) ---
+            console.log("Aggiunta event listeners...");
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file'; fileInput.accept = ".docx,.pdf"; fileInput.style.display = 'none';
+            fileInput.addEventListener('change', (event) => {
+                console.log('Evento "change" su fileInput.');
+                 try { resetUI(); } catch (e) { console.error("Errore resetUI su change:", e); }
+                 const files = event.target.files;
+                 if (files && files.length > 0) {
+                     console.log(`File selezionato: ${files[0].name}, avvio handleFile...`);
+                      handleFile(files[0]);
+                 } else { console.log("Nessun file selezionato."); }
+                 event.target.value = null; // Permette di ricaricare lo stesso file
+            });
+            document.body.appendChild(fileInput);
+            console.log("Input file nascosto aggiunto.");
+
+            dropZone.addEventListener('click', () => { console.log('Evento "click" su dropZone.'); fileInput.click(); });
+            dropZone.addEventListener('dragover', (event) => { event.preventDefault(); event.stopPropagation(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', (event) => { event.preventDefault(); event.stopPropagation(); dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (event) => {
+                event.preventDefault(); event.stopPropagation(); console.log('Evento "drop" su dropZone.');
+                dropZone.classList.remove('dragover');
+                 try { resetUI(); } catch (e) { console.error("Errore resetUI su drop:", e); }
+                const files = event.dataTransfer.files;
+                if (files && files.length > 0) {
+                    console.log(`File trascinato: ${files[0].name}, avvio handleFile...`);
+                    handleFile(files[0]);
+                } else { console.log("Nessun file valido trovato nel drop."); displayError("Nessun file valido trovato."); }
+            });
+            console.log("Event listeners aggiunti.");
+
+            resetUI(); // Resetta UI all'avvio
+            console.log("UI resettata.");
+
+        }); // Fine DOMContentLoaded listener
+    </script>
+
+</body>
+</html>

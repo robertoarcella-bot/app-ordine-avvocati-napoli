@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preventivo Professionale Avvocati</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d47a1;
+            --secondary-color: #1976d2;
+            --accent-color: #2196f3;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666666;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--primary-color);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #2c3e50;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #b08d4a;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Fe Calculator Styles */
+        #fasi-container {
+            padding: 15px;
+            background: #fdfcf8;
+            border: 1px dashed var(--secondary-color);
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: #f9f9f9;
+        }
+
+        .total-row td {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-top: 2px solid var(--primary-color);
+        }
+
+        /* Preview / PDF Styles */
+        #quote-preview {
+            display: none;
+            background: white;
+            padding: 60px;
+            margin-top: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            color: #000;
+            /* Real black for print */
+        }
+
+        .letterhead {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .letterhead h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .letterhead p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .quote-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .legal-text {
+            font-size: 0.9rem;
+            text-align: justify;
+            margin-top: 30px;
+            white-space: pre-wrap;
+        }
+
+        .signatures {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 200px;
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .container>*:not(#quote-preview) {
+                display: none !important;
+            }
+
+            #quote-preview {
+                display: block !important;
+                box-shadow: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .section-card,
+            header,
+            .btn {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            #quote-preview {
+                padding: 20px;
+            }
+        }
+
+        .info-alert {
+            background-color: #e8f4fd;
+            border-left: 4px solid var(--accent-color);
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .phase-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .phase-override {
+            width: 120px !important;
+            padding: 4px 8px !important;
+            font-size: 0.85rem !important;
+        }
+
+        .forfait-container {
+            background-color: #fce4ec;
+            border: 1px solid #f06292;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Preventivo Avvocato</h1>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                di <a href="https://avvocatotelematico.studiolegalearcella.it/apps/"
+                    style="color: var(--secondary-color); text-decoration: none; font-weight: 500;">robertoarcella
+                    @2026</a> |
+                <a href="https://avvocatotelematico.studiolegalearcella.it/apps/"
+                    style="color: var(--primary-color); text-decoration: underline;">Torna alle Apps</a>
+            </div>
+        </header>
+
+        <!-- Sezione Avvocato -->
+        <div class="section-card" id="lawyer-section">
+            <h2>Dati del Professionista</h2>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="lawyer_name">Nome e Cognome</label>
+                    <input type="text" id="lawyer_name" placeholder="Esempio: Avv. Mario Rossi">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_insurance">Polizza Assicurativa (Compagnia e Numero)</label>
+                    <input type="text" id="lawyer_insurance" placeholder="Esempio: Generali n. 123456789">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_studio">Studio Legale</label>
+                    <input type="text" id="lawyer_studio" placeholder="Esempio: Studio Legale Associato Rossi">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_address">Indirizzo</label>
+                    <input type="text" id="lawyer_address" placeholder="Via, Città, CAP">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_vat">Partita IVA</label>
+                    <input type="text" id="lawyer_vat" placeholder="00000000000">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_email">Email / PEC</label>
+                    <input type="email" id="lawyer_email" placeholder="email@esempio.it">
+                </div>
+                <div class="form-group">
+                    <label for="lawyer_phone">Telefono</label>
+                    <input type="text" id="lawyer_phone" placeholder="+39 000 0000000">
+                </div>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="flag_ai" style="width: auto;">
+                    <label for="flag_ai" style="margin:0; font-weight:normal; font-size: 0.85rem;">Includi informativa
+                        utilizzo IA (ex art. 13 L. 132/2025)</label>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" onclick="saveLawyerProfile()">Salva Profilo</button>
+                    <div id="save-status"
+                        style="display:inline-block; margin-left:10px; font-size:0.8rem; color:#27ae60;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione Cliente -->
+        <div class="section-card">
+            <h2>Dati del Cliente e Incarico</h2>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="client_name">Nome Cliente / Società</label>
+                    <input type="text" id="client_name" placeholder="Nome del destinatario">
+                </div>
+                <div class="form-group">
+                    <label for="client_id">Codice Fiscale / P.IVA</label>
+                    <input type="text" id="client_id" placeholder="Codice Fiscale o P.IVA del cliente">
+                </div>
+                <div class="form-group">
+                    <label for="client_address">Indirizzo Cliente</label>
+                    <input type="text" id="client_address" placeholder="Via, Città, CAP">
+                </div>
+                <div class="form-group">
+                    <label for="client_phone">Telefono Cliente</label>
+                    <input type="text" id="client_phone" placeholder="Numero di telefono del cliente">
+                </div>
+                <div class="form-group">
+                    <label for="case_object">Oggetto dell'Incarico</label>
+                    <input type="text" id="case_object" placeholder="Esempio: Risarcimento danni sinistro stradale">
+                </div>
+                <div class="form-group">
+                    <label for="case_complexity">Complessità dell'Incarico</label>
+                    <select id="case_complexity">
+                        <option value="basso">Basso</option>
+                        <option value="medio" selected>Medio</option>
+                        <option value="alto">Alto</option>
+                        <option value="altissimo">Altissimo</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="case_description">Descrizione Attività (facoltativa)</label>
+                <textarea id="case_description" rows="3"
+                    placeholder="Dettaglio sintetico delle attività previste..."></textarea>
+            </div>
+        </div>
+
+        <!-- Sezione Calcolatore (Integrata) -->
+        <div class="section-card">
+            <h2>Calcolo Compensi (D.M. 147/2022)</h2>
+            <form id="parcella-form">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="materia">Materia</label>
+                        <select id="materia" onchange="cambiaMateriaHandler()">
+                            <option value="">-- Seleziona --</option>
+                            <option value="civile">Civile</option>
+                            <option value="penale">Penale</option>
+                            <option value="stragiudiziale">Stragiudiziale</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="procedimento">Tipo di Procedimento</label>
+                        <select id="procedimento" onchange="cambiaProcedimentoHandler()" disabled>
+                            <option value="">-- Seleziona --</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="valore-container">
+                        <label for="valore">Valore della Controversia</label>
+                        <select id="valore" disabled>
+                            <option value="">-- Seleziona --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="parametri">Applicazione Parametri</label>
+                        <select id="parametri" onchange="togglePercentuale()">
+                            <option value="media">Valori Medi (Tabellari)</option>
+                            <option value="minimi">Valori Minimi (-50%)</option>
+                            <option value="massimi">Valori Massimi (+50%/+80%)</option>
+                            <option value="aumento_custom">Aumento Personalizzato</option>
+                            <option value="riduzione_custom">Riduzione Personalizzata</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="percentuale-container" style="display:none;">
+                        <label for="percentuale">Percentuale (+/- %)</label>
+                        <input type="number" id="percentuale" min="1" max="80" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="num_parti">Numero parti assistite</label>
+                        <input type="number" id="num_parti" value="1" min="1" max="30">
+                    </div>
+                </div>
+
+                <div class="forfait-container">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="flag_forfait" onchange="toggleForfait()">
+                        <label for="flag_forfait" style="margin:0; font-weight:bold;">Applica Compenso a Forfait</label>
+                    </div>
+                    <div id="forfait-input-group" style="display:none; margin-top:10px;">
+                        <label for="forfait_amount">Importo Forfait (€)</label>
+                        <input type="number" id="forfait_amount" placeholder="Es: 1500" step="0.01">
+                        <span style="font-size:0.8rem; color:#888;">Questo importo sostituirà il calcolo per
+                            fasi.</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Fasi Procedurali (Seleziona e, se necessario, inserisci importo personalizzato)</label>
+                    <div id="fasi-container">
+                        <p style="color: #999; font-style: italic;">Seleziona materia e procedimento per visualizzare le
+                            fasi.</p>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">* Lascia vuoto il campo importo per
+                        usare il valore tabellare.</p>
+                </div>
+
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Regime Fiscale</label>
+                        <div class="checkbox-item">
+                            <input type="radio" id="regime_ord" name="regime" value="ordinario" checked>
+                            <label for="regime_ord" style="margin:0; font-weight:normal;">Ordinario (IVA 22%)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="regime_forf" name="regime" value="forfettario">
+                            <label for="regime_forf" style="margin:0; font-weight:normal;">Forfettario (No IVA)</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ritenuta d'Acconto</label>
+                        <div class="checkbox-item">
+                            <input type="radio" id="ritenuta_no" name="ritenuta" value="no" checked>
+                            <label for="ritenuta_no" style="margin:0; font-weight:normal;">No</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="ritenuta_si" name="ritenuta" value="si">
+                            <label for="ritenuta_si" style="margin:0; font-weight:normal;">Sì (20%)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                    <h3 style="font-size: 1rem; color: var(--primary-color); margin-bottom: 15px;">Spese escluse
+                        dall'IVA (Anticipazioni)</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="spese_unificato">Contributo unificato e marca (€)</label>
+                            <input type="number" id="spese_unificato" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="spese_notifiche">Costo notifiche (€)</label>
+                            <input type="number" id="spese_notifiche" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="spese_altre">Altre spese (€)</label>
+                            <input type="number" id="spese_altre" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="spese_altre_desc">Descrizione altre spese</label>
+                            <input type="text" id="spese_altre_desc" placeholder="Esempio: Spese di trasferta">
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 15px; background-color: #e8f5e9; padding: 15px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="acconto_firma" style="color: #2e7d32; font-weight: bold;">Acconto da versare alla
+                            firma del preventivo (€)</label>
+                        <input type="number" id="acconto_firma" placeholder="Importo fondo spese iniziale" step="0.01">
+                        <p style="font-size: 0.75rem; color: #666; margin-top: 5px;">Questo importo verrà stampato nella
+                            clausola finale del preventivo.</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn btn-outline" style="width: 100%;" onclick="calcolaParcella()">
+                        Calcola e Genera Anteprima
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Anteprima Documento -->
+        <div id="quote-preview">
+            <div class="letterhead">
+                <h3 id="preview-lawyer-name">Avv. [Nome Avvocato]</h3>
+                <p id="preview-lawyer-studio">[Nome Studio Legale]</p>
+                <p id="preview-lawyer-details">[Indirizzo] | P.IVA: [VAT] | Email/PEC: [Email]</p>
+                <p id="preview-lawyer-insurance" style="font-size: 0.8rem; color: #777; margin-top: 5px;"></p>
+            </div>
+
+            <div class="quote-info">
+                <div>
+                    <strong>Spett.le</strong><br>
+                    <span id="preview-client-name" style="font-weight: bold; font-size: 1.1rem;">[Nome
+                        Cliente]</span><br>
+                    <span id="preview-client-details" style="font-size: 0.9rem; color: #444;"></span>
+                </div>
+                <div style="text-align: right;">
+                    <strong>Data:</strong> <span id="preview-date">[Data]</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3
+                    style="font-family: 'Playfair Display', serif; border-bottom: 1px solid #333; display: inline-block; margin-bottom: 15px;">
+                    Oggetto: Proposta di Preventivo</h3>
+                <p><strong>Incarico:</strong> <span id="preview-case-object">[Oggetto]</span></p>
+            </div>
+
+            <div id="preview-case-desc-container" style="margin-bottom: 20px; display: none;">
+                <p><strong>Dettaglio attività:</strong> <span id="preview-case-description"></span></p>
+            </div>
+
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Voce</th>
+                        <th style="text-align: right;">Importo</th>
+                    </tr>
+                </thead>
+                <tbody id="preview-table-body">
+                    <!-- Dinamico -->
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td>TOTALE COMPLESSIVO</td>
+                        <td style="text-align: right;" id="preview-total">€ 0,00</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="legal-text" id="legal-clauses">
+                <!-- Inserito da JS -->
+            </div>
+
+            <div class="signatures">
+                <div>
+                    <div class="signature-line">Firma per Accettazione</div>
+                </div>
+                <div>
+                    <div class="signature-line">Firma del Professionista</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="print-actions" style="display:none; text-align: center; margin-bottom: 50px;">
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="handlePrint()">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                        <path
+                            d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+                    </svg>
+                    Stampa PDF
+                </button>
+                <button class="btn" style="background-color: #25d366;" onclick="exportWhatsApp()">
+                    WhatsApp
+                </button>
+                <button class="btn btn-outline" onclick="exportTXT()">
+                    Salva TXT
+                </button>
+            </div>
+        </div>
+
+        <footer
+            style="text-align: center; margin: 40px 0; border-top: 1px solid var(--border-color); padding-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+            <p><strong>⚠️ Disclaimer:</strong> Si invita il professionista a controllare sempre l'esattezza del testo e
+                degli importi prima di sottoporli al cliente.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // --- COSTANTI E DATI (Porting dal calcolatore originale) ---
+        const PROCEDIMENTI = {
+            civile: {
+                "civ_gdp": "Giudice di Pace (Tab. 1 DM 147/22)",
+                "civ_trib": "Tribunale - Ordinario/Sommario (Tab. 2 DM 147/22)",
+                "civ_app": "Corte d'Appello (Tab. 12 DM 147/22)",
+                "civ_cass": "Corte di Cassazione (Tab. 13 DM 147/22)",
+                "civ_lav": "Cause di Lavoro (Tab. 3 DM 147/22)",
+                "civ_prev": "Cause di Previdenza (Tab. 4 DM 147/22)",
+                "civ_convalida": "Convalida Licenza/Sfratto (Tab. 5 DM 147/22)",
+                "civ_precetto": "Atto di Precetto (Tab. 6 DM 147/22)",
+                "civ_monitorio": "Procedimento Monitorio (Tab. 8 DM 147/22)",
+                "civ_volontaria": "Volontaria Giurisdizione (Tab. 7 DM 147/22)",
+                "civ_istr_prev": "Istruzione Preventiva (Tab. 9 DM 147/22)",
+                "civ_cautelare": "Procedimenti Cautelari (Tab. 10 DM 147/22)"
+            },
+            penale: {
+                "pen_gdp": "Giudice di Pace Penale (Tab. 15 DM 147/22)",
+                "pen_indagini": "Indagini Preliminari (Tab. 15 DM 147/22)",
+                "pen_gipgup": "GIP / GUP (Tab. 15 DM 147/22)",
+                "pen_mono": "Tribunale Monocratico (Tab. 15 DM 147/22)",
+                "pen_coll": "Tribunale Collegiale (Tab. 15 DM 147/22)",
+                "pen_app": "Corte d'Appello Penale (Tab. 15 DM 147/22)",
+                "pen_cass": "Corte di Cassazione Penale (Tab. 15 DM 147/22)"
+            },
+            stragiudiziale: {
+                "str_assistenza": "Assistenza Stragiudiziale (Tab. 25 DM 147/22)",
+                "str_mediazione": "Mediazione / Negoziazione (Tab. 25-bis DM 147/22)"
+            }
+        };
+
+        const FASI = {
+            "civ_gdp": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_trib": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_app": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_cass": ["studio", "introduttiva", "decisionale"],
+            "civ_lav": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_prev": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_convalida": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "civ_precetto": ["fase_unica_precetto"],
+            "civ_monitorio": ["fase_unica_monitorio"],
+            "civ_volontaria": ["fase_unica_volontaria"],
+            "civ_istr_prev": ["studio", "introduttiva", "istruttoria"],
+            "civ_cautelare": ["studio", "introduttiva", "istruttoria", "decisionale"],
+            "pen_gdp": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+            "pen_indagini": ["studio", "introduttiva", "istruttoria_pen", "decisionale_pen"],
+            "pen_gipgup": ["studio", "introduttiva", "istruttoria_pen", "decisionale_pen"],
+            "pen_mono": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+            "pen_coll": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+            "pen_app": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+            "pen_cass": ["studio", "introduttiva", "decisionale_pen"],
+            "str_assistenza": ["fase_unica_stragiudiziale"],
+            "str_mediazione": ["attivazione", "negoziazione", "conciliazione"]
+        };
+
+        const FASE_NOMI = {
+            "studio": "Fase di studio della controversia",
+            "introduttiva": "Fase introduttiva del giudizio",
+            "istruttoria": "Fase istruttoria e/o di trattazione",
+            "decisionale": "Fase decisionale",
+            "istruttoria_dibattimentale": "Fase istruttoria e/o dibattimentale",
+            "istruttoria_pen": "Fase istruttoria/investigativa",
+            "decisionale_pen": "Fase decisionale",
+            "fase_unica_precetto": "Compenso Atto di Precetto",
+            "fase_unica_monitorio": "Compenso Procedimento Monitorio",
+            "fase_unica_volontaria": "Compenso Volontaria Giurisdizione",
+            "fase_unica_stragiudiziale": "Compenso Assistenza Stragiudiziale",
+            "attivazione": "Fase di attivazione (Mediaz./Negoz.)",
+            "negoziazione": "Fase di negoziazione (Mediaz./Negoz.)",
+            "conciliazione": "Fase di conciliazione / redazione accordo (Mediaz./Negoz.)"
+        };
+
+        const PARAMETRI = {
+            "civ_gdp": { "s1": { "studio": 68.00, "introduttiva": 68.00, "istruttoria": 68.00, "decisionale": 142.00 }, "s2": { "studio": 236.00, "introduttiva": 252.00, "istruttoria": 352.00, "decisionale": 425.00 }, "s3": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s4": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s5": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s6": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s7": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 } },
+            "civ_trib": { "s1": { "studio": 131.00, "introduttiva": 131.00, "istruttoria": 200.00, "decisionale": 200.00 }, "s2": { "studio": 425.00, "introduttiva": 425.00, "istruttoria": 851.00, "decisionale": 851.00 }, "s3": { "studio": 919.00, "introduttiva": 777.00, "istruttoria": 1680.00, "decisionale": 1701.00 }, "s4": { "studio": 1701.00, "introduttiva": 1204.00, "istruttoria": 1806.00, "decisionale": 2905.00 }, "s5": { "studio": 2552.00, "introduttiva": 1628.00, "istruttoria": 5670.00, "decisionale": 4253.00 }, "s6": { "studio": 3544.00, "introduttiva": 2338.00, "istruttoria": 10411.00, "decisionale": 6164.00 }, "s7": { "studio": 3544.00, "introduttiva": 2338.00, "istruttoria": 10411.00, "decisionale": 6164.00 } },
+            "civ_lav": { "s1": { "studio": 210.00, "introduttiva": 126.00, "istruttoria": 126.00, "decisionale": 179.00 }, "s2": { "studio": 888.00, "introduttiva": 425.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s3": { "studio": 1822.00, "introduttiva": 777.00, "istruttoria": 1172.00, "decisionale": 1617.00 }, "s4": { "studio": 3245.00, "introduttiva": 1202.00, "istruttoria": 1880.00, "decisionale": 2930.00 }, "s5": { "studio": 4763.00, "introduttiva": 1701.00, "istruttoria": 2678.00, "decisionale": 4253.00 }, "s6": { "studio": 6668.00, "introduttiva": 2336.00, "istruttoria": 3623.00, "decisionale": 6290.00 }, "s7": { "studio": 6668.00, "introduttiva": 2336.00, "istruttoria": 3623.00, "decisionale": 6290.00 } },
+            "civ_prev": { "s1": { "studio": 131.00, "introduttiva": 121.00, "istruttoria": 179.00, "decisionale": 247.00 }, "s2": { "studio": 425.00, "introduttiva": 425.00, "istruttoria": 851.00, "decisionale": 919.00 }, "s3": { "studio": 929.00, "introduttiva": 777.00, "istruttoria": 1664.00, "decisionale": 2021.00 }, "s4": { "studio": 1701.00, "introduttiva": 1204.00, "istruttoria": 2693.00, "decisionale": 3675.00 }, "s5": { "studio": 2552.00, "introduttiva": 1701.00, "istruttoria": 3827.00, "decisionale": 4148.00 }, "s6": { "studio": 3544.00, "introduttiva": 2336.00, "istruttoria": 5171.00, "decisionale": 7865.00 }, "s7": { "studio": 3544.00, "introduttiva": 2336.00, "istruttoria": 5171.00, "decisionale": 7865.00 } },
+            "civ_convalida": { "s1": { "studio": 179.00, "introduttiva": 179.00, "istruttoria": 42.00, "decisionale": 142.00 }, "s2": { "studio": 530.00, "introduttiva": 494.00, "istruttoria": 142.00, "decisionale": 425.00 }, "s3": { "studio": 919.00, "introduttiva": 709.00, "istruttoria": 210.00, "decisionale": 746.00 }, "s4": { "studio": 1701.00, "introduttiva": 1061.00, "istruttoria": 352.00, "decisionale": 1344.00 }, "s5": { "studio": 2478.00, "introduttiva": 1418.00, "istruttoria": 494.00, "decisionale": 1911.00 }, "s6": { "studio": 3544.00, "introduttiva": 1559.00, "istruttoria": 709.00, "decisionale": 2835.00 }, "s7": { "studio": 3544.00, "introduttiva": 1559.00, "istruttoria": 709.00, "decisionale": 2835.00 } },
+            "civ_precetto": { "s1": { "fase_unica_precetto": 142.00 }, "s2": { "fase_unica_precetto": 142.00 }, "s3": { "fase_unica_precetto": 236.00 }, "s4": { "fase_unica_precetto": 331.00 }, "s5": { "fase_unica_precetto": 425.00 }, "s6": { "fase_unica_precetto": 567.00 }, "s7": { "fase_unica_precetto": 567.00 } },
+            "civ_volontaria": { "s1": { "fase_unica_volontaria": 425.00 }, "s2": { "fase_unica_volontaria": 425.00 }, "s3": { "fase_unica_volontaria": 1418.00 }, "s4": { "fase_unica_volontaria": 2336.00 }, "s5": { "fase_unica_volontaria": 3329.00 }, "s6": { "fase_unica_volontaria": 4536.00 }, "s7": { "fase_unica_volontaria": 4536.00 } },
+            "civ_monitorio": { "s1": { "fase_unica_monitorio": 473.00 }, "s2": { "fase_unica_monitorio": 473.00 }, "s3": { "fase_unica_monitorio": 567.00 }, "s4": { "fase_unica_monitorio": 1370.00 }, "s5": { "fase_unica_monitorio": 2242.00 }, "s6": { "fase_unica_monitorio": 4394.00 }, "s7": { "fase_unica_monitorio": 4394.00 } },
+            "civ_istr_prev": { "s1": { "studio": 210.00, "introduttiva": 284.00, "istruttoria": 352.00 }, "s2": { "studio": 210.00, "introduttiva": 284.00, "istruttoria": 352.00 }, "s3": { "studio": 567.00, "introduttiva": 709.00, "istruttoria": 1061.00 }, "s4": { "studio": 992.00, "introduttiva": 788.00, "istruttoria": 1276.00 }, "s5": { "studio": 1134.00, "introduttiva": 992.00, "istruttoria": 1701.00 }, "s6": { "studio": 2126.00, "introduttiva": 1454.00, "istruttoria": 2336.00 }, "s7": { "studio": 2126.00, "introduttiva": 1454.00, "istruttoria": 2336.00 } },
+            "civ_cautelare": { "s1": { "studio": 210.00, "introduttiva": 142.00, "istruttoria": 210.00, "decisionale": 105.00 }, "s2": { "studio": 567.00, "introduttiva": 352.00, "istruttoria": 851.00, "decisionale": 389.00 }, "s3": { "studio": 992.00, "introduttiva": 672.00, "istruttoria": 1204.00, "decisionale": 635.00 }, "s4": { "studio": 1175.00, "introduttiva": 851.00, "istruttoria": 1985.00, "decisionale": 1202.00 }, "s5": { "studio": 2251.00, "introduttiva": 1202.00, "istruttoria": 2835.00, "decisionale": 1771.00 }, "s6": { "studio": 3686.00, "introduttiva": 1559.00, "istruttoria": 3969.00, "decisionale": 2552.00 }, "s7": { "studio": 3686.00, "introduttiva": 1559.00, "istruttoria": 3969.00, "decisionale": 2552.00 } },
+            "civ_app": { "s1": { "studio": 142.00, "introduttiva": 142.00, "istruttoria": 179.00, "decisionale": 210.00 }, "s2": { "studio": 536.00, "introduttiva": 536.00, "istruttoria": 992.00, "decisionale": 851.00 }, "s3": { "studio": 1134.00, "introduttiva": 921.00, "istruttoria": 1843.00, "decisionale": 1911.00 }, "s4": { "studio": 2058.00, "introduttiva": 1418.00, "istruttoria": 3045.00, "decisionale": 3470.00 }, "s5": { "studio": 2977.00, "introduttiva": 1911.00, "istruttoria": 4326.00, "decisionale": 5103.00 }, "s6": { "studio": 4389.00, "introduttiva": 2552.00, "istruttoria": 5880.00, "decisionale": 7298.00 }, "s7": { "studio": 4389.00, "introduttiva": 2552.00, "istruttoria": 5880.00, "decisionale": 7298.00 } },
+            "civ_cass": { "s1": { "studio": 252.00, "introduttiva": 284.00, "decisionale": 142.00 }, "s2": { "studio": 709.00, "introduttiva": 777.00, "decisionale": 389.00 }, "s3": { "studio": 1276.00, "introduttiva": 1134.00, "decisionale": 672.00 }, "s4": { "studio": 2336.00, "introduttiva": 1969.00, "decisionale": 1208.00 }, "s5": { "studio": 3402.00, "introduttiva": 2478.00, "decisionale": 1775.00 }, "s6": { "studio": 4961.00, "introduttiva": 3260.00, "decisionale": 2552.00 }, "s7": { "studio": 4961.00, "introduttiva": 3260.00, "decisionale": 2552.00 } },
+            "pen_gdp": { "penale": { "studio": 378.00, "introduttiva": 473.00, "istruttoria_dibattimentale": 756.00, "decisionale_pen": 662.00 } },
+            "pen_indagini": { "penale": { "studio": 851.00, "introduttiva": 662.00, "istruttoria_pen": 1040.00, "decisionale_pen": 1229.00 } },
+            "pen_gipgup": { "penale": { "studio": 851.00, "introduttiva": 756.00, "istruttoria_pen": 1040.00, "decisionale_pen": 1418.00 } },
+            "pen_mono": { "penale": { "studio": 473.00, "introduttiva": 567.00, "istruttoria_dibattimentale": 1134.00, "decisionale_pen": 1418.00 } },
+            "pen_coll": { "penale": { "studio": 473.00, "introduttiva": 756.00, "istruttoria_dibattimentale": 1418.00, "decisionale_pen": 1418.00 } },
+            "pen_app": { "penale": { "studio": 473.00, "introduttiva": 945.00, "istruttoria_dibattimentale": 1418.00, "decisionale_pen": 1418.00 } },
+            "pen_cass": { "penale": { "studio": 945.00, "introduttiva": 2646.00, "decisionale_pen": 2741.00 } },
+            "str_assistenza": { "s1": { "fase_unica_stragiudiziale": 284.00 }, "s2": { "fase_unica_stragiudiziale": 1276.00 }, "s3": { "fase_unica_stragiudiziale": 1985.00 }, "s4": { "fase_unica_stragiudiziale": 2410.00 }, "s5": { "fase_unica_stragiudiziale": 4536.00 }, "s6": { "fase_unica_stragiudiziale": 6164.00 }, "s7": { "fase_unica_stragiudiziale": 6164.00 } },
+            "str_mediazione": { "s1": { "attivazione": 63.00, "negoziazione": 126.00, "conciliazione": 246.00 }, "s2": { "attivazione": 284.00, "negoziazione": 567.00, "conciliazione": 1106.00 }, "s3": { "attivazione": 441.00, "negoziazione": 882.00, "conciliazione": 1720.00 }, "s4": { "attivazione": 536.00, "negoziazione": 1071.00, "conciliazione": 2088.00 }, "s5": { "attivazione": 1008.00, "negoziazione": 2016.00, "conciliazione": 3931.00 }, "s6": { "attivazione": 1370.00, "negoziazione": 2741.00, "conciliazione": 5343.00 }, "s7": { "attivazione": 1370.00, "negoziazione": 2741.00, "conciliazione": 5343.00 } }
+        };
+
+        const LEGAL_TEXT = `Il presente preventivo è redatto in adempimento degli obblighi informativi e di trasparenza, al fine di rappresentare il grado di complessità dell’incarico (nel presente caso valutato come **{{COMPLESSITA}}**) e la prevedibile misura del costo della prestazione, con distinta indicazione del compenso professionale, delle spese – anche forfetarie – e degli oneri di legge. Esso costituisce una stima ragionevole formulata sulla base delle informazioni allo stato disponibili e del perimetro dell’incarico come concordato, fermo restando che l’attività difensiva, specie in ambito contenzioso, può subire variazioni per iniziative della controparte, provvedimenti dell’Autorità giudiziaria, esigenze istruttorie, sopravvenienze documentali o mutamenti del thema decidendum.
+Il compenso indicato è da intendersi fisso e concordato, salvo l’ipotesi di condanna della controparte alla rifusione delle spese di lite in misura superiore a quella pattuita, nel qual caso al compenso convenuto si sostituirà automaticamente quello liquidato dall’Autorità giudiziaria. In caso di risoluzione della controversia mediante conciliazione, mediazione, transazione o accordo raggiunti prima della fase decisionale, il compenso applicabile sarà costituito dal compenso relativo alle fasi già svolte, più un compenso aggiuntivo pari a quello previsto per la fase decisionale aumentato del 25%. Resta inteso che l’incarico si intenderà conferito e le condizioni economiche accettate esclusivamente a seguito di espressa approvazione del presente preventivo e del contestuale conferimento del mandato e della procura, ove necessaria; in difetto di accordo scritto sul compenso, ovvero in caso di contestazione, la determinazione potrà avvenire secondo i parametri ministeriali vigenti.
+Il preventivo ricomprende esclusivamente le attività espressamente indicate e non comprende eventuali prestazioni ulteriori o fasi procedimentali allo stato non prevedibili o non previste, quali, a titolo esemplificativo, procedimenti cautelari in corso di causa, reclami, riassunzioni del processo a seguito di interruzione o sospensione, né le spese per consulenze tecniche d’ufficio o di parte (CTU e CTP), la citazione di testimoni o altri adempimenti istruttori, nonché ogni ulteriore spesa eventuale. Ogni attività o costo non ricompreso sarà oggetto di separata pattuizione o di integrazione del preventivo.
+Restano a carico del Cliente tutte le spese vive non preventivate (quali, a mero titolo esemplificativo, notifiche, diritti di copia e autentica, bolli, imposta di registro, spese di CTU o CTP), che dovranno essere corrisposte direttamente o rimborsate allo Studio a semplice richiesta. Il compenso remunera l’attività professionale dello Studio, mentre spese e oneri costituiscono voci ulteriori; alle somme dovute si applicheranno IVA, contributo previdenziale e ogni altro tributo di legge vigente.
+Lo Studio potrà richiedere acconti sul compenso e un fondo spese, che alla sottoscrizione del mandato viene determinato in euro {{ACCONTO_FIRMA}}, il cui versamento vale quale accettazione del presente preventivo. Il compenso sarà corrisposto mediante acconti progressivi in relazione all’avanzamento delle fasi del procedimento; in caso di interruzione del rapporto, il Cliente sarà tenuto al pagamento delle competenze maturate per le attività svolte e per la fase in corso. Il mancato rispetto delle scadenze potrà comportare la sospensione delle attività professionali.
+È sin d’ora rappresentato che la durata del procedimento e i relativi oneri dipendono anche da fattori estranei alla sfera di controllo del difensore (quali carichi di ruolo, calendarizzazioni, condotte processuali avverse o necessità istruttorie). Ove si rendessero necessarie – o anche solo opportune – attività ulteriori o più complesse rispetto a quelle inizialmente previste, ovvero intervengano variazioni delle aliquote fiscali o previdenziali, il Cliente ne sarà tempestivamente informato e il preventivo potrà essere adeguato.
+Il Cliente dichiara infine di aver ricevuto e compreso l’informativa sul trattamento dei dati personali ai sensi del Regolamento (UE) 2016/679 e della normativa nazionale vigente, prendendo atto delle finalità e modalità del trattamento, dei diritti riconosciuti all’interessato e della possibilità di revocare in ogni momento l’eventuale consenso prestato, ferma restando la liceità dei trattamenti già effettuati.`;
+
+        const AI_TEXT = `\n\nInformativa utilizzo Intelligenza Artificiale
+Il Cliente dichiara di essere stato informato che lo Studio, ai sensi dell’art. 13 della legge 132/2025:
+- che nel corso dell’esecuzione dell’incarico conferito sia in sede giudiziale che stragiudiziale, ove ritenuto utile, potrebbe ricorrere all’impiego di sistemi di Intelligenza Artificiale (“I.A.”), per svolgere attività strumentali e/o di supporto all’attività professionale; 
+- che l’utilizzo dei sistemi di Intelligenza Artificiale (“I.A.”) avverrà sempre nel pieno rispetto delle disposizioni del Regolamento UE n. 2016/679 (GDPR) e dei doveri deontologici che regolano la professione forense al fine di garantire la tutela della privacy e della riservatezza del cliente e della parte assistita;
+- che, in particolare, l’Intelligenza Artificiale (“I.A.”) sarà impiegata esclusivamente per funzioni di supporto alla attività professionale, quali, a titolo meramente esemplificativo, la gestione di attività organizzative e di segreteria, la ricerca normativa e giurisprudenziale, l'analisi preliminare di documenti e la predisposizione di bozze o sintesi;
+- che il risultato derivato dai sistemi di Intelligenza Artificiale (“I.A.”) sarà oggetto di una verifica attenta e accurata da parte dell’avvocato, sia in sede di generazione del prodotto che di controllo delle fonti.`;
+
+        // --- LOGICA DI PERSISTENZA ---
+        function saveLawyerProfile() {
+            const profile = {
+                name: document.getElementById('lawyer_name').value,
+                studio: document.getElementById('lawyer_studio').value,
+                address: document.getElementById('lawyer_address').value,
+                vat: document.getElementById('lawyer_vat').value,
+                email: document.getElementById('lawyer_email').value,
+                phone: document.getElementById('lawyer_phone').value,
+                insurance: document.getElementById('lawyer_insurance').value
+            };
+            localStorage.setItem('lawyer_profile', JSON.stringify(profile));
+            const status = document.getElementById('save-status');
+            status.textContent = "Profilo salvato correttamente!";
+            setTimeout(() => status.textContent = "", 3000);
+            updatePreviewHeadings();
+        }
+
+        function loadLawyerProfile() {
+            const saved = localStorage.getItem('lawyer_profile');
+            if (saved) {
+                const profile = JSON.parse(saved);
+                document.getElementById('lawyer_name').value = profile.name || "";
+                document.getElementById('lawyer_studio').value = profile.studio || "";
+                document.getElementById('lawyer_address').value = profile.address || "";
+                document.getElementById('lawyer_vat').value = profile.vat || "";
+                document.getElementById('lawyer_email').value = profile.email || "";
+                document.getElementById('lawyer_phone').value = profile.phone || "";
+                document.getElementById('lawyer_insurance').value = profile.insurance || "";
+                updatePreviewHeadings();
+            }
+        }
+
+        // --- LOGICA CALCOLO & INTERFACCIA ---
+        function cambiaMateriaHandler() {
+            const materia = document.getElementById('materia').value;
+            const procedimentoSelect = document.getElementById('procedimento');
+            const valoreContainer = document.getElementById('valore-container');
+            const valoreSelect = document.getElementById('valore');
+            const fasiContainer = document.getElementById('fasi-container');
+
+            procedimentoSelect.innerHTML = '<option value="">-- Seleziona --</option>';
+            procedimentoSelect.disabled = true;
+
+            const valoreOptionsHTML = `
+                <option value="">-- Seleziona --</option>
+                <option value="s1">fino a € 1.100,00</option><option value="s2">da € 1.100,01 a € 5.200,00</option>
+                <option value="s3">da € 5.200,01 a € 26.000,00</option><option value="s4">da € 26.000,01 a € 52.000,00</option>
+                <option value="s5">da € 52.000,01 a € 260.000,00</option><option value="s6">da € 260.000,01 a € 520.000,00</option>
+                <option value="s7">oltre € 520.000,00</option><option value="ind_basso">Indeterminabile - Bassa Complessità (fino a € 26.000)</option>
+                <option value="ind_medio">Indeterminabile - Media Complessità (da € 26.001 a € 260.000)</option><option value="ind_alto">Indeterminabile - Alta Complessità (da € 260.001 a € 520.000)</option>
+            `;
+            valoreSelect.innerHTML = valoreOptionsHTML;
+            valoreSelect.disabled = true;
+            valoreContainer.style.display = 'block';
+            fasiContainer.innerHTML = '<p style="color: #999; font-style: italic;">Seleziona materia e procedimento per visualizzare le fasi.</p>';
+
+            if (!materia) return;
+
+            const procedimentiMateria = PROCEDIMENTI[materia];
+            if (procedimentiMateria) {
+                for (const id in procedimentiMateria) {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = procedimentiMateria[id];
+                    procedimentoSelect.appendChild(option);
+                }
+                procedimentoSelect.disabled = false;
+            }
+
+            valoreContainer.style.display = materia === 'penale' ? 'none' : 'block';
+            valoreSelect.disabled = materia === 'penale';
+        }
+
+        function cambiaProcedimentoHandler() {
+            const procedimento = document.getElementById('procedimento').value;
+            const fasiContainer = document.getElementById('fasi-container');
+            fasiContainer.innerHTML = '';
+
+            if (!procedimento) return;
+
+            const fasiProcedimento = FASI[procedimento];
+            if (fasiProcedimento) {
+                fasiProcedimento.forEach(faseKey => {
+                    const label = FASE_NOMI[faseKey] || faseKey;
+                    const div = document.createElement('div');
+                    div.className = 'phase-input-container';
+                    div.innerHTML = `
+                        <div class="checkbox-item" style="margin-bottom:0; flex-grow:1;">
+                            <input type="checkbox" id="fase-${faseKey}" value="${faseKey}" checked> 
+                            <label for="fase-${faseKey}">${label}</label>
+                        </div>
+                        <input type="number" class="phase-override" id="override-${faseKey}" placeholder="Libero (€)" step="0.01">
+                    `;
+                    fasiContainer.appendChild(div);
+                });
+            }
+        }
+
+        function toggleForfait() {
+            const isForfait = document.getElementById('flag_forfait').checked;
+            document.getElementById('forfait-input-group').style.display = isForfait ? 'block' : 'none';
+            // Disabilita parametri e fasi se forfait è attivo
+            const elementsToDisable = ['parametri', 'percentuale', 'materia', 'procedimento', 'valore', 'num_parti'];
+            elementsToDisable.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = isForfait;
+            });
+            document.querySelectorAll('#fasi-container input').forEach(el => el.disabled = isForfait);
+        }
+
+        function togglePercentuale() {
+            const val = document.getElementById('parametri').value;
+            document.getElementById('percentuale-container').style.display = (val === 'aumento_custom' || val === 'riduzione_custom') ? 'block' : 'none';
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(value);
+        }
+
+        function getScaglione(val) {
+            const map = { 'ind_basso': 's3', 'ind_medio': 's5', 'ind_alto': 's6' };
+            return map[val] || val;
+        }
+
+        function updatePreviewHeadings() {
+            let name = document.getElementById('lawyer_name').value || "[Nome Avvocato]";
+            if (name && !name.toLowerCase().startsWith('avv.')) name = "Avv. " + name;
+            document.getElementById('preview-lawyer-name').textContent = name;
+            document.getElementById('preview-lawyer-studio').textContent = document.getElementById('lawyer_studio').value || "";
+            const addr = document.getElementById('lawyer_address').value;
+            const vat = document.getElementById('lawyer_vat').value;
+            const email = document.getElementById('lawyer_email').value;
+            document.getElementById('preview-lawyer-details').textContent = `${addr ? addr + ' | ' : ''}${vat ? 'P.IVA: ' + vat + ' | ' : ''}${email ? 'Email: ' + email : ''}`;
+
+            const insurance = document.getElementById('lawyer_insurance').value;
+            const insurancePrev = document.getElementById('preview-lawyer-insurance');
+            insurancePrev.textContent = insurance ? "Assicurazione: " + insurance : "";
+        }
+
+        function calcolaParcella() {
+            try {
+                const isForfait = document.getElementById('flag_forfait').checked;
+                const forfaitAmount = parseFloat(document.getElementById('forfait_amount').value) || 0;
+
+                const materia = document.getElementById('materia').value;
+                const procedimento = document.getElementById('procedimento').value;
+                const valoreId = document.getElementById('valore').value;
+                const tipoParametri = document.getElementById('parametri').value;
+                const numParti = parseInt(document.getElementById('num_parti').value) || 1;
+                const regime = document.querySelector('input[name="regime"]:checked').value;
+                const ritenuta = document.querySelector('input[name="ritenuta"]:checked').value === 'si';
+
+                let compensiApplicati = 0;
+                let infoParametri = "";
+                let dettaglioFasi = [];
+
+                if (isForfait) {
+                    if (forfaitAmount <= 0) throw new Error("Inserisci un importo valido per il forfait.");
+                    compensiApplicati = forfaitAmount;
+                    infoParametri = "Compenso pattuito a forfait";
+                    dettaglioFasi.push({ nome: "Compensi professionali (A forfait)", importo: forfaitAmount });
+                } else {
+                    if (!materia || !procedimento) throw new Error("Seleziona materia e procedimento.");
+                    if (materia !== 'penale' && !valoreId) throw new Error("Seleziona il valore della controversia.");
+
+                    const scaglione = materia === 'penale' ? 'penale' : getScaglione(valoreId);
+                    const table = PARAMETRI[procedimento];
+                    if (!table || !table[scaglione]) throw new Error("Parametri non trovati.");
+
+                    const selectedFases = [];
+                    document.querySelectorAll('#fasi-container .checkbox-item input:checked').forEach(i => selectedFases.push(i.value));
+                    if (selectedFases.length === 0) throw new Error("Seleziona almeno una fase.");
+
+                    selectedFases.forEach(f => {
+                        const overrideVal = parseFloat(document.getElementById(`override-${f}`).value);
+                        let faseImporto = 0;
+                        if (!isNaN(overrideVal)) {
+                            faseImporto = overrideVal;
+                        } else {
+                            let baseVal = table[scaglione][f] || 0;
+                            // Applica variazioni parametri al valore base tabellare
+                            if (tipoParametri === 'minimi') baseVal *= 0.5;
+                            if (tipoParametri === 'massimi') baseVal *= (materia === 'penale' ? 1.8 : 1.5);
+                            if (tipoParametri === 'aumento_custom') {
+                                const perc = parseInt(document.getElementById('percentuale').value) || 0;
+                                baseVal *= (1 + perc / 100);
+                            }
+                            if (tipoParametri === 'riduzione_custom') {
+                                const perc = parseInt(document.getElementById('percentuale').value) || 0;
+                                baseVal *= (1 - perc / 100);
+                            }
+                            faseImporto = baseVal;
+                        }
+                        compensiApplicati += faseImporto;
+                        dettaglioFasi.push({ nome: FASE_NOMI[f] || f, importo: faseImporto });
+                    });
+
+                    // Calcolo range per indicazione minimi/massimi
+                    let sumBase = 0;
+                    selectedFases.forEach(f => sumBase += (table[scaglione][f] || 0));
+                    const minRange = sumBase * 0.5;
+                    const maxRange = sumBase * (materia === 'penale' ? 1.8 : 1.5);
+                    infoParametri = `Calcolo su parametri D.M. 147/2022 (Range scaglione: da ${formatCurrency(minRange)} a ${formatCurrency(maxRange)})`;
+                }
+
+                // Aumento per parti assistite
+                let aumentoParti = 0;
+                if (!isForfait && numParti > 1) {
+                    let percAumento = 0;
+                    if (numParti <= 10) percAumento = 0.3;
+                    else if (numParti <= 30) percAumento = 0.3 + (numParti - 10) * 0.1;
+                    if (percAumento > 1) percAumento = 1;
+                    aumentoParti = compensiApplicati * percAumento;
+                    dettaglioFasi.push({ nome: `Maggiorazione per n. ${numParti} parti assistite`, importo: aumentoParti });
+                }
+
+                const baseImponibile = compensiApplicati + aumentoParti;
+                const rimborso = baseImponibile * 0.15;
+                const cpa = (baseImponibile + rimborso) * 0.04;
+                const totaleImponibile = baseImponibile + rimborso + cpa;
+                const iva = (regime === 'ordinario') ? totaleImponibile * 0.22 : 0;
+
+                // Spese escluse IVA (Anticipazioni)
+                const speseUnificato = parseFloat(document.getElementById('spese_unificato').value) || 0;
+                const speseNotifiche = parseFloat(document.getElementById('spese_notifiche').value) || 0;
+                const speseAltre = parseFloat(document.getElementById('spese_altre').value) || 0;
+                const speseAltreDesc = document.getElementById('spese_altre_desc').value || "Altre spese";
+                const totaleSpeseEscluse = speseUnificato + speseNotifiche + speseAltre;
+
+                const totale = totaleImponibile + iva + totaleSpeseEscluse;
+                const ritenutaImporto = ritenuta ? baseImponibile * 0.20 : 0;
+
+                // Popola Anteprima
+                updatePreviewHeadings();
+                document.getElementById('preview-client-name').textContent = document.getElementById('client_name').value || "[Cliente]";
+
+                // Dettagli Cliente
+                const cId = document.getElementById('client_id').value;
+                const cAddr = document.getElementById('client_address').value;
+                const cPhone = document.getElementById('client_phone').value;
+                let clientInfo = "";
+                if (cId) clientInfo += "C.F./P.IVA: " + cId;
+                if (cAddr) clientInfo += (clientInfo ? " | " : "") + cAddr;
+                if (cPhone) clientInfo += (clientInfo ? " | Tel: " : "Tel: ") + cPhone;
+                document.getElementById('preview-client-details').textContent = clientInfo;
+
+                document.getElementById('preview-date').textContent = new Date().toLocaleDateString('it-IT');
+                document.getElementById('preview-case-object').textContent = document.getElementById('case_object').value || "[Oggetto]";
+
+                const desc = document.getElementById('case_description').value;
+                const descCont = document.getElementById('preview-case-desc-container');
+                if (desc) {
+                    document.getElementById('preview-case-description').textContent = desc;
+                    descCont.style.display = 'block';
+                } else {
+                    descCont.style.display = 'none';
+                }
+
+                const tbody = document.getElementById('preview-table-body');
+                let tableHtml = "";
+                dettaglioFasi.forEach(item => {
+                    tableHtml += `<tr><td>${item.nome}</td><td style="text-align:right;">${formatCurrency(item.importo)}</td></tr>`;
+                });
+                tableHtml += `
+                    <tr style="font-size:0.8rem; color:#666;"><td colspan="2"><i>${infoParametri}</i></td></tr>
+                    <tr style="border-top: 1px double #ccc;"><td><strong>Totale compensi professionali</strong></td><td style="text-align:right;"><strong>${formatCurrency(baseImponibile)}</strong></td></tr>
+                    <tr><td>Rimborso forfettario spese generali (15%)</td><td style="text-align:right;">${formatCurrency(rimborso)}</td></tr>
+                    <tr><td>Contributo Previdenziale Avvocati (CPA 4%)</td><td style="text-align:right;">${formatCurrency(cpa)}</td></tr>
+                    ${iva > 0 ? `<tr><td>IVA (22%)</td><td style="text-align:right;">${formatCurrency(iva)}</td></tr>` : ''}
+                `;
+
+                // Aggiunta spese escluse IVA in tabella
+                if (speseUnificato > 0) {
+                    tableHtml += `<tr><td>Contributo unificato e marca (Escl. IVA)</td><td style="text-align:right;">${formatCurrency(speseUnificato)}</td></tr>`;
+                }
+                if (speseNotifiche > 0) {
+                    tableHtml += `<tr><td>Costo notifiche (Escl. IVA)</td><td style="text-align:right;">${formatCurrency(speseNotifiche)}</td></tr>`;
+                }
+                if (speseAltre > 0) {
+                    tableHtml += `<tr><td>${speseAltreDesc} (Escl. IVA)</td><td style="text-align:right;">${formatCurrency(speseAltre)}</td></tr>`;
+                }
+
+                if (ritenuta) {
+                    tableHtml += `<tr><td><i style="font-size:0.8rem;">Ritenuta d'acconto (DA DETRARRE - 20%)</i></td><td style="text-align:right;"><i>-${formatCurrency(ritenutaImporto)}</i></td></tr>`;
+                }
+
+                tbody.innerHTML = tableHtml;
+                document.getElementById('preview-total').textContent = formatCurrency(totale - (ritenuta ? ritenutaImporto : 0));
+
+                let combinedLegal = LEGAL_TEXT;
+
+                // Gestione Acconto nel testo legale
+                const accontoFirma = parseFloat(document.getElementById('acconto_firma').value) || 0;
+                const accontoStr = accontoFirma > 0 ? formatCurrency(accontoFirma) : "__________";
+                combinedLegal = combinedLegal.replace("{{ACCONTO_FIRMA}}", accontoStr);
+
+                // Gestione Complessità nel testo legale
+                const complessita = document.getElementById('case_complexity').value;
+                combinedLegal = combinedLegal.replace("{{COMPLESSITA}}", complessita);
+
+                if (document.getElementById('flag_ai').checked) {
+                    combinedLegal += AI_TEXT;
+                }
+                document.getElementById('legal-clauses').textContent = combinedLegal;
+
+                // Mostra anteprima e pulsante stampa
+                document.getElementById('quote-preview').style.display = 'block';
+                document.getElementById('print-actions').style.display = 'block';
+
+                // Scroll to preview
+                document.getElementById('quote-preview').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (e) {
+                alert("Errore nel calcolo: " + e.message);
+            }
+        }
+
+        function generateFullText() {
+            const lawyer = document.getElementById('preview-lawyer-name').textContent;
+            const studio = document.getElementById('preview-lawyer-studio').textContent;
+            const client = document.getElementById('preview-client-name').textContent;
+            const clientDetails = document.getElementById('preview-client-details').textContent;
+            const date = document.getElementById('preview-date').textContent;
+            const object = document.getElementById('preview-case-object').textContent;
+
+            let text = `PREVENTIVO PROFESSIONALE\n`;
+            text += `Emesso da: ${lawyer}${studio ? ' - ' + studio : ''}\n`;
+            text += `Data: ${date}\n\n`;
+            text += `Spett.le ${client}\n${clientDetails}\n\n`;
+            text += `OGGETTO: ${object}\n\n`;
+            text += `DETTAGLIO COMPENSI:\n`;
+
+            // Loop through table rows for charges
+            const rows = document.querySelectorAll('#preview-table-body tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length === 2) {
+                    text += `- ${cells[0].textContent}: ${cells[1].textContent}\n`;
+                } else if (cells.length === 1) {
+                    text += `  (${cells[0].textContent})\n`;
+                }
+            });
+
+            text += `\nTOTALE COMPLESSIVO: ${document.getElementById('preview-total').textContent}\n\n`;
+            text += `NOTE LEGALI:\n${document.getElementById('legal-clauses').textContent}\n`;
+
+            return text;
+        }
+
+        function exportWhatsApp() {
+            const text = generateFullText();
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function exportTXT() {
+            const text = generateFullText();
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Preventivo_${document.getElementById('client_name').value || 'Cliente'}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function handlePrint() {
+            const clientName = document.getElementById('client_name').value || "Cliente";
+            const dateStr = new Date().toLocaleDateString('it-IT').replace(/\//g, '-');
+            const originalTitle = document.title;
+
+            // Pulisce il nome per evitare caratteri problematici (opzionale, ma consigliato)
+            const safeClientName = clientName.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_');
+
+            document.title = `Preventivo_${safeClientName}_${dateStr}`;
+            window.print();
+
+            // Ripristina il titolo originale dopo una breve attesa
+            setTimeout(() => { document.title = originalTitle; }, 1000);
+        }
+
+        // Inizializzazione
+        window.onload = function () {
+            loadLawyerProfile();
+        };
+    </script>
+</body>
+
+</html>
+
+

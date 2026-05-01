@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoicyLex - Dashboard Fiscale</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' },
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts & Libs -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 5px;
+        }
+
+        .drag-active {
+            border-color: #38bdf8 !important;
+            background: rgba(56, 189, 248, 0.1) !important;
+        }
+
+        select option {
+            background-color: #1e293b;
+            color: #cbd5e1;
+        }
+
+        .invoice-paper {
+            background-color: white;
+            color: #1e293b;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .invoice-paper th {
+            background-color: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .invoice-paper td {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        #mobileMenu {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .mobile-visible {
+            transform: translateX(0);
+        }
+
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sortable:hover {
+            color: #38bdf8;
+        }
+
+        button {
+            min-height: 44px;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-bg text-slate-200 min-h-screen flex flex-col font-medium">
+
+    <!-- Navbar -->
+    <nav
+        class="h-20 border-b border-dark-border glass flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 bg-dark-bg/80 backdrop-blur-md">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleMobileMenu()" class="md:hidden p-3 text-slate-400 hover:text-white"><i
+                    data-lucide="menu" class="w-7 h-7"></i></button>
+            <div class="flex flex-col items-start">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/30 text-xl">
+                        IL</div>
+                    <span
+                        class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 hidden sm:inline">InvoicyLex</span>
+                </div>
+                <p class="text-xs text-slate-400 ml-14 font-semibold hidden sm:block">Assistente contabilità per
+                    Avvocati</p>
+                <p class="text-[10px] text-slate-500 ml-14 hidden sm:block">robertoarcella ©2026</p>
+            </div>
+        </div>
+        <div id="invoiceCounterHeader"
+            class="hidden md:flex items-center gap-2 px-4 py-2 bg-slate-800/50 rounded-xl border border-dark-border">
+            <i data-lucide="files" class="w-4 h-4 text-primary-400"></i>
+            <span class="text-sm text-slate-300">Fatture caricate: <b id="headerCount" class="text-white">0</b></span>
+        </div>
+        <div class="flex items-center gap-3 md:gap-6">
+            <a href="https://avvocatotelematico.studiolegalearcella.it/apps/"
+                class="text-slate-400 hover:text-white transition-colors text-sm hidden sm:inline-flex items-center gap-2"
+                title="Torna alle applicazioni">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>Torna alle apps</span>
+            </a>
+            <a href="https://avvocatotelematico.studiolegalearcella.it/Manuale_InvoicyLex.pdf" target="_blank"
+                class="text-slate-400 hover:text-primary-400 transition-colors text-sm hidden sm:inline-flex items-center gap-2"
+                title="Apri il manuale utente (PDF)">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>Manuale</span>
+            </a>
+            <button onclick="document.getElementById('fileInput').click()"
+                class="bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2 font-semibold shadow-lg shadow-primary-500/20 text-sm md:text-base">
+                <i data-lucide="upload-cloud" class="w-5 h-5"></i> <span class="hidden sm:inline">Importa</span>
+            </button>
+            <input type="file" id="fileInput" multiple accept=".xml,.p7m,.zip" class="hidden">
+
+            <button onclick="openSettings()"
+                class="text-slate-400 hover:text-white p-3 rounded-xl hover:bg-slate-800 transition-colors">
+                <i data-lucide="settings" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 relative">
+
+        <!-- Sidebar -->
+        <aside class="w-72 border-r border-dark-border bg-dark-bg/50 hidden md:flex flex-col fixed left-0 top-20
+            h-[calc(100vh-5rem)] overflow-y-auto z-30">
+            <div class="p-6 space-y-2">
+                <button onclick="switchView('dashboard')" id="navDashboard"
+                    class="w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-base font-semibold">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i> <span>Dashboard</span>
+                </button>
+                <button onclick="switchView('invoices')" id="navInvoices"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all text-base font-semibold">
+                    <i data-lucide="file-text" class="w-5 h-5"></i> <span>Fatture</span>
+                </button>
+                <button onclick="switchView('analytics')" id="navAnalytics"
+                    class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all text-base font-semibold">
+                    <i data-lucide="pie-chart" class="w-5 h-5"></i> <span>Analisi Fiscale</span>
+                </button>
+                <div class="pt-2 mt-2 border-t border-dark-border">
+                    <p class="text-xs text-slate-500 uppercase font-bold px-4 py-2">Report Fiscali</p>
+                    <button onclick="switchView('vat')" id="navVat"
+                        class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all text-sm">
+                        <i data-lucide="receipt" class="w-4 h-4"></i> <span>Liquidazione IVA</span>
+                    </button>
+                    <button onclick="switchView('cpa')" id="navCpa"
+                        class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all text-sm">
+                        <i data-lucide="coins" class="w-4 h-4"></i> <span>Riepilogo CPA</span>
+                    </button>
+                    <button onclick="switchView('ritenute')" id="navRitenute"
+                        class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all text-sm">
+                        <i data-lucide="percent" class="w-4 h-4"></i> <span>Ritenute</span>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-auto p-6 border-t border-dark-border">
+                <div class="bg-slate-800/50 rounded-2xl p-4 border border-dark-border">
+                    <p id="dbStatus" class="text-sm text-slate-400 flex items-center gap-3"><span
+                            class="w-3 h-3 rounded-full bg-yellow-500"></span> Connessione...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Mobile -->
+        <div id="mobileMenuOverlay" onclick="toggleMobileMenu()"
+            class="fixed inset-0 bg-black/50 z-40 hidden md:hidden glass"></div>
+        <aside id="mobileMenu"
+            class="fixed inset-y-0 left-0 w-72 bg-dark-bg border-r border-dark-border z-50 transform mobile-hidden md:hidden flex flex-col pt-20">
+            <div class="p-6 space-y-3">
+                <button onclick="switchView('dashboard'); toggleMobileMenu()"
+                    class="w-full flex items-center gap-4 px-5 py-4 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-2xl text-lg">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6"></i> <span class="font-semibold">Dashboard</span>
+                </button>
+                <button onclick="switchView('invoices'); toggleMobileMenu()"
+                    class="w-full flex items-center gap-4 px-5 py-4 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-2xl text-lg">
+                    <i data-lucide="file-text" class="w-6 h-6"></i> <span class="font-semibold">Fatture</span> </button>
+                <button onclick="switchView('analytics'); toggleMobileMenu()"
+                    class="w-full flex items-center gap-4 px-5 py-4 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-2xl text-lg">
+                    <i data-lucide="pie-chart" class="w-6 h-6"></i> <span class="font-semibold">Analisi Fiscale</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 md:p-8 md:ml-72 relative overflow-x-hidden w-full">
+
+            <!-- Filters -->
+            <header class="mb-8 flex flex-col 2xl:flex-row 2xl:items-center justify-between gap-6">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Panoramica Fatture</h1>
+                    <p class="text-slate-400 text-base md:text-lg" id="regimeStatusDisplay">Regime: Ordinario</p>
+                </div>
+                <div class="flex flex-col gap-4 w-full 2xl:w-auto">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex bg-slate-800 rounded-xl p-1.5 border border-dark-border flex-1">
+                            <select id="filterMode" title="Modalità Filtro"
+                                class="bg-transparent text-slate-300 text-base font-medium px-3 py-2 outline-none w-full hover:text-white cursor-pointer"
+                                onchange="updateFilterUI()">
+                                <option value="year">Anno Singolo</option>
+                                <option value="range_year">Intervallo Anni</option>
+                                <option value="range_date">Date Libere</option>
+                            </select>
+                        </div>
+                        <div class="flex bg-slate-800 rounded-xl p-1.5 border border-dark-border flex-1">
+                            <select id="filterType" title="Tipo Fattura"
+                                class="bg-transparent text-slate-300 text-base font-medium px-3 py-2 outline-none w-full hover:text-white cursor-pointer">
+                                <option value="all">Tutte</option>
+                                <option value="active">Attive</option>
+                                <option value="passive">Passive</option>
+                            </select>
+                        </div>
+                        <button onclick="openExportModal()"
+                            class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"><i
+                                data-lucide="download" class="w-5 h-5"></i></button>
+                    </div>
+                    <div id="filterInputs"
+                        class="flex flex-wrap gap-3 items-center bg-slate-800/50 p-3 rounded-xl border border-dark-border">
+                        <div id="inputSingleYear" class="flex flex-wrap items-center gap-3 w-full">
+                            <select id="filterYear" title="Filtro Anno"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1">
+                                <option value="all">Tutti</option>
+                            </select>
+                            <select id="filterQuarter" title="Filtro Trimestre"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1">
+                                <option value="all">Tutti</option>
+                                <option value="1">T1</option>
+                                <option value="2">T2</option>
+                                <option value="3">T3</option>
+                                <option value="4">T4</option>
+                            </select>
+                        </div>
+                        <div id="inputYearRange" class="hidden flex items-center gap-3 w-full">
+                            <span class="text-sm text-slate-400">Da</span><select id="filterYearFrom"
+                                title="Anno Inizio"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1"></select>
+                            <span class="text-sm text-slate-400">A</span><select id="filterYearTo" title="Anno Fine"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1"></select>
+                        </div>
+                        <div id="inputDateRange" class="hidden flex items-center gap-3 w-full">
+                            <input type="date" id="filterDateFrom"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1">
+                            <span class="text-slate-400">-</span><input type="date" id="filterDateTo"
+                                class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-3 py-2 outline-none flex-1">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="dropZone"
+                class="mb-8 border-2 border-dashed border-dark-border rounded-2xl p-10 text-center transition-all hover:border-primary-500/50 cursor-pointer bg-slate-800/20 shadow-inner group">
+                <div
+                    class="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-400 group-hover:scale-110 transition-transform">
+                    <i data-lucide="upload" class="w-7 h-7"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-1">Clicca o Trascina XML/ZIP</h3>
+                <p class="text-base text-slate-500">Analisi locale sicura</p>
+            </div>
+
+            <!-- VIEW: DASHBOARD -->
+            <div id="viewDashboard" class="space-y-8 animated-fade w-full">
+                <!-- Dashboard Year Filter -->
+                <div
+                    class="flex flex-col md:flex-row items-center gap-4 mb-2 bg-slate-800/30 p-4 rounded-2xl border border-dark-border">
+                    <label class="text-slate-300 font-bold flex items-center gap-2" for="dashboardYearFilter"><i
+                            data-lucide="calendar" class="w-5 h-5"></i> Seleziona Anno Dashboard:</label>
+                    <select id="dashboardYearFilter" onchange="syncYearFilters(this.value)"
+                        title="Filtro Anno Dashboard"
+                        class="bg-slate-900 border border-slate-700 text-white text-lg font-bold rounded-xl px-4 py-2 outline-none focus:border-primary-500">
+                        <option value="none">-- Seleziona Anno --</option>
+                    </select>
+                </div>
+
+                <div id="dashboardPlaceholder"
+                    class="glass rounded-2xl p-16 text-center border-dashed border-2 border-slate-700">
+                    <i data-lucide="info" class="w-12 h-12 text-primary-400 mx-auto mb-4"></i>
+                    <h3 class="text-2xl font-bold text-white mb-2">Seleziona un anno</h3>
+                    <p class="text-slate-400">Scegli un'annualità dal menu sopra per visualizzare i report sintetici
+                        della dashboard.</p>
+                </div>
+
+                <div id="dashboardContent" class="hidden space-y-8">
+                    <div id="statsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Content dynamic -->
+                    </div>
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <div class="glass rounded-2xl p-8 border border-dark-border w-full">
+                            <h3 class="text-xl font-bold text-white mb-6">Trend Mensile</h3>
+                            <div class="relative h-80 w-full"><canvas id="chartTrend"></canvas></div>
+                        </div>
+                        <div class="glass rounded-2xl p-8 border border-dark-border w-full">
+                            <h3 class="text-xl font-bold text-white mb-6">Top 5 Soggetti</h3>
+                            <div class="relative h-80 w-full flex items-center justify-center"><canvas
+                                    id="chartSuppliers"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: INVOICES -->
+            <div id="viewInvoices" class="hidden space-y-6 animated-fade w-full">
+                <div class="glass rounded-2xl border border-dark-border overflow-hidden flex flex-col w-full">
+                    <div
+                        class="px-8 py-6 border-b border-dark-border flex flex-col md:flex-row items-center justify-between gap-4 bg-slate-800/30">
+                        <h3 class="text-xl font-bold text-white">Fatture</h3>
+                        <input type="text" id="searchInput" placeholder="Cerca..."
+                            class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-base w-full md:min-w-[300px]">
+                    </div>
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-slate-800/50 text-slate-400 text-sm uppercase tracking-wider font-bold">
+                                    <th class="px-8 py-5 sortable" onclick="sortBy('type')">Tipo <span
+                                            id="sort-type"></span></th>
+                                    <th class="px-8 py-5 sortable" onclick="sortBy('supplier')">Soggetto <span
+                                            id="sort-supplier"></span></th>
+                                    <th class="px-8 py-5 sortable" onclick="sortBy('date')">Data <span
+                                            id="sort-date"></span></th>
+                                    <th class="px-8 py-5 sortable" onclick="sortBy('number')">Numero <span
+                                            id="sort-number"></span></th>
+                                    <th class="px-8 py-5 text-right sortable" onclick="sortBy('netAmount')">Imponibile
+                                        <span id="sort-netAmount"></span>
+                                    </th>
+                                    <th class="px-8 py-5 text-right sortable" onclick="sortBy('totalAmount')">Totale
+                                        <span id="sort-totalAmount"></span>
+                                    </th>
+                                    <th class="px-8 py-5"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoiceList" class="divide-y divide-dark-border text-base"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: ANALYTICS -->
+            <div id="viewAnalytics" class="hidden space-y-10 animated-fade w-full">
+                <!-- KPI -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="glass rounded-2xl p-8 border border-dark-border">
+                        <p class="text-slate-400 text-sm uppercase font-bold mb-3">Fatturato (VENDITE)</p>
+                        <h3 id="kpiRevenue" class="text-3xl font-bold text-white">€ 0,00</h3>
+                        <p class="text-[10px] text-slate-500 mt-2 uppercase">Imponibile IVA (Allineato Aruba)</p>
+                    </div>
+                    <div class="glass rounded-2xl p-8 border border-dark-border">
+                        <p class="text-slate-400 text-sm uppercase font-bold mb-3">Totale ACQUISTI</p>
+                        <h3 id="kpiPurchase" class="text-3xl font-bold text-white">€ 0,00</h3>
+                    </div>
+                    <div class="glass rounded-2xl p-8 border-l-4 border-blue-500 bg-blue-500/5">
+                        <p class="text-blue-200 text-sm uppercase font-bold mb-3">Totale CPA (4%)</p>
+                        <h3 id="kpiTotCpa" class="text-3xl font-bold text-blue-100">€ 0,00</h3>
+                    </div>
+                    <div class="glass rounded-2xl p-8 border-l-4 border-emerald-500 bg-emerald-500/5">
+                        <p class="text-emerald-200 text-sm uppercase font-bold mb-3">IVA a Debito</p>
+                        <h3 id="kpiTotIva" class="text-3xl font-bold text-emerald-100">€ 0,00</h3>
+                    </div>
+                </div>
+
+                <!-- Dataset Breakdown -->
+                <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                    <div class="px-8 py-5 border-b border-dark-border bg-slate-800/30 flex items-center gap-3">
+                        <i data-lucide="database" class="w-5 h-5 text-primary-400"></i>
+                        <h3 class="font-bold text-white text-xl">Consistenza Dataset (N. Fatture per Anno)</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800/50 text-slate-400 text-xs uppercase font-bold tracking-wider">
+                                    <th class="px-8 py-4">Anno</th>
+                                    <th class="px-8 py-4 text-center">Fatture ATTIVE (Vendite)</th>
+                                    <th class="px-8 py-4 text-center">Fatture PASSIVE (Acquisti)</th>
+                                    <th class="px-8 py-4 text-center">TOTALE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="datasetBreakdownBody" class="divide-y divide-dark-border text-base">
+                                <!-- Dynamic content -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VAT -->
+                <div id="vatSection" class="hidden glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                    <div
+                        class="px-8 py-6 border-b border-dark-border bg-slate-800/30 flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <h3 class="font-bold text-white text-xl">Liquidazione IVA</h3>
+                            <select id="vatPeriodicity" onchange="renderAnalytics()" title="Periodicità IVA"
+                                class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-lg px-2 py-1 outline-none">
+                                <option value="q">Trimestrale</option>
+                                <option value="m">Mensile</option>
+                                <option value="f">Forfettario</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="exportTable('txt','vat')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="file-text" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('html','vat')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="code" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('csv','vat')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="file-spreadsheet" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('wa','vat')"
+                                class="p-2 text-emerald-400 hover:text-emerald-300 rounded hover:bg-slate-700"><i
+                                    data-lucide="send" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr class="bg-slate-800/50 text-slate-400 text-sm uppercase font-bold">
+                                    <th class="px-8 py-5">Periodo</th>
+                                    <th class="px-8 py-5 text-right">Debito</th>
+                                    <th class="px-8 py-5 text-right">Credito</th>
+                                    <th class="px-8 py-5 text-right">Int. 1.5%</th>
+                                    <th class="px-8 py-5 text-right">Da Versare</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vatTableBody" class="divide-y divide-dark-border text-lg"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="vatPlaceholder"
+                    class="glass rounded-2xl p-12 text-center border-dashed border-2 border-slate-700 w-full">
+                    <p class="text-slate-400 text-lg">Seleziona un <b>Anno Singolo</b> per i report fiscali (IVA, CPA,
+                        Ritenute).</p>
+                </div>
+
+                <!-- CPA -->
+                <div id="cpaSection" class="hidden glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                    <div
+                        class="px-8 py-6 border-b border-dark-border bg-slate-800/30 flex justify-between items-center">
+                        <h3 class="font-bold text-white text-xl">Riepilogo CPA</h3>
+                        <div class="flex gap-2">
+                            <button onclick="exportTable('txt','cpa')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="file-text" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('html','cpa')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="code" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('csv','cpa')"
+                                class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                    data-lucide="file-spreadsheet" class="w-5 h-5"></i></button>
+                            <button onclick="exportTable('wa','cpa')"
+                                class="p-2 text-emerald-400 hover:text-emerald-300 rounded hover:bg-slate-700"><i
+                                    data-lucide="send" class="w-5 h-5"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr class="bg-slate-800/50 text-slate-400 text-sm font-bold">
+                                    <th class="px-8 py-4">Periodo</th>
+                                    <th class="px-8 py-4 text-right">Importo CPA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cpaTableBody" class="divide-y divide-dark-border text-base"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Wit -->
+                <div id="ritSection" class="hidden grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
+                    <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                        <div
+                            class="px-8 py-6 border-b border-dark-border bg-slate-800/30 border-l-4 border-l-emerald-500 flex justify-between items-center">
+                            <h3 class="font-bold text-white text-lg">Subite (Attive)</h3>
+                            <div class="flex gap-1"><button onclick="exportTable('wa','rits')"
+                                    class="p-1.5 text-emerald-400 hover:bg-slate-700 rounded"><i data-lucide="send"
+                                        class="w-4 h-4"></i></button><button onclick="exportTable('csv','rits')"
+                                    class="p-1.5 text-slate-400 hover:bg-slate-700 rounded"><i data-lucide="download"
+                                        class="w-4 h-4"></i></button></div>
+                        </div>
+                        <div class="overflow-x-auto max-h-[500px]">
+                            <table class="w-full text-left border-collapse">
+                                <tbody id="ritSubiteBody" class="divide-y divide-dark-border text-base"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                        <div
+                            class="px-8 py-6 border-b border-dark-border bg-slate-800/30 border-l-4 border-l-red-500 flex justify-between items-center">
+                            <h3 class="font-bold text-white text-lg">Operate (Passive)</h3>
+                            <div class="flex gap-1"><button onclick="exportTable('wa','rito')"
+                                    class="p-1.5 text-emerald-400 hover:bg-slate-700 rounded"><i data-lucide="send"
+                                        class="w-4 h-4"></i></button><button onclick="exportTable('csv','rito')"
+                                    class="p-1.5 text-slate-400 hover:bg-slate-700 rounded"><i data-lucide="download"
+                                        class="w-4 h-4"></i></button></div>
+                        </div>
+                        <div class="overflow-x-auto max-h-[500px]">
+                            <table class="w-full text-left border-collapse">
+                                <tbody id="ritOperateBody" class="divide-y divide-dark-border text-base"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- VIEW: VAT -->
+        <div id="viewVat" class="hidden space-y-6 animated-fade w-full">
+            <!-- Year Filter for VAT View -->
+            <div class="glass rounded-2xl p-6 border border-dark-border">
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <label class="text-slate-400 font-semibold">Seleziona Anno:</label>
+                    <select id="filterYearVat" title="Seleziona Anno Liquidazione"
+                        onchange="document.getElementById('filterYear').value = this.value; renderVatView()"
+                        class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-4 py-2 outline-none flex-1 md:flex-initial">
+                        <option value="all">Tutti</option>
+                    </select>
+                </div>
+            </div>
+            <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                <div class="px-8 py-6 border-b border-dark-border bg-slate-800/30 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h3 class="font-bold text-white text-xl">Liquidazione IVA</h3>
+                        <select id="vatPeriodicityDedicated" onchange="renderVatView()" title="Periodicità IVA dedicata"
+                            class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-lg px-2 py-1 outline-none">
+                            <option value="q">Trimestrale</option>
+                            <option value="m">Mensile</option>
+                            <option value="f">Forfettario</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="exportTable('txt','vat')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                data-lucide="file-text" class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('html','vat')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i data-lucide="code"
+                                class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('csv','vat')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                data-lucide="file-spreadsheet" class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('wa','vat')"
+                            class="p-2 text-emerald-400 hover:text-emerald-300 rounded hover:bg-slate-700"><i
+                                data-lucide="send" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
+                        <thead>
+                            <tr class="bg-slate-800/50 text-slate-400 text-sm uppercase font-bold">
+                                <th class="px-8 py-5">Periodo</th>
+                                <th class="px-8 py-5 text-right">Debito</th>
+                                <th class="px-8 py-5 text-right">Credito</th>
+                                <th class="px-8 py-5 text-right">Int. 1.5%</th>
+                                <th class="px-8 py-5 text-right">Da Versare</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vatTableBodyDedicated" class="divide-y divide-dark-border text-lg"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: CPA -->
+        <div id="viewCpa" class="hidden space-y-6 animated-fade w-full">
+            <!-- Year Filter for CPA View -->
+            <div class="glass rounded-2xl p-6 border border-dark-border">
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <label class="text-slate-400 font-semibold">Seleziona Anno:</label>
+                    <select id="filterYearCpa" title="Seleziona Anno CPA"
+                        onchange="document.getElementById('filterYear').value = this.value; renderCpaView()"
+                        class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-4 py-2 outline-none flex-1 md:flex-initial">
+                        <option value="all">Tutti</option>
+                    </select>
+                </div>
+            </div>
+            <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                <div class="px-8 py-6 border-b border-dark-border bg-slate-800/30 flex justify-between items-center">
+                    <h3 class="font-bold text-white text-xl">Riepilogo CPA</h3>
+                    <div class="flex gap-2">
+                        <button onclick="exportTable('txt','cpa')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                data-lucide="file-text" class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('html','cpa')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i data-lucide="code"
+                                class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('csv','cpa')"
+                            class="p-2 text-slate-400 hover:text-white rounded hover:bg-slate-700"><i
+                                data-lucide="file-spreadsheet" class="w-5 h-5"></i></button>
+                        <button onclick="exportTable('wa','cpa')"
+                            class="p-2 text-emerald-400 hover:text-emerald-300 rounded hover:bg-slate-700"><i
+                                data-lucide="send" class="w-5 h-5"></i></button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead>
+                            <tr class="bg-slate-800/50 text-slate-400 text-sm font-bold">
+                                <th class="px-8 py-4">Periodo</th>
+                                <th class="px-8 py-4 text-right">Importo CPA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cpaTableBodyDedicated" class="divide-y divide-dark-border text-base"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RITENUTE -->
+        <div id="viewRitenute" class="hidden space-y-6 animated-fade w-full">
+            <!-- Year Filter for Ritenute View -->
+            <div class="glass rounded-2xl p-6 border border-dark-border">
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <label class="text-slate-400 font-semibold">Seleziona Anno:</label>
+                    <select id="filterYearRitenute"
+                        onchange="document.getElementById('filterYear').value = this.value; renderRitenuteView()"
+                        class="bg-slate-900 border border-slate-700 text-slate-200 text-base rounded-lg px-4 py-2 outline-none flex-1 md:flex-initial">
+                        <option value="all">Tutti</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
+                <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                    <div
+                        class="px-8 py-6 border-b border-dark-border bg-slate-800/30 border-l-4 border-l-emerald-500 flex justify-between items-center">
+                        <h3 class="font-bold text-white text-lg">Subite (Attive)</h3>
+                        <div class="flex gap-1">
+                            <button onclick="exportTable('wa','rits')"
+                                class="p-1.5 text-emerald-400 hover:bg-slate-700 rounded"><i data-lucide="send"
+                                    class="w-4 h-4"></i></button>
+                            <button onclick="exportTable('csv','rits')"
+                                class="p-1.5 text-slate-400 hover:bg-slate-700 rounded"><i data-lucide="download"
+                                    class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-[500px]">
+                        <table class="w-full text-left border-collapse">
+                            <tbody id="ritSubiteBodyDedicated" class="divide-y divide-dark-border text-base"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl border border-dark-border overflow-hidden w-full">
+                    <div
+                        class="px-8 py-6 border-b border-dark-border bg-slate-800/30 border-l-4 border-l-red-500 flex justify-between items-center">
+                        <h3 class="font-bold text-white text-lg">Operate (Passive)</h3>
+                        <div class="flex gap-1">
+                            <button onclick="exportTable('wa','rito')"
+                                class="p-1.5 text-emerald-400 hover:bg-slate-700 rounded"><i data-lucide="send"
+                                    class="w-4 h-4"></i></button>
+                            <button onclick="exportTable('csv','rito')"
+                                class="p-1.5 text-slate-400 hover:bg-slate-700 rounded"><i data-lucide="download"
+                                    class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-[500px]">
+                        <table class="w-full text-left border-collapse">
+                            <tbody id="ritOperateBodyDedicated" class="divide-y divide-dark-border text-base"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-border bg-dark-bg/80 backdrop-blur-md py-6 px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm">
+                        IL</div>
+                    <div>
+                        <p class="text-sm font-semibold text-white">InvoicyLex</p>
+                        <p class="text-xs text-slate-500">by robertoarcella ©2026</p>
+                    </div>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-xs text-slate-400 max-w-2xl">
+                        <span class="text-yellow-400 font-semibold">⚠️ Disclaimer:</span>
+                        I risultati forniti da questa applicazione sono generati automaticamente.
+                        Si raccomanda di <strong>verificare sempre i dati</strong> con un commercialista qualificato
+                        prima di utilizzarli per adempimenti fiscali ufficiali.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div id="modalSettings"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-md shadow-2xl p-8">
+            <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-3"><i data-lucide="settings"
+                    class="w-6 h-6"></i> Impostazioni</h3>
+            <div class="space-y-6">
+                <div> <label class="block text-base font-medium text-slate-400 mb-2">La tua Partita IVA / CF</label>
+                    <input type="text" id="userVatInput" placeholder="IT..."
+                        class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 w-full focus:outline-none focus:border-primary-500 uppercase text-lg">
+                </div>
+                <div> <label class="block text-base font-medium text-slate-400 mb-2">Regime Fiscale</label>
+                    <select id="userRegimeInput" title="Selezione Regime Fiscale"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-primary-500 text-lg">
+                        <option value="ordinario">Ordinario</option>
+                        <option value="forfettario">Forfettario (78%)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end"><button onclick="saveSettings()"
+                        class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-3 rounded-xl font-bold">Salva</button>
+                </div>
+                <div class="w-full h-px bg-dark-border"></div>
+                <div>
+                    <h4 class="text-base font-bold text-white mb-3">Backup</h4>
+                    <div class="grid grid-cols-2 gap-4"> <button onclick="backupData()"
+                            class="flex flex-col items-center justify-center p-5 bg-slate-800 hover:bg-slate-700 border border-dark-border rounded-xl">
+                            <i data-lucide="download-cloud" class="w-7 h-7 text-primary-400 mb-2"></i> <span
+                                class="text-sm font-medium text-slate-300">Backup</span> </button> <label
+                            class="flex flex-col items-center justify-center p-5 bg-slate-800 hover:bg-slate-700 border border-dark-border rounded-xl cursor-pointer">
+                            <i data-lucide="upload-cloud" class="w-7 h-7 text-emerald-400 mb-2"></i> <span
+                                class="text-sm font-medium text-slate-300">Ripristina</span> <input type="file"
+                                id="restoreInput" accept=".json" class="hidden" onchange="restoreData(this.files[0])">
+                        </label> </div>
+                </div>
+                <button onclick="clearDB()"
+                    class="w-full py-4 text-red-400 border border-red-500/30 hover:bg-red-500/10 rounded-xl font-bold">OS:
+                    Reset Database</button>
+            </div>
+            <button onclick="closeSettings()" class="absolute top-6 right-6 text-slate-500 hover:text-white"><i
+                    data-lucide="x" class="w-6 h-6"></i></button>
+        </div>
+    </div>
+
+    <div id="modalExport" class="fixed inset-0 z-50 hidden bg-black/50 p-4 flex items-center justify-center">
+        <div class="bg-dark-card border border-dark-border rounded-2xl w-full max-w-sm p-8">
+            <h3 class="text-xl font-bold text-white mb-6">Esporta CSV</h3>
+            <div class="space-y-4">
+                <button onclick="performExport('active')"
+                    class="w-full py-4 bg-blue-500/10 text-blue-400 border border-blue-500 rounded-xl font-bold block">Attive</button>
+                <button onclick="performExport('passive')"
+                    class="w-full py-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500 rounded-xl font-bold block">Passive</button>
+                <button onclick="performExport('all')"
+                    class="w-full py-4 bg-slate-700 text-white rounded-xl font-bold block">Tutte</button>
+            </div>
+            <button onclick="document.getElementById('modalExport').classList.add('hidden')"
+                class="mt-6 w-full text-base text-slate-500 font-medium">Annulla</button>
+        </div>
+    </div>
+
+    <div id="modalDetail"
+        class="fixed inset-0 z-50 hidden bg-black/60 p-2 md:p-6 overflow-y-auto flex items-center justify-center">
+        <div
+            class="invoice-paper rounded-2xl w-full max-w-5xl shadow-2xl flex flex-col min-h-[80vh] mx-auto overflow-hidden relative text-base p-8 md:p-16">
+            <button onclick="document.getElementById('modalDetail').classList.add('hidden')"
+                class="absolute top-6 right-6 p-3 bg-slate-100 rounded-full text-slate-600"><i data-lucide="x"
+                    class="w-6 h-6"></i></button>
+            <div id="detContent"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        let invoices = [], availableYears = new Set(), currentView = 'dashboard', db, userVAT = localStorage.getItem('userVAT') || "", userRegime = localStorage.getItem('userRegime') || "ordinario", currentSort = { field: 'date', order: 'desc' };
+        const DB_NAME = 'InvoicifyDB', DB_VERSION = 4, STORE_NAME = 'invoices';
+
+        let currentReports = { vat: null, cpa: null, rits: null, rito: null, irpef: null };
+
+        function syncYearFilters(val) {
+            if (val === 'none') {
+                document.getElementById('dashboardYearFilter').value = 'none';
+                document.getElementById('filterYear').value = 'all';
+                document.getElementById('dashboardContent').classList.add('hidden');
+                document.getElementById('dashboardPlaceholder').classList.remove('hidden');
+            } else {
+                document.getElementById('filterMode').value = 'year';
+                document.getElementById('filterYear').value = val;
+                document.getElementById('dashboardYearFilter').value = val;
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                document.getElementById('dashboardPlaceholder').classList.add('hidden');
+                updateFilterUI();
+            }
+            renderApp();
+        }
+
+        function exportTable(fmt, type) {
+            const d = currentReports[type];
+            if (!d || !d.length) { alert("Nessun dato da esportare"); return; }
+            let content = "", mime = "text/plain", ext = "txt";
+            if (fmt === 'txt' || fmt === 'wa') {
+                content = `*REPORT ${type.toUpperCase()} - Anno ${document.getElementById('filterYear').value}*\n\n`; d.forEach(r => content += `${r.join(' | ')}\n`);
+                if (fmt === 'wa') { window.open(`https://wa.me/?text=${encodeURIComponent(content)}`, '_blank'); return; }
+            } else if (fmt === 'csv') { mime = "text/csv"; ext = "csv"; content = d.map(r => r.join(';')).join('\n'); }
+            else if (fmt === 'html') { mime = "text/html"; ext = "html"; content = `<html><style>table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:8px;}</style><body><h2>Report ${type.toUpperCase()}</h2><table>${d.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table></body></html>`; }
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type: mime })); a.download = `export_${type}.${ext}`; a.click();
+        }
+
+        // Logic
+        function initDB() { return new Promise(r => { const q = indexedDB.open(DB_NAME, DB_VERSION); q.onsuccess = e => { db = e.target.result; document.getElementById('dbStatus').innerHTML = 'Online'; r(db) }; q.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(STORE_NAME)) e.target.result.createObjectStore(STORE_NAME, { keyPath: "id" }) } }) }
+        function saveInvoiceToDB(i) { if (db) db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME).put(i) }
+        function loadInvoicesFromDB() { return new Promise(r => { if (!db) r([]); db.transaction([STORE_NAME], "readonly").objectStore(STORE_NAME).getAll().onsuccess = e => r(e.target.result) }) }
+        function clearDB() { if (confirm("Eliminare tutto?")) db.transaction([STORE_NAME], "readwrite").objectStore(STORE_NAME).clear().onsuccess = () => { invoices = []; availableYears.clear(); processData(true); renderApp(); alert("Cancellato."); closeSettings() } }
+
+        function openSettings() {
+            document.getElementById('modalSettings').classList.remove('hidden');
+            document.getElementById('userVatInput').value = localStorage.getItem('userVAT') || "";
+            document.getElementById('userRegimeInput').value = localStorage.getItem('userRegime') || "ordinario";
+        }
+        function closeSettings() { document.getElementById('modalSettings').classList.add('hidden') }
+
+        // Reclassify all existing invoices based on current userVAT
+        function reclassifyInvoices() {
+            if (!userVAT) return;
+
+            let reclassified = 0;
+            invoices.forEach(inv => {
+                const normalizedUserVAT = normalizeVAT(userVAT);
+                const normalizedSupplierVAT = normalizeVAT(inv.supplierFull.vat);
+                const normalizedClientVAT = normalizeVAT(inv.clientFull.vat);
+
+                // Remove country prefix for comparison (IT, DE, etc.)
+                const userVATNoPrefix = normalizedUserVAT.replace(/^[A-Z]{2}/, '');
+                const supplierVATNoPrefix = normalizedSupplierVAT.replace(/^[A-Z]{2}/, '');
+                const clientVATNoPrefix = normalizedClientVAT.replace(/^[A-Z]{2}/, '');
+
+                const oldType = inv.type;
+
+                // Check if user is the supplier (invoice issued/active)
+                if (normalizedSupplierVAT === normalizedUserVAT ||
+                    supplierVATNoPrefix === userVATNoPrefix ||
+                    normalizedSupplierVAT === userVATNoPrefix ||
+                    supplierVATNoPrefix === normalizedUserVAT) {
+                    inv.type = 'active';
+                }
+                // Check if user is the client (invoice received/passive)
+                else if (normalizedClientVAT === normalizedUserVAT ||
+                    clientVATNoPrefix === userVATNoPrefix ||
+                    normalizedClientVAT === userVATNoPrefix ||
+                    clientVATNoPrefix === normalizedUserVAT) {
+                    inv.type = 'passive';
+                }
+
+                if (oldType !== inv.type) {
+                    reclassified++;
+                    saveInvoiceToDB(inv); // Update in database
+                }
+            });
+
+            return reclassified;
+        }
+
+        function saveSettings() {
+            userVAT = document.getElementById('userVatInput').value.trim().toUpperCase();
+            userRegime = document.getElementById('userRegimeInput').value;
+            localStorage.setItem('userVAT', userVAT);
+            localStorage.setItem('userRegime', userRegime);
+
+            // Update UI status
+            document.getElementById('regimeStatusDisplay').textContent = "Regime: " + (userRegime === 'forfettario' ? 'Forfettario' : 'Ordinario');
+
+            // Update sidebar labels if needed
+            updateSidebarLabels();
+
+            // Reclassify existing invoices
+            const count = reclassifyInvoices();
+
+            renderApp();
+            closeSettings();
+
+            if (count > 0) {
+                alert(`Salvato! ${count} fatture sono state riclassificate.`);
+            } else {
+                alert("Salvato.");
+            }
+        }
+
+        function updateSidebarLabels() {
+            const isForfettario = userRegime === 'forfettario';
+            const navVat = document.getElementById('navVat');
+            if (navVat) {
+                navVat.innerHTML = isForfettario ?
+                    `<i data-lucide="calculator" class="w-4 h-4"></i> <span>Calcolo IRPEF</span>` :
+                    `<i data-lucide="receipt" class="w-4 h-4"></i> <span>Liquidazione IVA</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        function backupData() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(invoices)); a.download = "backup.json"; a.click() }
+        function restoreData(f) { if (!f) return; const r = new FileReader(); r.onload = e => { try { const d = JSON.parse(e.target.result); if (Array.isArray(d)) { invoices = d; invoices.forEach(saveInvoiceToDB); processData(true); renderApp(); alert("Fatto."); closeSettings() } } catch { alert("Err") } }; r.readAsText(f) }
+
+        function sortBy(f) { if (currentSort.field === f) currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc'; else currentSort = { field: f, order: 'desc' }; renderApp() }
+        function applySort(d) { const { field, order } = currentSort; const m = order === 'asc' ? 1 : -1; d.sort((a, b) => { let va = a[field], vb = b[field]; if (field === 'supplier') { va = (a.type === 'passive' ? a.supplier : a.client).toLowerCase(); vb = (b.type === 'passive' ? b.supplier : b.client).toLowerCase() } if (va < vb) return -1 * m; if (va > vb) return 1 * m; return 0 }); document.querySelectorAll('[id^="sort-"]').forEach(e => e.innerHTML = ''); const el = document.getElementById('sort-' + field); if (el) el.innerHTML = order === 'asc' ? '↑' : '↓' }
+
+        const dz = document.getElementById('dropZone'); dz.addEventListener('dragenter', e => { e.preventDefault(); dz.classList.add('drag-active') }); dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-active') }); dz.addEventListener('dragleave', e => { e.preventDefault(); dz.classList.remove('drag-active') }); dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-active'); handleFiles(e.dataTransfer.files) });
+        document.getElementById('fileInput').addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function updateFilterUI() { const m = document.getElementById('filterMode').value;['inputSingleYear', 'inputYearRange', 'inputDateRange'].forEach(id => document.getElementById(id).classList.add('hidden')); if (m === 'year') document.getElementById('inputSingleYear').classList.remove('hidden'); else if (m === 'range_year') document.getElementById('inputYearRange').classList.remove('hidden'); else if (m === 'range_date') document.getElementById('inputDateRange').classList.remove('hidden'); renderApp() }
+
+        // Better Listeners
+        ['filterYear', 'filterQuarter', 'filterYearFrom', 'filterYearTo', 'filterType'].forEach(id => document.getElementById(id).addEventListener('change', renderApp));
+        ['filterDateFrom', 'filterDateTo', 'searchInput'].forEach(id => document.getElementById(id).addEventListener('input', renderApp));
+
+        async function handleFiles(files) {
+            let count = 0, skipped = 0, errors = 0;
+            for (const f of files) {
+                try {
+                    if (f.name.toLowerCase().endsWith('.zip')) {
+                        try {
+                            const z = await JSZip.loadAsync(f);
+                            const entries = Object.keys(z.files);
+                            let foundInZip = 0;
+                            for (const n of entries) {
+                                const entry = z.files[n];
+                                if (!entry.dir && n.toLowerCase().endsWith('.xml')) {
+                                    try {
+                                        const res = await parseAndSave(await entry.async("string"), n);
+                                        if (res === "saved") { count++; foundInZip++; }
+                                        else if (res === "duplicate") skipped++;
+                                        else if (res === "error") errors++;
+                                    } catch (err) { console.error("Error parsing XML in ZIP:", n, err); errors++; }
+                                }
+                            }
+                            if (foundInZip === 0 && !skipped) alert("Nessun file XML trovato all'interno di " + f.name);
+                        } catch (err) {
+                            console.error(err);
+                            alert("Errore apertura ZIP: " + f.name + ". Il file potrebbe essere corrotto o protetto.");
+                        }
+                    } else if (f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.p7m')) {
+                        const res = await parseAndSave(await f.text(), f.name);
+                        if (res === "saved") count++;
+                        else if (res === "duplicate") skipped++;
+                        else if (res === "error") errors++;
+                    }
+                } catch (e) { console.error("File Read Error:", e); errors++; }
+            }
+
+            if (count > 0 || skipped > 0) {
+                processData(false);
+                renderApp();
+
+                let msg = `Operazione completata.\n- ${count} fatture caricate.`;
+                if (skipped > 0) msg += `\n- ${skipped} fatture saltate (già presenti).`;
+                if (errors > 0) msg += `\n- ${errors} errori durante il caricamento.`;
+                alert(msg);
+            } else if (errors > 0) {
+                alert("Si sono verificati errori durante il caricamento dei file.");
+            }
+        }
+
+        // Helper: Normalize VAT number for comparison
+        function normalizeVAT(vat) {
+            if (!vat) return "";
+            return vat.toString().toUpperCase().replace(/[\s\-\.]/g, '');
+        }
+
+        // --- ADVANCED PARSING (V7 FIX) ---
+        async function parseAndSave(c, n) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(c, "text/xml");
+
+            // Duplicate Check Helper
+            const isDuplicate = (supplierVat, number, date) => {
+                return invoices.some(i =>
+                    normalizeVAT(i.supplierFull.vat) === normalizeVAT(supplierVat) &&
+                    String(i.number) === String(number) &&
+                    i.date === date
+                );
+            };
+
+            // Helper: Look for direct child with tagName inside context node
+            const getVal = (context, tag) => {
+                if (!context) return "";
+                // Use XPath relative to context to be safe against namespaces check
+                try {
+                    const el = doc.evaluate(`.//*[local-name()='${tag}']`, context, null, 9, null).singleNodeValue;
+                    return el ? el.textContent.trim().toUpperCase() : "";
+                } catch (e) { return ""; }
+            };
+
+            // Helper: Get node by local name from doc or context
+            const getNode = (context, tag) => {
+                try {
+                    return doc.evaluate(`.//*[local-name()='${tag}']`, context || doc, null, 9, null).singleNodeValue;
+                } catch (e) { return null; }
+            };
+
+            try {
+                const h = getNode(doc, "FatturaElettronicaHeader") || getNode(doc, "Header");
+
+                const getEnt = (typeTag) => {
+                    const node = getNode(h, typeTag);
+                    if (!node) return { name: "?", address: "", vat: "", cf: "", idStr: "?" };
+
+                    let den = getVal(node, "Denominazione");
+                    if (!den) den = (getVal(node, "Nome") + " " + getVal(node, "Cognome")).trim();
+
+                    const sede = getNode(node, "Sede");
+                    const addr = sede ? (getVal(sede, "Indirizzo") + ", " + getVal(sede, "Comune")) : "";
+
+                    const idFiscNode = getNode(node, "IdFiscaleIVA");
+                    const vat = idFiscNode ? (getVal(idFiscNode, "IdPaese") + getVal(idFiscNode, "IdCodice")) : "";
+                    const cf = getVal(node, "CodiceFiscale");
+
+                    return {
+                        name: den,
+                        address: addr,
+                        vat: vat || "N/A",
+                        cf: cf || "",
+                        idStr: `${den} (${vat || "N/A"})`
+                    };
+                };
+
+                const sup = getEnt("CedentePrestatore");
+                const cli = getEnt("CessionarioCommittente");
+                const body = getNode(doc, "FatturaElettronicaBody");
+
+                let d = "", num = "", amt = 0, tax = 0, cpa = 0, rit = 0, expensesTax = 0, expensesExcl = 0, stamp = 0, ls = [], totDocXml = 0, obj = "";
+
+                if (body) {
+                    const gen = getNode(body, "DatiGeneraliDocumento");
+                    if (gen) {
+                        d = getVal(gen, "Data");
+                        num = getVal(gen, "Numero");
+                        totDocXml = parseFloat(getVal(gen, "ImportoTotaleDocumento") || 0);
+                        obj = getVal(gen, "Causale");
+                    }
+
+                    // CRITICAL: DUPLICATE CHECK
+                    if (isDuplicate(sup.vat, num, d)) {
+                        console.log(`Duplicate found: ${num} from ${sup.vat} on ${d}. Skipping.`);
+                        return "duplicate";
+                    }
+
+                    const stampNode = getNode(body, "DatiBollo");
+                    if (stampNode) stamp = parseFloat(getVal(stampNode, "ImportoBollo") || 0);
+
+                    const sums = doc.evaluate(".//*[local-name()='DatiRiepilogo']", body, null, 7, null);
+                    for (let i = 0; i < sums.snapshotLength; i++) {
+                        const node = sums.snapshotItem(i);
+                        const imp = parseFloat(getVal(node, "ImponibileImporto") || 0);
+                        const tx = parseFloat(getVal(node, "Imposta") || 0);
+                        const al = parseFloat(getVal(node, "AliquotaIVA") || 0);
+                        const nat = getVal(node, "Natura");
+                        // If Aliquota is 0 AND Natura is N1, it's Excluded/Art.15 expense
+                        // Otherwise (e.g. N2.2 for Forfettari), it's part of the taxable base (amt)
+                        if (al === 0 && nat === 'N1') {
+                            expensesExcl += imp;
+                        } else {
+                            amt += imp;
+                            tax += tx;
+                        }
+                    }
+
+                    const cpNodes = doc.evaluate(".//*[local-name()='DatiCassaPrevidenziale']", body, null, 7, null);
+                    for (let i = 0; i < cpNodes.snapshotLength; i++) {
+                        cpa += parseFloat(getVal(cpNodes.snapshotItem(i), "ImportoContributoCassa") || 0);
+                    }
+
+                    const rtNodes = doc.evaluate(".//*[local-name()='DatiRitenuta']", body, null, 7, null);
+                    for (let i = 0; i < rtNodes.snapshotLength; i++) rit += parseFloat(getVal(rtNodes.snapshotItem(i), "ImportoRitenuta") || 0);
+
+                    const lnNodes = doc.evaluate(".//*[local-name()='DettaglioLinee']", body, null, 7, null);
+                    for (let i = 0; i < lnNodes.snapshotLength; i++) {
+                        const l = lnNodes.snapshotItem(i);
+                        const desc = getVal(l, "Descrizione");
+                        const tot = parseFloat(getVal(l, "PrezzoTotale") || 0);
+                        const type = getVal(l, "TipoCessionePrestazione"); // AC = Accessorie
+
+                        ls.push({
+                            desc,
+                            qty: parseFloat(getVal(l, "Quantita") || 1),
+                            price: parseFloat(getVal(l, "PrezzoUnitario") || 0),
+                            total: tot
+                        });
+
+                        // If it's an accessory charge (AC), track it separately as Taxable Expense
+                        if (type === 'AC') expensesTax += tot;
+                    }
+                }
+
+                // Main Description from first line
+                const mainDescription = ls.length > 0 ? ls[0].desc : "";
+
+                // Determine Type
+                let t = "unknown";
+                if (n.toLowerCase().includes("attiv")) t = "active";
+                else if (n.toLowerCase().includes("passiv")) t = "passive";
+                else t = "passive"; // Default
+
+                // Logic FIX: In Italian professional invoices (Avvocati), the CPA is usually ALREADY included 
+                // in the summaries (DatiRiepilogo) because it's part of the taxable base for IVA.
+                // To get actual 'Compensi' (Fees), we must subtract the CPA from the taxable amount.
+                let fees = amt - cpa - expensesTax;
+                if (fees < 0) fees = 0;
+
+                // IMPROVED TOTAL LOGIC: Use XML total if available, otherwise calculate carefully.
+                // Ritenuta (withholding) is usually subtracted from the total to pay.
+                let totalAmount = totDocXml || (amt + tax + cpa + expensesExcl - rit);
+
+                const inv = {
+                    id: Math.random().toString(36),
+                    filename: n,
+                    date: d, number: num,
+                    supplier: sup.name, supplierFull: sup,
+                    client: cli.name, clientFull: cli,
+                    netAmount: amt, taxAmount: tax, cpaAmount: cpa, withholdingTax: rit,
+                    fees: fees, expensesTaxable: expensesTax, expensesExcluded: expensesExcl,
+                    totalAmount: totalAmount,
+                    revenue: 0, // calculated later based on final type
+                    type: t, lines: ls,
+                    description: mainDescription,
+                    subject: obj,
+                    xml: c
+                };
+
+                // Advanced Identity Check - IMPROVED
+                if (userVAT) {
+                    const normalizedUserVAT = normalizeVAT(userVAT);
+                    const normalizedSupplierVAT = normalizeVAT(inv.supplierFull.vat);
+                    const normalizedClientVAT = normalizeVAT(inv.clientFull.vat);
+
+                    // Remove country prefix for comparison (IT, DE, etc.)
+                    const userVATNoPrefix = normalizedUserVAT.replace(/^[A-Z]{2}/, '');
+                    const supplierVATNoPrefix = normalizedSupplierVAT.replace(/^[A-Z]{2}/, '');
+                    const clientVATNoPrefix = normalizedClientVAT.replace(/^[A-Z]{2}/, '');
+
+                    // Check if user is the supplier (invoice issued/active)
+                    if (normalizedSupplierVAT === normalizedUserVAT ||
+                        supplierVATNoPrefix === userVATNoPrefix ||
+                        normalizedSupplierVAT === userVATNoPrefix ||
+                        supplierVATNoPrefix === normalizedUserVAT) {
+                        inv.type = 'active';
+                    }
+                    // Check if user is the client (invoice received/passive)
+                    else if (normalizedClientVAT === normalizedUserVAT ||
+                        clientVATNoPrefix === userVATNoPrefix ||
+                        normalizedClientVAT === userVATNoPrefix ||
+                        clientVATNoPrefix === normalizedUserVAT) {
+                        inv.type = 'passive';
+                    }
+                }
+
+                // Final revenue calculation matching Aruba logic (Fatturato = Imponibile IVA)
+                inv.revenue = inv.netAmount;
+
+                invoices.push(inv);
+                saveInvoiceToDB(inv);
+                availableYears.add(d.substring(0, 4));
+                return "saved";
+
+            } catch (e) { console.error("Parse Error", e); return "error"; }
+        }
+
+        function processData(rst) {
+            availableYears = new Set(invoices.map(i => i.date?.substring(0, 4)).filter(y => y?.length === 4));
+            const sy = Array.from(availableYears).sort().reverse();
+            ['filterYear', 'filterYearFrom', 'filterYearTo', 'filterYearVat', 'filterYearCpa', 'filterYearRitenute', 'dashboardYearFilter'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const ov = el.value;
+                el.innerHTML = (id === 'filterYear' || id.startsWith('filterYear') || id === 'dashboardYearFilter') ?
+                    (id === 'dashboardYearFilter' ? '<option value="none">-- Seleziona Anno --</option>' : '<option value="all">Tutti</option>') : '';
+                sy.forEach(y => { const o = document.createElement('option'); o.value = y; o.textContent = y; el.appendChild(o) });
+                if (!rst && Array.from(el.options).some(o => o.value === ov)) el.value = ov;
+            });
+            if (rst && sy.length > 0) {
+                // Do not automatically select year for dashboard to respect the "suggestion" requirement
+            }
+        }
+
+        function getFiltered() {
+            const m = document.getElementById('filterMode').value;
+            const typ = document.getElementById('filterType').value;
+            const txt = document.getElementById('searchInput').value.toLowerCase();
+            const q = document.getElementById('filterQuarter').value;
+            return invoices.filter(i => {
+                let dOk = true; const y = i.date?.substring(0, 4);
+                if (m === 'year') { const sel = document.getElementById('filterYear').value; dOk = (sel === 'all' || y === sel); if (dOk && sel !== 'all' && q !== 'all') dOk = (Math.ceil(parseInt(i.date?.substring(5, 7)) / 3) == q); }
+                else if (m === 'range_year') { const f = parseInt(document.getElementById('filterYearFrom').value), t = parseInt(document.getElementById('filterYearTo').value); dOk = (parseInt(y) >= f && parseInt(y) <= t); }
+                else if (m === 'range_date') { const df = document.getElementById('filterDateFrom').value, dt = document.getElementById('filterDateTo').value; if (df && i.date < df) dOk = false; if (dt && i.date > dt) dOk = false; }
+                const tOk = typ === 'all' || i.type === typ;
+                const txtOk = !txt || i.supplier.toLowerCase().includes(txt) || i.client.toLowerCase().includes(txt) || String(i.number).toLowerCase().includes(txt) || i.date.includes(txt) || (i.description || "").toLowerCase().includes(txt) || (i.subject || "").toLowerCase().includes(txt);
+                return dOk && tOk && txtOk;
+            });
+        }
+
+        function renderApp() {
+            const data = getFiltered();
+            const totalInvoices = invoices.length;
+
+            // Header stats
+            document.getElementById('headerCount').textContent = totalInvoices;
+
+            // Dashboard conditional stats
+            const statsGrid = document.getElementById('statsGrid');
+            const selYear = document.getElementById('dashboardYearFilter').value;
+
+            if (selYear === 'none') {
+                document.getElementById('dashboardContent').classList.add('hidden');
+                document.getElementById('dashboardPlaceholder').classList.remove('hidden');
+            } else {
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                document.getElementById('dashboardPlaceholder').classList.add('hidden');
+
+                const activeData = data.filter(i => i.type === 'active');
+                const passiveData = data.filter(i => i.type === 'passive');
+
+                const fatturatoAttivo = activeData.reduce((a, c) => a + (c.revenue || 0), 0);
+                const fatturatoPassivo = passiveData.reduce((a, c) => a + (c.revenue || 0), 0);
+
+                const iva = activeData.reduce((a, c) => a + c.taxAmount, 0);
+                const rit = activeData.reduce((a, c) => a + (c.withholdingTax || 0), 0);
+                const cpa = activeData.reduce((a, c) => a + (c.cpaAmount || 0), 0);
+
+                let cardsHtml = "";
+                if (userRegime === 'forfettario') {
+                    const activeCompensi = activeData.reduce((a, c) => a + (c.fees || 0), 0);
+                    const irr = activeCompensi * 0.78;
+                    const tax = irr * 0.15;
+                    cardsHtml = `
+                        <div class="glass rounded-2xl p-6 border-l-4 border-primary-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Fatturato (VENDITE)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(fatturatoAttivo)}</h3>
+                            <p class="text-[9px] text-slate-500 mt-1">ALLINEATO ARUBA</p>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-orange-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Reddito IRPEF (78%)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(irr)}</h3>
+                            <p class="text-[9px] text-slate-500 mt-1">CALCOLATO SU COMPENSI</p>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-red-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Imposta Sost. (15%)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(tax)}</h3>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-blue-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Totale Cassa (CPA)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(cpa)}</h3>
+                        </div>
+                    `;
+                } else {
+                    cardsHtml = `
+                        <div class="glass rounded-2xl p-6 border-l-4 border-primary-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Fatturato (VENDITE)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(fatturatoAttivo)}</h3>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-emerald-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Totale ACQUISTI</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(fatturatoPassivo)}</h3>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-purple-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">IVA (DEBITO)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(iva)}</h3>
+                        </div>
+                        <div class="glass rounded-2xl p-6 border-l-4 border-blue-500">
+                            <p class="text-slate-400 text-xs uppercase font-bold mb-1">Totale Cassa (CPA)</p>
+                            <h3 class="text-2xl font-bold text-white">${formatCurrency(cpa)}</h3>
+                        </div>
+                    `;
+                }
+                statsGrid.innerHTML = cardsHtml;
+            }
+
+            applySort(data);
+            const ls = document.getElementById('invoiceList');
+            let rowsHtml = "";
+            data.forEach(i => {
+                const p = i.type === 'passive';
+                rowsHtml += `<tr class="hover:bg-slate-700/20 transition-colors border-b border-dark-border last:border-0">
+                    <td class="px-8 py-5"><span class="px-3 py-1.5 rounded-xl text-sm font-bold border ${p ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}">${p ? 'Ric' : 'Eme'}</span></td>
+                    <td class="px-8 py-5 font-semibold text-white">
+                        <div class="flex flex-col">
+                            <span>${p ? i.supplier : i.client}</span>
+                            <span class="text-xs text-slate-500 font-normal mt-1 max-w-xs truncate" title="${i.subject || ''}">${i.subject || ''}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <div class="flex flex-col">
+                            <span class="text-slate-400 whitespace-nowrap">${formatDate(i.date)}</span>
+                            <span class="text-xs text-slate-500 font-normal mt-1 max-w-xs truncate" title="${i.description || ''}">${i.description || ''}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-5 text-slate-400">#${i.number}</td>
+                    <td class="px-8 py-5 text-right font-mono text-slate-300 text-lg">${formatCurrency(i.netAmount)}</td>
+                    <td class="px-8 py-5 text-right font-mono text-white font-bold text-lg">${formatCurrency(i.totalAmount)}</td>
+                    <td class="px-8 py-5 text-right flex items-center justify-end gap-2">
+                        <button onclick="showDetail('${i.id}')" title="Visualizza Dettaglio" class="p-3 hover:bg-slate-700 rounded-xl text-slate-400 transition-colors"><i data-lucide="eye" class="w-6 h-6"></i></button>
+                        <button onclick="generatePDF('${i.id}')" title="Genera PDF" class="p-3 hover:bg-primary-500/10 rounded-xl text-primary-400 transition-colors"><i data-lucide="file-down" class="w-6 h-6"></i></button>
+                        <button onclick="deleteInvoice('${i.id}')" title="Elimina" class="p-3 hover:bg-red-500/20 rounded-xl text-red-400 transition-colors"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                    </td>
+                </tr>`
+            });
+            ls.innerHTML = rowsHtml;
+            updateCharts(data);
+            if (currentView === 'analytics') renderAnalytics();
+            lucide.createIcons();
+        }
+
+        function renderAnalytics() {
+            const datasetBody = document.getElementById('datasetBreakdownBody');
+            if (datasetBody) {
+                datasetBody.innerHTML = "";
+                const counts = {};
+                invoices.forEach(i => {
+                    const y = i.date?.substring(0, 4) || "Senza Data";
+                    if (!counts[y]) counts[y] = { active: 0, passive: 0 };
+                    if (i.type === 'active') counts[y].active++; else counts[y].passive++;
+                });
+                Object.keys(counts).sort().reverse().forEach(y => {
+                    const c = counts[y];
+                    datasetBody.innerHTML += `<tr>
+                        <td class="px-8 py-4 font-bold text-white">${y}</td>
+                        <td class="px-8 py-4 text-center text-emerald-400 font-mono">${c.active}</td>
+                        <td class="px-8 py-4 text-center text-orange-400 font-mono">${c.passive}</td>
+                        <td class="px-8 py-4 text-center text-slate-300 font-bold font-mono">${c.active + c.passive}</td>
+                    </tr>`;
+                });
+            }
+
+            const data = getFiltered(), isY = document.getElementById('filterMode').value === 'year' && document.getElementById('filterYear').value !== 'all';
+            ['vatSection', 'cpaSection', 'ritSection'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('hidden', !isY);
+            });
+            document.getElementById('vatPlaceholder').classList.toggle('hidden', isY);
+
+            const activeData = data.filter(i => i.type === 'active');
+            const passiveData = data.filter(i => i.type === 'passive');
+
+            document.getElementById('kpiRevenue').textContent = formatCurrency(activeData.reduce((a, c) => a + (c.revenue || 0), 0));
+            document.getElementById('kpiPurchase').textContent = formatCurrency(passiveData.reduce((a, c) => a + (c.revenue || 0), 0));
+            document.getElementById('kpiTotCpa').textContent = formatCurrency(activeData.reduce((a, c) => a + (c.cpaAmount || 0), 0));
+            if (document.getElementById('kpiTotIva')) document.getElementById('kpiTotIva').textContent = formatCurrency(activeData.reduce((a, c) => a + (c.taxAmount || 0), 0));
+            if (document.getElementById('kpiTotRit')) document.getElementById('kpiTotRit').textContent = formatCurrency(activeData.reduce((a, c) => a + (c.withholdingTax || 0), 0));
+
+            if (isY) {
+                const per = document.getElementById('vatPeriodicity') ? document.getElementById('vatPeriodicity').value : 'q';
+                const vt = document.getElementById('vatTableBody');
+                vt.innerHTML = "";
+                currentReports.vat = [];
+
+                if (userRegime === 'forfettario') {
+                    const totActiveCompensi = activeData.reduce((a, c) => a + (c.fees || 0), 0);
+                    const irrImp = totActiveCompensi * 0.78;
+                    const tax = irrImp * 0.15;
+
+                    vt.innerHTML = `
+                        <tr><td colspan="5" class="px-8 py-6 bg-blue-500/5 font-bold text-white text-center border-b border-dark-border">CALCOLO IRPEF FORFETTARIO (Default 78%)</td></tr>
+                        <tr><td class="px-8 py-4 text-slate-400">Totale Fatturato (Fatture Attive)</td><td colspan="4" class="px-8 py-4 text-right font-mono text-white">${formatCurrency(totActiveRev)}</td></tr>
+                        <tr><td class="px-8 py-4 text-slate-400">Coefficiente di Redditività</td><td colspan="4" class="px-8 py-4 text-right font-mono text-blue-400">78,00%</td></tr>
+                        <tr><td class="px-8 py-4 text-slate-300 font-bold">Base Imponibile IRPEF</td><td colspan="4" class="px-8 py-4 text-right font-mono font-bold text-xl text-emerald-400">${formatCurrency(irrImp)}</td></tr>
+                        <tr><td class="px-8 py-4 text-slate-400">Imposta Sostitutiva (15%)</td><td colspan="4" class="px-8 py-4 text-right font-mono text-red-400 font-bold">${formatCurrency(tax)}</td></tr>
+                    `;
+                    currentReports.vat = [["Descrizione", "Importo"], ["Totale Fatturato Attive", totActiveRev.toFixed(2)], ["Redditività", "78%"], ["Base Imponibile IRPEF", irrImp.toFixed(2)], ["Imposta 15%", tax.toFixed(2)]];
+                } else if (per === 'f') {
+                    vt.innerHTML = `<tr><td colspan="5" class="px-8 py-10 text-center text-slate-400 text-lg">Regime Forfettario: Nessuna Liquidazione IVA calcolata.<br><span class="text-sm opacity-75">Le fatture emesse non espongono IVA, e l'IVA sugli acquisti non è detraibile.</span></td></tr>`;
+                    currentReports.vat = [];
+                } else {
+                    const buckets = {};
+                    const keys = per === 'q' ? ["T1", "T2", "T3", "T4"] :
+                        ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+                    keys.forEach(k => buckets[k] = { d: 0, c: 0 });
+
+                    data.forEach(i => {
+                        const m = parseInt(i.date?.substring(5, 7));
+                        if (!isNaN(m)) {
+                            let k = "";
+                            if (per === 'q') k = "T" + Math.ceil(m / 3);
+                            else k = m < 10 ? "0" + m : "" + m;
+
+                            if (buckets[k]) {
+                                if (i.type === 'active') buckets[k].d += i.taxAmount; else buckets[k].c += i.taxAmount;
+                            }
+                        }
+                    });
+
+                    currentReports.vat = [["Periodo", "Debito", "Credito", "Int. 1.5%", "Da Versare"]];
+
+                    keys.forEach(q => {
+                        const r = buckets[q];
+                        const d = r.d - r.c;
+                        const int = (per === 'q' && d > 0) ? (d * 0.015) : 0;
+                        const f = d + int;
+                        const label = per === 'q' ? q : (new Date(2000, parseInt(q) - 1, 1).toLocaleString('it-IT', { month: 'long' }));
+                        currentReports.vat.push([label, r.d.toFixed(2), r.c.toFixed(2), int.toFixed(2), f.toFixed(2)]);
+
+                        vt.innerHTML += `<tr>
+                            <td class="px-8 py-5 font-bold text-white capitalize">${label}</td>
+                            <td class="px-8 py-5 text-right text-slate-300 font-mono">${formatCurrency(r.d)}</td>
+                            <td class="px-8 py-5 text-right text-slate-300 font-mono">${formatCurrency(r.c)}</td>
+                            <td class="px-8 py-5 text-right text-slate-400 font-mono text-sm">${int > 0 ? formatCurrency(int) : '-'}</td>
+                            <td class="px-8 py-5 text-right font-bold font-mono text-xl ${f >= 0 ? 'text-red-400' : 'text-emerald-400'}">${formatCurrency(f)}</td>
+                        </tr>`;
+                    });
+                }
+
+                const cpaYearlyBuckets = {};
+                invoices.forEach(i => {
+                    const y = i.date?.substring(0, 4);
+                    if (y && y.length === 4) {
+                        cpaYearlyBuckets[y] = (cpaYearlyBuckets[y] || 0) + (i.cpaAmount || 0);
+                    }
+                });
+
+                const cp = document.getElementById('cpaTableBody'); cp.innerHTML = "";
+                currentReports.cpa = [["Anno", "Importo CPA"]];
+
+                Object.keys(cpaYearlyBuckets).sort().reverse().forEach(y => {
+                    if (cpaYearlyBuckets[y] > 0) {
+                        currentReports.cpa.push([y, cpaYearlyBuckets[y].toFixed(2)]);
+                        cp.innerHTML += `<tr><td class="px-8 py-4 font-bold text-white">${y}</td><td class="px-8 py-4 text-right font-mono text-blue-300 text-lg">${formatCurrency(cpaYearlyBuckets[y])}</td></tr>`;
+                    }
+                });
+
+                const renderRit = (o, id) => { const el = document.getElementById(id); el.innerHTML = ""; Object.values(o).forEach(x => { el.innerHTML += `<tr><td class="px-6 py-4 text-white font-medium">${x.name}</td><td class="px-6 py-4 text-sm font-mono text-slate-400">${x.vat}</td><td class="px-6 py-4 text-right font-bold text-slate-300 text-lg">${formatCurrency(x.val)}</td></tr>` }); if (!Object.keys(o).length) el.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-4">-</td></tr>` };
+                renderRit(ritS, 'ritSubiteBody'); renderRit(ritO, 'ritOperateBody');
+
+                currentReports.rits = [["Cliente", "P.IVA", "Ritenuta"]]; Object.values(ritS).forEach(x => currentReports.rits.push([x.name, x.vat, x.val.toFixed(2)]));
+                currentReports.rito = [["Fornitore", "P.IVA", "Ritenuta"]]; Object.values(ritO).forEach(x => currentReports.rito.push([x.name, x.vat, x.val.toFixed(2)]));
+            }
+        }
+
+        async function repairDatabase() {
+            let repaired = 0;
+            const parser = new DOMParser();
+
+            for (const inv of invoices) {
+                let changed = false;
+
+                // 1. Restore missing Date/Number from XML if needed
+                if (!inv.date || inv.date === 'undefined' || !inv.number || inv.number === 'undefined') {
+                    if (inv.xml) {
+                        try {
+                            const doc = parser.parseFromString(inv.xml, "text/xml");
+                            const body = doc.evaluate(".//*[local-name()='FatturaElettronicaBody']", doc, null, 9, null).singleNodeValue;
+                            if (body) {
+                                const gen = doc.evaluate(".//*[local-name()='DatiGeneraliDocumento']", body, null, 9, null).singleNodeValue;
+                                if (gen) {
+                                    const dEl = doc.evaluate(".//*[local-name()='Data']", gen, null, 9, null).singleNodeValue;
+                                    const nEl = doc.evaluate(".//*[local-name()='Numero']", gen, null, 9, null).singleNodeValue;
+                                    if (dEl) inv.date = dEl.textContent.trim();
+                                    if (nEl) inv.number = nEl.textContent.trim().toUpperCase();
+                                    changed = true;
+                                }
+                            }
+                        } catch (e) { console.error("Repair error", e); }
+                    }
+                }
+
+                // 2. Align Revenue and ensure Fees calculation
+                // Aruba definition: Revenue (Fatturato) = Imponibile IVA (netAmount)
+                if (inv.revenue !== inv.netAmount) {
+                    inv.revenue = inv.netAmount || 0;
+                    changed = true;
+                }
+
+                // Recalculate fees if missing (needed for Forfettario)
+                if (inv.fees === undefined || inv.fees === null) {
+                    inv.fees = (inv.netAmount || 0) - (inv.cpaAmount || 0) - (inv.expensesTaxable || 0);
+                    if (inv.fees < 0) inv.fees = 0;
+                    changed = true;
+                }
+
+                if (changed) {
+                    saveInvoiceToDB(inv);
+                    repaired++;
+                }
+            }
+            if (repaired > 0) console.log(`Repaired/Migrated ${repaired} invoices.`);
+        }
+
+        function updateCharts(data) {
+            const mData = {}; const sData = {};
+            data.forEach(i => {
+                if (i.date) { const k = i.date.substring(0, 7); if (k.length === 7) mData[k] = (mData[k] || 0) + i.netAmount; }
+                const sName = i.type === 'active' ? i.client : i.supplier;
+                sData[sName] = (sData[sName] || 0) + i.netAmount;
+            });
+
+            // Trend
+            const keys = Object.keys(mData).sort();
+            if (window.chartTrendInstance) window.chartTrendInstance.destroy();
+            const ctx = document.getElementById('chartTrend');
+            if (ctx) window.chartTrendInstance = new Chart(ctx, { type: 'line', data: { labels: keys, datasets: [{ label: 'Imp.', data: keys.map(k => mData[k]), borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true }] }, options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { display: false } } } });
+
+            // Top 5
+            const sKeys = Object.keys(sData).sort((a, b) => sData[b] - sData[a]).slice(0, 5);
+            if (window.chartSuppliersInstance) window.chartSuppliersInstance.destroy();
+            const ctx2 = document.getElementById('chartSuppliers');
+            if (ctx2) window.chartSuppliersInstance = new Chart(ctx2, { type: 'bar', data: { labels: sKeys, datasets: [{ label: 'Totale', data: sKeys.map(k => sData[k]), backgroundColor: '#0ea5e9' }] }, options: { maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#334155' } }, y: { grid: { display: false } } } } });
+        }
+
+        function deleteInvoice(id) {
+            const i = invoices.find(x => x.id === id);
+            if (!i) return;
+            if (confirm(`Sei sicuro di voler eliminare la fattura #${i.number} del ${formatDate(i.date)}?`)) {
+                if (confirm(`Confermi definitivamente l'eliminazione? L'operazione non è reversibile.`)) {
+                    // Remove from IndexedDB
+                    if (db) {
+                        const transaction = db.transaction([STORE_NAME], "readwrite");
+                        transaction.objectStore(STORE_NAME).delete(id).onsuccess = () => {
+                            // Remove from local array
+                            invoices = invoices.filter(x => x.id !== id);
+                            processData(true);
+                            renderApp();
+                        };
+                    } else {
+                        invoices = invoices.filter(x => x.id !== id);
+                        processData(true);
+                        renderApp();
+                    }
+                }
+            }
+        }
+
+        function exportByClient(clientVat) {
+            const clientInvoices = invoices.filter(i =>
+                normalizeVAT(i.clientFull.vat) === normalizeVAT(clientVat) ||
+                normalizeVAT(i.supplierFull.vat) === normalizeVAT(clientVat)
+            );
+
+            if (!clientInvoices.length) return;
+
+            const first = clientInvoices[0];
+            const clientName = (normalizeVAT(first.clientFull.vat) === normalizeVAT(clientVat)) ? first.client : first.supplier;
+
+            const headers = ["Data", "Numero", "Tipo", "Ragione Sociale", "P.IVA", "CF", "Compensi", "Spese Imp.", "Spese Escl.", "CPA", "IVA", "Ritenute", "Totale"];
+            const rows = clientInvoices.map(i => {
+                const ent = (normalizeVAT(i.clientFull.vat) === normalizeVAT(clientVat)) ? i.supplierFull : i.clientFull;
+                return [
+                    i.date, i.number, i.type, ent.name, ent.vat, ent.cf,
+                    (i.fees || 0).toFixed(2), (i.expensesTaxable || 0).toFixed(2), (i.expensesExcluded || 0).toFixed(2),
+                    (i.cpaAmount || 0).toFixed(2), i.taxAmount.toFixed(2), (i.withholdingTax || 0).toFixed(2), i.totalAmount.toFixed(2)
+                ];
+            });
+            const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `export_${clientName.replace(/\s+/g, '_')}.csv`; a.click();
+        }
+
+        function exportInvoiceDetail(id, mode) {
+            const i = invoices.find(x => x.id === id); if (!i) return;
+            let text = `FATTURA: ${i.number} del ${formatDate(i.date)} (${i.type === 'active' ? 'Emessa' : 'Ricevuta'})\n\n`;
+            text += `CEDENTE:\n${i.supplierFull.name}\n${i.supplierFull.vat}\n\n`;
+            text += `CESSIONARIO:\n${i.clientFull.name}\n${i.clientFull.vat}\n\n`;
+            text += `RIGHE:\n`;
+            (i.lines || []).forEach(l => text += `- ${l.desc} (x${l.qty}): ${formatCurrency(l.total)}\n`);
+            text += `\nTOTALI:\nImponibile: ${formatCurrency(i.netAmount)}\nIVA: ${formatCurrency(i.taxAmount)}\n`;
+            if (i.cpaAmount) text += `CPA: ${formatCurrency(i.cpaAmount)}\n`;
+            if (i.withholdingTax) text += `Ritenuta: -${formatCurrency(i.withholdingTax)}\n`;
+            text += `TOTALE DOC: ${formatCurrency(i.totalAmount)}`;
+
+            if (mode === 'wa') window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            else {
+                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain' })); a.download = `fat_${i.number}.txt`; a.click();
+            }
+        }
+
+        function showDetail(id) {
+            const i = invoices.find(x => x.id === id); if (!i) return;
+            document.getElementById('detContent').innerHTML = `
+            <div class="flex flex-col md:flex-row justify-between items-start mb-10 pb-8 border-b border-slate-200">
+                <div><h2 class="text-4xl font-bold text-slate-900 mb-2">FATTURA</h2><p class="text-slate-500 text-lg">#${i.number} del ${formatDate(i.date)}</p><span class="mt-3 px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 font-bold uppercase text-sm inline-block tracking-wide">${i.type === 'active' ? 'Emessa' : 'Ricevuta'}</span></div>
+                <div class="flex gap-2">
+                    <button onclick="generatePDF('${i.id}')" class="flex items-center gap-2 px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-600 rounded-lg font-medium transition-colors"><i data-lucide="file-down" class="w-5 h-5"></i> PDF</button>
+                    <button onclick="exportByClient('${i.type === 'active' ? i.clientFull.vat : i.supplierFull.vat}')" class="flex items-center gap-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-100/10 text-blue-600 rounded-lg font-medium transition-colors"><i data-lucide="users" class="w-5 h-5"></i> Client Export</button>
+                    <button onclick="exportInvoiceDetail('${i.id}','txt')" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-medium transition-colors"><i data-lucide="file-text" class="w-5 h-5"></i> TXT</button>
+                    <button onclick="exportInvoiceDetail('${i.id}','wa')" class="flex items-center gap-2 px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg font-medium transition-colors"><i data-lucide="send" class="w-5 h-5"></i> WA</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10"><div><h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Cedente</h4><div class="text-slate-800 text-lg leading-relaxed"><p class="font-bold">${i.supplierFull.name}</p><p class="text-base text-slate-600">${i.supplierFull.address}</p><p class="font-mono text-base text-slate-500 mt-1">${i.supplierFull.vat}</p></div></div><div><h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Cessionario</h4><div class="text-slate-800 text-lg leading-relaxed"><p class="font-bold">${i.clientFull.name}</p><p class="text-base text-slate-600">${i.clientFull.address}</p><p class="font-mono text-base text-slate-500 mt-1">${i.clientFull.vat}</p></div></div></div><div class="mb-10 overflow-x-auto"><table class="w-full text-left border-collapse"><thead><tr class="border-b-2 border-slate-100"><th class="py-4 pr-6 font-bold text-slate-500 uppercase text-sm">Descrizione</th><th class="py-4 px-6 text-right font-bold text-slate-500 uppercase text-sm">Q.tà</th><th class="py-4 px-6 text-right font-bold text-slate-500 uppercase text-sm">Prezzo</th><th class="py-4 pl-6 text-right font-bold text-slate-500 uppercase text-sm">Totale</th></tr></thead><tbody class="text-slate-700 font-mono text-lg">${(i.lines || []).map(l => `<tr><td class="py-4 pr-6 border-b border-slate-50">${l.desc}</td><td class="py-4 px-6 text-right border-b border-slate-50">${l.qty}</td><td class="py-4 px-6 text-right border-b border-slate-50">${formatCurrency(l.price)}</td><td class="py-4 pl-6 text-right border-b border-slate-50 font-bold">${formatCurrency(l.total)}</td></tr>`).join('')}</tbody></table></div><div class="flex justify-end pt-6 border-t-2 border-slate-100"><div class="w-full md:w-1/2 lg:w-1/3 space-y-3"><div class="flex justify-between text-lg text-slate-600"><span>Compensi</span><span class="font-mono">${formatCurrency(i.fees || 0)}</span></div><div class="flex justify-between text-lg text-slate-600"><span>Spese Imp.</span><span class="font-mono">${formatCurrency(i.expensesTaxable || 0)}</span></div><div class="flex justify-between text-lg text-slate-600"><span>Spese Escl.</span><span class="font-mono">${formatCurrency(i.expensesExcluded || 0)}</span></div><div class="flex justify-between text-lg text-slate-600"><span>IVA</span><span class="font-bold font-mono">${formatCurrency(i.taxAmount)}</span></div>${i.cpaAmount ? `<div class="flex justify-between text-lg text-blue-600"><span>CPA</span><span class="font-bold font-mono">${formatCurrency(i.cpaAmount)}</span></div>` : ''}${i.withholdingTax ? `<div class="flex justify-between text-lg text-red-600"><span>Ritenuta</span><span class="font-bold font-mono">-${formatCurrency(i.withholdingTax)}</span></div>` : ''}<div class="flex justify-between text-2xl font-bold text-slate-900 border-t border-slate-200 pt-4 mt-2"><span>TOTALE</span><span>${formatCurrency(i.totalAmount)}</span></div></div></div>`;
+            document.getElementById('modalDetail').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        async function generatePDF(id) {
+            const i = invoices.find(x => x.id === id); if (!i) return;
+            const intestatario = i.type === 'active' ? i.clientFull.name : i.supplierFull.name;
+            const year = i.date?.substring(0, 4) || "0000";
+            const filename = `fattura n. ${i.number} - ${year} - ${intestatario}.pdf`;
+
+            const opt = {
+                margin: [10, 10, 10, 10],
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            const content = `
+                <div style="font-family: Arial, sans-serif; color: #333; padding: 15px; background: white;">
+                    <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #EEE; padding-bottom: 20px; margin-bottom: 30px;">
+                        <div>
+                            <h1 style="margin: 0; color: #000; font-size: 28px;">FATTURA</h1>
+                            <p style="margin: 5px 0; color: #666;">#${i.number} del ${formatDate(i.date)}</p>
+                            <div style="margin-top: 10px; font-weight: bold; text-transform: uppercase; font-size: 12px; color: #999;">${i.type === 'active' ? 'Documento Emesso' : 'Documento Ricevuto'}</div>
+                        </div>
+                        <div style="text-align: right;">
+                             <div style="font-size: 20px; font-weight: bold; color: #0ea5e9;">InvoicyLex</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
+                        <div>
+                            <h4 style="font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Cedente</h4>
+                            <div style="font-size: 16px; line-height: 1.5;"><strong>${i.supplierFull.name}</strong><br>${i.supplierFull.address}<br><span style="font-family: monospace; color: #666;">P.IVA: ${i.supplierFull.vat}</span></div>
+                        </div>
+                        <div>
+                            <h4 style="font-size: 12px; color: #999; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px;">Cessionario</h4>
+                            <div style="font-size: 16px; line-height: 1.5;"><strong>${i.clientFull.name}</strong><br>${i.clientFull.address}<br><span style="font-family: monospace; color: #666;">P.IVA: ${i.clientFull.vat}</span></div>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #EEE;">
+                                <th style="text-align: left; padding: 12px 0; color: #999; text-transform: uppercase; font-size: 12px;">Descrizione</th>
+                                <th style="text-align: right; padding: 12px 0; color: #999; text-transform: uppercase; font-size: 12px;">Q.tà</th>
+                                <th style="text-align: right; padding: 12px 0; color: #999; text-transform: uppercase; font-size: 12px;">Prezzo</th>
+                                <th style="text-align: right; padding: 12px 0; color: #999; text-transform: uppercase; font-size: 12px;">Totale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${(i.lines || []).map(l => `
+                                <tr style="border-bottom: 1px solid #F5F5F5;">
+                                    <td style="padding: 15px 0; font-size: 14px;">${l.desc}</td>
+                                    <td style="padding: 15px 0; text-align: right; font-size: 14px;">${l.qty}</td>
+                                    <td style="padding: 15px 0; text-align: right; font-size: 14px;">${formatCurrency(l.price)}</td>
+                                    <td style="padding: 15px 0; text-align: right; font-size: 14px; font-weight: bold;">${formatCurrency(l.total)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <div style="width: 300px;">
+                            <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #666;"><span>Compensi</span><span>${formatCurrency(i.fees || 0)}</span></div>
+                            <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #666;"><span>Spese Imp.</span><span>${formatCurrency(i.expensesTaxable || 0)}</span></div>
+                            <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #666;"><span>Spese Escl.</span><span>${formatCurrency(i.expensesExcluded || 0)}</span></div>
+                            <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #666;"><span>IVA</span><span style="font-weight: bold;">${formatCurrency(i.taxAmount)}</span></div>
+                            ${i.cpaAmount ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #0284c7;"><span>CPA</span><span style="font-weight: bold;">${formatCurrency(i.cpaAmount)}</span></div>` : ''}
+                            ${i.withholdingTax ? `<div style="display: flex; justify-content: space-between; padding: 5px 0; color: #dc2626;"><span>Ritenuta</span><span style="font-weight: bold;">-${formatCurrency(i.withholdingTax)}</span></div>` : ''}
+                            <div style="display: flex; justify-content: space-between; padding: 15px 0; margin-top: 10px; border-top: 2px solid #EEE; font-size: 20px; font-weight: bold; color: #000;"><span>TOTALE</span><span>${formatCurrency(i.totalAmount)}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            const element = document.createElement('div');
+            element.innerHTML = content;
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function openExportModal() { document.getElementById('modalExport').classList.remove('hidden') }
+        function performExport(mode) {
+            let d = getFiltered(); if (mode !== 'all') d = d.filter(x => x.type === mode);
+            // Enhanced CSV Headers
+            const headers = ["Data", "Numero", "Tipo", "Ragione Sociale", "P.IVA", "CF", "Compensi", "Spese Imp.", "Spese Escl.", "CPA", "IVA", "Ritenute", "Totale"];
+            const rows = d.map(i => {
+                const ent = i.type === 'active' ? i.clientFull : i.supplierFull;
+                return [
+                    i.date, i.number, i.type, ent.name, ent.vat, ent.cf, // 0-5
+                    (i.fees || 0).toFixed(2), (i.expensesTaxable || 0).toFixed(2), (i.expensesExcluded || 0).toFixed(2), // 6-8
+                    (i.cpaAmount || 0).toFixed(2), i.taxAmount.toFixed(2), (i.withholdingTax || 0).toFixed(2), i.totalAmount.toFixed(2) // 9-12
+                ];
+            });
+            const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'export_extended.csv'; a.click();
+            document.getElementById('modalExport').classList.add('hidden');
+        }
+        function switchView(view) {
+            currentView = view;
+            // Hide all views
+            ['viewDashboard', 'viewInvoices', 'viewAnalytics', 'viewVat', 'viewCpa', 'viewRitenute'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Update menu highlighting
+            ['navDashboard', 'navInvoices', 'navAnalytics', 'navVat', 'navCpa', 'navRitenute'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.className = 'w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all ' + (id.includes('nav') && !id.includes('Dashboard') && !id.includes('Invoices') && !id.includes('Analytics') ? 'text-sm' : 'text-base font-semibold');
+                }
+            });
+
+            // Show selected view and highlight menu
+            if (view === 'dashboard') {
+                document.getElementById('viewDashboard').classList.remove('hidden');
+                document.getElementById('navDashboard').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-base font-semibold';
+            } else if (view === 'invoices') {
+                document.getElementById('viewInvoices').classList.remove('hidden');
+                document.getElementById('navInvoices').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-base font-semibold';
+            } else if (view === 'analytics') {
+                document.getElementById('viewAnalytics').classList.remove('hidden');
+                document.getElementById('navAnalytics').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-base font-semibold';
+                renderAnalytics();
+            } else if (view === 'vat') {
+                const el = document.getElementById('viewVat');
+                if (el) el.classList.remove('hidden');
+                document.getElementById('navVat').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-sm';
+                renderVatView();
+            } else if (view === 'cpa') {
+                const el = document.getElementById('viewCpa');
+                if (el) el.classList.remove('hidden');
+                document.getElementById('navCpa').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-sm';
+                renderCpaView();
+            } else if (view === 'ritenute') {
+                const el = document.getElementById('viewRitenute');
+                if (el) el.classList.remove('hidden');
+                document.getElementById('navRitenute').className = 'w-full flex items-center gap-3 px-4 py-3 bg-primary-500/10 text-primary-400 border border-primary-500/20 rounded-xl transition-all text-sm';
+                renderRitenuteView();
+            }
+            renderApp();
+        }
+        function toggleMobileMenu() { const m = document.getElementById('mobileMenu'); const o = document.getElementById('mobileMenuOverlay'); if (m.classList.contains('mobile-hidden')) { m.classList.remove('mobile-hidden', 'hidden'); m.classList.add('mobile-visible'); o.classList.remove('hidden') } else { m.classList.remove('mobile-visible'); m.classList.add('mobile-hidden'); setTimeout(() => m.classList.add('hidden'), 300); o.classList.add('hidden') } }
+        function formatCurrency(v) { return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(v) }
+        function formatDate(d) { try { return new Intl.DateTimeFormat('it-IT').format(new Date(d)) } catch { return d } }
+
+        // Dedicated View Renderers
+        function renderVatView() {
+            // Sync year selectors
+            const yearVat = document.getElementById('filterYearVat');
+            const yearMain = document.getElementById('filterYear');
+            if (yearVat && yearMain && yearVat.value !== yearMain.value) {
+                yearVat.value = yearMain.value;
+            }
+            const data = getFiltered();
+            const isY = document.getElementById('filterMode').value === 'year' && document.getElementById('filterYear').value !== 'all';
+            const per = document.getElementById('vatPeriodicityDedicated') ? document.getElementById('vatPeriodicityDedicated').value : 'q';
+            const vt = document.getElementById('vatTableBodyDedicated');
+            vt.innerHTML = "";
+            currentReports.vat = [];
+
+            if (!isY) {
+                vt.innerHTML = `<tr><td colspan="5" class="px-8 py-10 text-center text-slate-400 text-lg">Seleziona un <b>Anno Singolo</b> per visualizzare la Liquidazione IVA.</td></tr>`;
+                return;
+            }
+
+            if (userRegime === 'forfettario') {
+                const activeData = data.filter(i => i.type === 'active');
+                const totActiveRev = activeData.reduce((a, c) => a + (c.revenue || 0), 0);
+                const irrImp = totActiveRev * 0.78;
+                const tax = irrImp * 0.15;
+
+                vt.innerHTML = `
+                    <tr><td colspan="5" class="px-8 py-6 bg-blue-500/5 font-bold text-white text-center border-b border-dark-border">CALCOLO IRPEF FORFETTARIO (Coefficiente 78%)</td></tr>
+                    <tr class="text-base"><td class="px-8 py-5 text-slate-400">Totale Fatturato (Inviate)</td><td colspan="4" class="px-8 py-5 text-right font-mono text-white">${formatCurrency(totActiveRev)}</td></tr>
+                    <tr class="text-base"><td class="px-8 py-5 text-slate-400">Coefficiente di Redditività (Codice ATECO Avvocati)</td><td colspan="4" class="px-8 py-5 text-right font-mono text-blue-400">78,00%</td></tr>
+                    <tr class="bg-emerald-500/5"><td class="px-8 py-6 text-slate-200 font-bold">REDDITO IMPONIBILE IRPEF</td><td colspan="4" class="px-8 py-6 text-right font-mono font-bold text-2xl text-emerald-400">${formatCurrency(irrImp)}</td></tr>
+                    <tr class="text-base border-t border-dark-border"><td class="px-8 py-5 text-slate-400">Imposta Sostitutiva Calcolata (15%)</td><td colspan="4" class="px-8 py-5 text-right font-mono text-red-400 font-bold text-xl">${formatCurrency(tax)}</td></tr>
+                    <tr><td colspan="5" class="px-8 py-4 text-center text-xs text-slate-500 italic">* Nota: Per il regime forfettario non si tiene conto delle fatture passive.</td></tr>
+                `;
+                currentReports.vat = [["Descrizione", "Importo"], ["Fatturato Attive", totActiveRev.toFixed(2)], ["Redditività", "78%"], ["Base IRPEF", irrImp.toFixed(2)], ["Imposta 15%", tax.toFixed(2)]];
+                document.getElementById('navVat').querySelector('span').textContent = "Calcolo IRPEF";
+            } else if (per === 'f') {
+                vt.innerHTML = `<tr><td colspan="5" class="px-8 py-10 text-center text-slate-400 text-lg">Regime Forfettario: Nessuna Liquidazione IVA calcolata.<br><span class="text-sm opacity-75">Le fatture emesse non espongono IVA, e l'IVA sugli acquisti non è detraibile.</span></td></tr>`;
+                currentReports.vat = [];
+            } else {
+                const buckets = {};
+                const keys = per === 'q' ? ["T1", "T2", "T3", "T4"] : ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+                keys.forEach(k => buckets[k] = { d: 0, c: 0 });
+                data.forEach(i => {
+                    const m = parseInt(i.date?.substring(5, 7));
+                    if (!isNaN(m)) {
+                        let k = per === 'q' ? "T" + Math.ceil(m / 3) : (m < 10 ? "0" + m : "" + m);
+                        if (buckets[k]) {
+                            if (i.type === 'active') buckets[k].d += i.taxAmount; else buckets[k].c += i.taxAmount;
+                        }
+                    }
+                });
+                currentReports.vat = [["Periodo", "Debito", "Credito", "Int. 1.5%", "Da Versare"]];
+                keys.forEach(q => {
+                    const r = buckets[q];
+                    const d = r.d - r.c;
+                    const int = (per === 'q' && d > 0) ? (d * 0.015) : 0;
+                    const f = d + int;
+                    const label = per === 'q' ? q : (new Date(2000, parseInt(q) - 1, 1).toLocaleString('it-IT', { month: 'long' }));
+                    currentReports.vat.push([label, r.d.toFixed(2), r.c.toFixed(2), int.toFixed(2), f.toFixed(2)]);
+                    vt.innerHTML += `<tr>
+                        <td class="px-8 py-5 font-bold text-white capitalize">${label}</td>
+                        <td class="px-8 py-5 text-right text-slate-300 font-mono">${formatCurrency(r.d)}</td>
+                        <td class="px-8 py-5 text-right text-slate-300 font-mono">${formatCurrency(r.c)}</td>
+                        <td class="px-8 py-5 text-right text-slate-400 font-mono text-sm">${int > 0 ? formatCurrency(int) : '-'}</td>
+                        <td class="px-8 py-5 text-right font-bold font-mono text-xl ${f >= 0 ? 'text-red-400' : 'text-emerald-400'}">${formatCurrency(f)}</td>
+                    </tr>`;
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function renderCpaView() {
+            // Sync year selectors
+            const yearCpa = document.getElementById('filterYearCpa');
+            const yearMain = document.getElementById('filterYear');
+            if (yearCpa && yearMain && yearCpa.value !== yearMain.value) {
+                yearCpa.value = yearMain.value;
+            }
+            const data = getFiltered();
+            const isY = document.getElementById('filterMode').value === 'year' && document.getElementById('filterYear').value !== 'all';
+            const cp = document.getElementById('cpaTableBodyDedicated');
+            cp.innerHTML = "";
+            currentReports.cpa = [["Periodo", "Importo CPA"]];
+
+            if (!isY) {
+                cp.innerHTML = `<tr><td colspan="2" class="px-8 py-10 text-center text-slate-400 text-lg">Seleziona un <b>Anno Singolo</b> per visualizzare il Riepilogo CPA.</td></tr>`;
+                return;
+            }
+
+            const cpaYearlyBuckets = {};
+            invoices.forEach(i => {
+                const y = i.date?.substring(0, 4);
+                if (y && y.length === 4) {
+                    cpaYearlyBuckets[y] = (cpaYearlyBuckets[y] || 0) + (i.cpaAmount || 0);
+                }
+            });
+
+            currentReports.cpa = [["Anno", "Importo CPA"]];
+            Object.keys(cpaYearlyBuckets).sort().reverse().forEach(y => {
+                if (cpaYearlyBuckets[y] > 0) {
+                    currentReports.cpa.push([y, cpaYearlyBuckets[y].toFixed(2)]);
+                    cp.innerHTML += `<tr><td class="px-8 py-4 font-bold text-white">${y}</td><td class="px-8 py-4 text-right font-mono text-blue-300 text-lg">${formatCurrency(cpaYearlyBuckets[y])}</td></tr>`;
+                }
+            });
+
+            if (Object.keys(cpaYearlyBuckets).length === 0) {
+                cp.innerHTML = `<tr><td colspan="2" class="px-8 py-10 text-center text-slate-500">Nessun importo CPA registrato nel dataset.</td></tr>`;
+            }
+            lucide.createIcons();
+        }
+
+        function renderRitenuteView() {
+            // Sync year selectors
+            const yearRit = document.getElementById('filterYearRitenute');
+            const yearMain = document.getElementById('filterYear');
+            if (yearRit && yearMain && yearRit.value !== yearMain.value) {
+                yearRit.value = yearMain.value;
+            }
+            const data = getFiltered();
+            const isY = document.getElementById('filterMode').value === 'year' && document.getElementById('filterYear').value !== 'all';
+            const ritS = {}, ritO = {};
+
+            if (!isY) {
+                document.getElementById('ritSubiteBodyDedicated').innerHTML = `<tr><td colspan="3" class="px-8 py-10 text-center text-slate-400">Seleziona un <b>Anno Singolo</b>.</td></tr>`;
+                document.getElementById('ritOperateBodyDedicated').innerHTML = `<tr><td colspan="3" class="px-8 py-10 text-center text-slate-400">Seleziona un <b>Anno Singolo</b>.</td></tr>`;
+                return;
+            }
+
+            data.forEach(i => {
+                if (i.withholdingTax > 0) {
+                    const k = i.type === 'active' ? i.clientFull.idStr : i.supplierFull.idStr;
+                    const t = i.type === 'active' ? ritS : ritO;
+                    if (!t[k]) t[k] = { name: i.type === 'active' ? i.client : i.supplier, vat: i.type === 'active' ? i.clientFull.vat : i.supplierFull.vat, val: 0 };
+                    t[k].val += i.withholdingTax;
+                }
+            });
+
+            const renderRit = (o, id) => {
+                const el = document.getElementById(id);
+                el.innerHTML = "";
+                Object.values(o).forEach(x => {
+                    el.innerHTML += `<tr><td class="px-6 py-4 text-white font-medium">${x.name}</td><td class="px-6 py-4 text-sm font-mono text-slate-400">${x.vat}</td><td class="px-6 py-4 text-right font-bold text-slate-300 text-lg">${formatCurrency(x.val)}</td></tr>`;
+                });
+                if (!Object.keys(o).length) el.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-4">Nessuna ritenuta registrata.</td></tr>`;
+            };
+            renderRit(ritS, 'ritSubiteBodyDedicated');
+            renderRit(ritO, 'ritOperateBodyDedicated');
+
+            currentReports.rits = [["Cliente", "P.IVA", "Ritenuta"]]; Object.values(ritS).forEach(x => currentReports.rits.push([x.name, x.vat, x.val.toFixed(2)]));
+            currentReports.rito = [["Fornitore", "P.IVA", "Ritenuta"]]; Object.values(ritO).forEach(x => currentReports.rito.push([x.name, x.vat, x.val.toFixed(2)]));
+            lucide.createIcons();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ['modalDetail', 'modalExport', 'modalSettings'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            }
+        });
+
+        // Robust Initialization
+        window.addEventListener('load', async () => {
+            console.log("App Started");
+            try {
+                if (!window.indexedDB) { alert("Il tuo browser non supporta IndexedDB. I dati non verranno salvati."); return; }
+
+                // 1. Init DB
+                await initDB();
+                console.log("DB Loaded");
+
+                // 2. Load Invoices
+                const saved = await loadInvoicesFromDB();
+                console.log("Invoices Found:", saved.length);
+
+                if (saved.length > 0) {
+                    invoices = saved;
+                    await repairDatabase(); // Critical fix for missing date/number
+                    processData(true); // force UI refresh
+
+                    // Initialization of status and labels
+                    document.getElementById('regimeStatusDisplay').textContent = "Regime: " + (userRegime === 'forfettario' ? 'Forfettario' : 'Ordinario');
+                    updateSidebarLabels();
+
+                    renderApp();
+
+                    document.getElementById('dbStatus').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Online';
+                } else {
+                    document.getElementById('dbStatus').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Pronto';
+                }
+
+            } catch (e) {
+                console.error("Init Failed:", e);
+                document.getElementById('dbStatus').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Errore';
+                alert("Errore caricamento dati: " + e.message);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

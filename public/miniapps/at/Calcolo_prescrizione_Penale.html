@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Prescrizione Penale - Avanzato (Rev. 2)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        input[type="date"],
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+            background-color: #fff; /* Ensure inputs are white */
+        }
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        select {
+             height: 45px; /* Consistent height */
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .add-btn {
+            background-color: #2ecc71;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .add-btn:hover {
+            background-color: #27ae60;
+        }
+        .remove-btn {
+             background-color: #e74c3c;
+             padding: 2px 8px;
+             font-size: 12px;
+             margin-left: 10px;
+        }
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #eaf2f8;
+            border-left: 5px solid #3498db;
+            border-radius: 5px;
+            display: none;
+        }
+        .result h2 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .credits {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .disclaimer {
+            font-size: 12px;
+            color: #95a5a6;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .info-icon {
+            cursor: pointer;
+            display: inline-block;
+            margin-left: 5px;
+            color: #3498db;
+            font-size: 14px;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .separator {
+            border-top: 1px solid #ccc;
+            margin: 25px 0;
+        }
+        .flex-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .flex-item {
+            flex: 1;
+        }
+        #sospensioneGiudiceContainer {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+            background-color: #fafafa;
+        }
+        .intervallo-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #2c3e50;
+            transform: translateY(-2px);
+        }
+        .back-button::before {
+            content: "← ";
+        }
+         @media (max-width: 600px) {
+            .flex-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body onload="popolaReati()">
+
+    <div class="container">
+        <a href="https://avvocatotelematico.studiolegalearcella.it/apps/" class="back-button">Torna alle Apps</a>
+        <h1>Calcolo della Prescrizione Penale</h1>
+        <p style="text-align: center;">Questo strumento calcola il termine di prescrizione di un reato in base alla data di commissione e alla pena edittale, considerando l'evoluzione normativa. Puoi selezionare un reato dalla lista per compilare automaticamente i campi o inserirli manually.</p>
+        
+        <form id="prescrizioneForm">
+            <div class="flex-container">
+                <div class="form-group flex-item">
+                    <label for="dataReato">Data di commissione del reato</label>
+                    <input type="date" id="dataReato" required onchange="checkReatoPena()">
+                </div>
+                 <div class="form-group flex-item">
+                    <label for="dataAttoInterruttivo">Data ultimo atto interruttivo (facoltativo)
+                        <div class="tooltip">
+                            <span class="info-icon">ⓘ</span>
+                            <span class="tooltiptext">Inserire la data dell'ultimo atto che ha interrotto la prescrizione (es. richiesta di rinvio a giudizio, sentenza di condanna). L'interruzione azzera il termine trascorso, facendolo ripartire, ma entro un limite massimo di aumento.</span>
+                        </div>
+                    </label>
+                    <input type="date" id="dataAttoInterruttivo">
+                </div>
+            </div>
+            
+            <div class="separator"></div>
+
+            <div class="form-group">
+                 <label for="cercaReato">Cerca e seleziona il reato (facoltativo)</label>
+                 <input type="text" id="cercaReato" onkeyup="filtraReati()" placeholder="Cerca per nome o articolo (es. Furto, 575)...">
+                 <select id="reatoSelect" onchange="selezionaReato()">
+                     <option value="">-- Seleziona un reato dalla lista --</option>
+                 </select>
+            </div>
+            
+            <p style="text-align:center; margin-bottom: 20px;">Oppure inserisci manualmente i dati del reato:</p>
+
+            <div class="flex-container">
+                <div class="form-group flex-item">
+                    <label for="penaMassima">Pena edittale massima (anni)</label>
+                    <input type="number" id="penaMassima" min="0" step="0.1" required placeholder="Es. 6">
+                </div>
+
+                <div class="form-group flex-item">
+                    <label for="tipoReato">Tipo di reato
+                        <div class="tooltip">
+                            <span class="info-icon">ⓘ</span>
+                            <span class="tooltiptext">"Delitto" è la categoria generale. Selezionare "Contravvenzione" solo se il reato è specificamente una contravvenzione punita con arresto o ammenda.</span>
+                        </div>
+                    </label>
+                    <select id="tipoReato">
+                        <option value="delitto">Delitto</option>
+                        <option value="contravvenzione_arresto">Contravvenzione (con arresto)</option>
+                        <option value="contravvenzione_ammenda">Contravvenzione (con solo ammenda)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="aumentoPenaBase">Aumento pena base per aggravanti
+                    <div class="tooltip">
+                        <span class="info-icon">ⓘ</span>
+                        <span class="tooltiptext">Seleziona se la pena edittale massima è aumentata per circostanze aggravanti ad effetto speciale (es. recidiva art. 99 c.p.), che incidono sulla pena base usata per il calcolo.</span>
+                    </div>
+                </label>
+                <select id="aumentoPenaBase">
+                    <option value="1">Nessuno (Pena come da campo sopra)</option>
+                    <option value="1.3333">Aumento di un terzo (1/3)</option>
+                    <option value="1.5">Aumento della metà (1/2)</option>
+                    <option value="1.6667">Aumento di due terzi (2/3)</option>
+                </select>
+            </div>
+
+            <div class="separator"></div>
+            
+            <p style="text-align:center; margin-bottom: 20px;">Impostazioni termini e sospensioni:</p>
+
+            <div class="form-group">
+                <label for="raddoppioTerminiBase">Raddoppio termini di prescrizione (base)
+                    <div class="tooltip">
+                        <span class="info-icon">ⓘ</span>
+                        <span class="tooltiptext">Seleziona 'Sì' per i reati che prevedono il raddoppio dei termini ordinari di prescrizione (es. art. 572, 609-bis dopo L. 172/2012). Questo raddoppia il termine base.</span>
+                    </div>
+                </label>
+                <select id="raddoppioTerminiBase">
+                    <option value="no">No</option>
+                    <option value="si">Sì (es. art. 572, 609-bis, ...)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="aggravanti">Casi particolari (limiti art. 161 c.p.)
+                     <div class="tooltip">
+                        <span class="info-icon">ⓘ</span>
+                        <span class="tooltiptext">Seleziona come l'atto interruttivo incide sul termine massimo. 'Nessuna' (max +1/4). 'Recidiva reiterata' (max +1/2 o +2/3). 'Delitti gravi' (nessun limite).</span>
+                    </div>
+                </label>
+                <select id="aggravanti">
+                    <option value="nessuna">Nessuna (aumento max +1/4)</option>
+                    <option value="recidiva_art161">Recidiva reiterata, abitualità (aumento max +1/2 o +2/3)</option>
+                    <option value="no_limit">Delitti gravi (art. 51 c.3-bis/3-quater - es. Mafia) (Nessun limite all'aumento)</option>
+                </select>
+            </div>
+            
+            <div class="separator"></div>
+
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="sospensioneCovid" name="sospensioneCovid">
+                    <label for="sospensioneCovid">Applica sospensione per emergenza Covid-19
+                        <div class="tooltip">
+                            <span class="info-icon">ⓘ</span>
+                            <span class="tooltiptext">Aggiunge 64 giorni di sospensione (9/3/2020 - 11/5/2020), applicabile ai termini di prescrizione in corso in quel periodo.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                     <input type="checkbox" id="sospensioneGiudiceCheck" name="sospensioneGiudiceCheck" onchange="toggleSospensioneGiudice()">
+                    <label for="sospensioneGiudiceCheck">Aggiungi periodi di sospensione disposti dal giudice
+                        <div class="tooltip">
+                            <span class="info-icon">ⓘ</span>
+                            <span class="tooltiptext">Seleziona per inserire i periodi di sospensione del processo. Puoi inserire il totale dei giorni manualmente o calcolarlo aggiungendo uno o più intervalli di date con il tasto '+'.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div id="sospensioneGiudiceContainer" style="display: none;">
+                    <div id="intervalliSospensione"></div>
+                    <button type="button" class="add-btn" onclick="addIntervallo()">+ Aggiungi intervallo</button>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label for="giorniSospensioneGiudice">Giorni complessivi di sospensione</label>
+                        <input type="number" id="giorniSospensioneGiudice" min="0" placeholder="Calcolati o inseriti manualmente">
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button type="button" onclick="calcolaPrescrizione()">Calcola Prescrizione</button>
+            </div>
+        </form>
+
+        <div id="result" class="result">
+            <h2>Risultato del Calcolo</h2>
+            <p id="disciplinaApplicabile"></p>
+            <p id="termineBase"></p>
+            <p id="termineMassimo"></p>
+            <p id="infoSospensione"></p>
+            <p id="infoSospensioneGiudice"></p>
+            <p id="dataPrescrizione"></p>
+            <p id="dataPrescrizioneMassima"></p>
+            <p id="noteAggiuntive"></p>
+        </div>
+
+        <div class="credits">
+            <p>Realizzazione: Avv. Roberto Arcella</p>
+            <p><strong>con la collaborazione della Commissione Informatica del Consiglio dell'Ordine degli Avvocati di Napoli © 2025</strong></p>
+        </div>
+
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> Questo strumento è a scopo puramente illustrativo e non sostituisce una consulenza legale professionale. La normativa sulla prescrizione è complessa e l'applicazione pratica può dipendere da molti fattori non considerati in questo calcolatore (es. atti interruttivi, sospensioni specifiche). Consultare sempre un avvocato per una valutazione accurata del proprio caso.</p>
+        </div>
+    </div>
+
+    <script>
+        // Database dei reati
+        const reati = [
+            { group: "Delitti contro la personalità dello Stato", items: [
+                { art: "241 c.p.", nome: "Attentati contro l'integrità, l'indipendenza e l'unità dello Stato", pena: 999, tipo: 'delitto' },
+                { art: "270-bis c.p.", nome: "Associazione con finalità di terrorismo anche internazionale", pena: 15, tipo: 'delitto' },
+                { art: "280 c.p.", nome: "Attentato per finalità terroristiche o di eversione", pena: 999, tipo: 'delitto' },
+                { art: "285 c.p.", nome: "Devastazione, saccheggio e strage", pena: 999, tipo: 'delitto' },
+            ]},
+            { group: "Delitti contro la Pubblica Amministrazione", items: [
+                { art: "314 c.p.", nome: "Peculato", pena: 10.5, tipo: 'delitto' },
+                { art: "317 c.p.", nome: "Concussione", pena: 12, tipo: 'delitto' },
+                { art: "318 c.p.", nome: "Corruzione per l'esercizio della funzione", pena: 8, tipo: 'delitto' },
+                { art: "319 c.p.", nome: "Corruzione per un atto contrario ai doveri d'ufficio", pena: 8, tipo: 'delitto' },
+                { art: "323 c.p.", nome: "Abuso d'ufficio", pena: 4, tipo: 'delitto' },
+                { art: "336 c.p.", nome: "Violenza o minaccia a un pubblico ufficiale", pena: 5, tipo: 'delitto' },
+                { art: "337 c.p.", nome: "Resistenza a un pubblico ufficiale", pena: 5, tipo: 'delitto' },
+                { art: "340 c.p.", nome: "Interruzione di un ufficio o servizio pubblico", pena: 1, tipo: 'delitto' },
+            ]},
+            { group: "Delitti contro l'amministrazione della giustizia", items: [
+                { art: "368 c.p.", nome: "Calunnia", pena: 6, tipo: 'delitto' },
+                { art: "372 c.p.", nome: "Falsa testimonianza", pena: 6, tipo: 'delitto' },
+                { art: "378 c.p.", nome: "Favoreggiamento personale", pena: 4, tipo: 'delitto' },
+            ]},
+            { group: "Delitti contro la persona", items: [
+                { art: "575 c.p.", nome: "Omicidio", pena: 999, tipo: 'delitto' },
+                // Art. 572 con pene basate sulla data
+                { art: "572 c.p.", nome: "Maltrattamenti contro familiari e conviventi", 
+                  pene: [
+                      { finoA: '2019-07-18', pena: 6 }, // Pena max 6 anni prima del "Codice Rosso"
+                      { dal: '2019-07-19', pena: 7 }   // Pena max 7 anni dopo L. 69/2019
+                  ], 
+                  tipo: 'delitto' },
+                { art: "581 c.p.", nome: "Percosse", pena: 0.5, tipo: 'delitto' },
+                { art: "582 c.p.", nome: "Lesioni personali", pena: 3, tipo: 'delitto' },
+                { art: "583 c.p.", nome: "Lesioni personali gravi o gravissime", pena: 12, tipo: 'delitto' },
+                { art: "589 c.p.", nome: "Omicidio colposo", pena: 5, tipo: 'delitto' },
+                { art: "589-bis c.p.", nome: "Omicidio stradale", pena: 18, tipo: 'delitto' },
+                { art: "590 c.p.", nome: "Lesioni personali colpose", pena: 0.25, tipo: 'delitto' },
+                { art: "595 c.p.", nome: "Diffamazione", pena: 1, tipo: 'delitto' },
+                { art: "600-bis c.p.", nome: "Prostituzione minorile", pena: 12, tipo: 'delitto' },
+                { art: "609-bis c.p.", nome: "Violenza sessuale", pena: 12, tipo: 'delitto' },
+                { art: "610 c.p.", nome: "Violenza privata", pena: 4, tipo: 'delitto' },
+                { art: "612 c.p.", nome: "Minaccia", pena: 1, tipo: 'delitto' },
+                { art: "612-bis c.p.", nome: "Atti persecutori (Stalking)", pena: 6.5, tipo: 'delitto' },
+            ]},
+            { group: "Delitti contro il patrimonio", items: [
+                { art: "624 c.p.", nome: "Furto", pena: 3, tipo: 'delitto' },
+                { art: "624-bis c.p.", nome: "Furto in abitazione e furto con strappo", pena: 6, tipo: 'delitto' },
+                { art: "628 c.p.", nome: "Rapina", pena: 10, tipo: 'delitto' },
+                { art: "629 c.p.", nome: "Estorsione", pena: 10, tipo: 'delitto' },
+                { art: "630 c.p.", nome: "Sequestro di persona a scopo di estorsione", pena: 30, tipo: 'delitto' },
+                { art: "640 c.p.", nome: "Truffa", pena: 3, tipo: 'delitto' },
+                { art: "644 c.p.", nome: "Usura", pena: 10, tipo: 'delitto' },
+                { art: "646 c.p.", nome: "Appropriazione indebita", pena: 3, tipo: 'delitto' },
+                { art: "648 c.p.", nome: "Ricettazione", pena: 8, tipo: 'delitto' },
+                { art: "648-bis c.p.", nome: "Riciclaggio", pena: 12, tipo: 'delitto' },
+            ]},
+            { group: "Contravvenzioni", items: [
+                { art: "650 c.p.", nome: "Inosservanza dei provvedimenti dell'Autorità", pena: 0.25, tipo: 'contravvenzione_arresto' },
+                { art: "688 c.p.", nome: "Ubriachezza manifesta in luogo pubblico", pena: 0, tipo: 'contravvenzione_ammenda' },
+                { art: "703 c.p.", nome: "Accensioni ed esplosioni pericolose", pena: 0.08, tipo: 'contravvenzione_ammenda' },
+                { art: "Art. 186 C.d.S.", nome: "Guida in stato di ebbrezza (ipotesi più grave)", pena: 1, tipo: 'contravvenzione_arresto' },
+            ]}
+        ];
+
+        function popolaReati() {
+            const select = document.getElementById('reatoSelect');
+            reati.forEach(group => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = group.group;
+                group.items.forEach(item => {
+                    const option = document.createElement('option');
+                    // Salva l'intero oggetto reato come JSON string
+                    option.value = JSON.stringify(item);
+                    option.textContent = `${item.art} - ${item.nome}`;
+                    optgroup.appendChild(option);
+                });
+                select.appendChild(optgroup);
+            });
+        }
+        
+        function filtraReati() {
+            const input = document.getElementById('cercaReato');
+            const filter = input.value.toLowerCase();
+            const select = document.getElementById('reatoSelect');
+            const optgroups = select.getElementsByTagName('optgroup');
+
+            for (let i = 0; i < optgroups.length; i++) {
+                const optgroup = optgroups[i];
+                const options = optgroup.getElementsByTagName('option');
+                let groupVisible = false;
+                for (let j = 0; j < options.length; j++) {
+                    const option = options[j];
+                    const txtValue = option.textContent || option.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        option.style.display = "";
+                        groupVisible = true;
+                    } else {
+                        option.style.display = "none";
+                    }
+                }
+                 optgroup.style.display = groupVisible ? "" : "none";
+            }
+        }
+        
+        // Funzione per ricontrollare la pena se la data cambia dopo aver selezionato un reato
+        function checkReatoPena() {
+             const select = document.getElementById('reatoSelect');
+             if (select.value) {
+                 selezionaReato();
+             }
+        }
+        
+        function selezionaReato() {
+            const select = document.getElementById('reatoSelect');
+            if (!select.value) {
+                document.getElementById('penaMassima').value = '';
+                document.getElementById('tipoReato').value = 'delitto';
+                return;
+            }
+            
+            const reato = JSON.parse(select.value);
+            let penaCorretta;
+
+            if (reato.pene) {
+                // Reato con pene variabili
+                const dataReatoStr = document.getElementById('dataReato').value;
+                if (!dataReatoStr) {
+                    alert("Attenzione: Seleziona prima la data del reato per determinare la pena edittale corretta.");
+                    select.value = ""; // Deseleziona
+                    document.getElementById('penaMassima').value = '';
+                    return;
+                }
+                const dataReato = new Date(dataReatoStr);
+                
+                penaCorretta = reato.pene[reato.pene.length - 1].pena; // Default all'ultima (più recente)
+                for (const p of reato.pene) {
+                    if (p.finoA && dataReato <= new Date(p.finoA)) {
+                        penaCorretta = p.pena;
+                        break;
+                    }
+                    if (p.dal && dataReato >= new Date(p.dal)) {
+                        penaCorretta = p.pena;
+                        // Non fare break, continua a cercare se una più specifica "finoA" matcha
+                    }
+                }
+            } else if (reato.pena) {
+                // Reato con pena singola statica
+                penaCorretta = reato.pena;
+            }
+
+            document.getElementById('penaMassima').value = penaCorretta;
+            document.getElementById('tipoReato').value = reato.tipo;
+        }
+        
+        function toggleSospensioneGiudice() {
+            const container = document.getElementById('sospensioneGiudiceContainer');
+            const checkbox = document.getElementById('sospensioneGiudiceCheck');
+            container.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        function addIntervallo() {
+            const container = document.getElementById('intervalliSospensione');
+            const newRow = document.createElement('div');
+            newRow.className = 'intervallo-row';
+            
+            newRow.innerHTML = `
+                <label style="margin-bottom:0;">Dal:</label>
+                <input type="date" class="intervallo-data" onchange="calcolaGiorniDaIntervalli()">
+                <label style="margin-bottom:0;">Al:</label>
+                <input type="date" class="intervallo-data" onchange="calcolaGiorniDaIntervalli()">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove(); calcolaGiorniDaIntervalli();">X</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function calcolaGiorniDaIntervalli() {
+            const container = document.getElementById('intervalliSospensione');
+            const rows = container.getElementsByClassName('intervallo-row');
+            let totalDays = 0;
+            for (let row of rows) {
+                const dates = row.getElementsByClassName('intervallo-data');
+                const startDate = dates[0].value;
+                const endDate = dates[1].value;
+
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    if (end >= start) {
+                        const diffTime = Math.abs(end - start);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end day
+                        totalDays += diffDays;
+                    }
+                }
+            }
+            document.getElementById('giorniSospensioneGiudice').value = totalDays;
+        }
+
+        function calcolaPrescrizione() {
+            // Reset
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            const fieldsToReset = ['disciplinaApplicabile', 'termineBase', 'termineMassimo', 'dataPrescrizione', 'dataPrescrizioneMassima', 'noteAggiuntive', 'infoSospensione', 'infoSospensioneGiudice'];
+            fieldsToReset.forEach(id => document.getElementById(id).innerHTML = '');
+            let note = ''; // Inizializza le note
+
+            // Acquisizione input
+            const dataReatoStr = document.getElementById('dataReato').value;
+            const dataAttoInterruttivoStr = document.getElementById('dataAttoInterruttivo').value;
+            const applicaSospensioneCovid = document.getElementById('sospensioneCovid').checked;
+            
+            if (!dataReatoStr) {
+                alert("Per favore, inserisci la data di commissione del reato.");
+                return;
+            }
+            const dataReato = new Date(dataReatoStr);
+            
+            // 1. Acquisizione Pena Base ed eventuale Aumento per Aggravanti
+            let penaMassima = parseFloat(document.getElementById('penaMassima').value);
+            if (isNaN(penaMassima) || penaMassima < 0) {
+                alert("Per favore, inserisci una pena massima valida.");
+                return;
+            }
+            
+            const moltiplicatoreAggravante = parseFloat(document.getElementById('aumentoPenaBase').value);
+            if (moltiplicatoreAggravante > 1) {
+                penaMassima = penaMassima * moltiplicatoreAggravante;
+                note += `Pena base per il calcolo aumentata a ${penaMassima.toLocaleString('it-IT')} anni a causa di aggravanti ad effetto speciale. `;
+            }
+            
+            resultDiv.style.display = 'block';
+
+            if (penaMassima >= 999) {
+                document.getElementById('disciplinaApplicabile').innerHTML = '<strong>Disciplina Applicabile:</strong> Il reato è punito con l\'ergastolo.';
+                document.getElementById('termineBase').innerHTML = '<strong>Questo reato è imprescrittibile.</strong>';
+                return;
+            }
+            
+            const tipoReato = document.getElementById('tipoReato').value;
+            const raddoppioBase = document.getElementById('raddoppioTerminiBase').value;
+            const limitiArt161 = document.getElementById('aggravanti').value;
+
+            const dataCirielli = new Date('2005-12-08');
+            const dataBonafede = new Date('2020-01-01');
+
+            let disciplina, termineAnni;
+
+            // Logica di selezione della disciplina
+            if (dataReato < dataCirielli) {
+                const termineRocco = calcolaTermineRocco(penaMassima, tipoReato);
+                const termineCirielli = calcolaTermineCirielli(penaMassima, tipoReato, limitiArt161, true);
+
+                if (termineCirielli < termineRocco) {
+                    disciplina = `Si applica la Riforma "ex Cirielli" (L. 251/2005) per il principio del <i>favor rei</i>, in quanto più favorevole rispetto al Codice Rocco vigente all'epoca del fatto.`;
+                    termineAnni = termineCirielli;
+                } else {
+                    disciplina = `Si applica la disciplina originaria del Codice Rocco del 1930, in quanto la successiva Riforma "ex Cirielli" risulterebbe meno favorevole.`;
+                    termineAnni = termineRocco;
+                }
+            } else if (dataReato >= dataCirielli && dataReato < dataBonafede) {
+                disciplina = `Si applica la Riforma "ex Cirielli" (L. 251/2005).`;
+                // Check Riforma Orlando
+                const dataOrlandoInizio = new Date('2017-08-03');
+                if (dataReato < dataBonafede) { // La dataReato è irrilevante, è se il processo cade in quel periodo
+                     note += ` <strong>Attenzione (Riforma Orlando):</strong> Se il processo ha avuto sentenze tra l'agosto 2017 e il gennaio 2020, potrebbero applicarsi le sospensioni della Riforma Orlando (L. 103/2017), non calcolate automaticamente.`;
+                }
+                
+                termineAnni = calcolaTermineCirielli(penaMassima, tipoReato, limitiArt161, false);
+            } else {
+                disciplina = `Si applica la disciplina derivante dalle riforme "Bonafede" (L. 3/2019) e "Cartabia" (L. 134/2021).`;
+                note += ` <strong>Attenzione (Riforma Bonafede/Cartabia):</strong> Con questa disciplina, il corso della prescrizione cessa definitivamente con la sentenza di primo grado. Dopo tale sentenza, il reato non si prescrive più. La Riforma Cartabia ha introdotto l'istituto della "improcedibilità" per superamento dei termini massimi di durata dei giudizi di appello (2 anni) e Cassazione (1 anno), salvo proroghe.`;
+                termineAnni = calcolaTermineCirielli(penaMassima, tipoReato, limitiArt161, false);
+            }
+
+            // 2. Applicazione Raddoppio Termini Base (se selezionato)
+            if (raddoppioBase === 'si') {
+                termineAnni = termineAnni * 2;
+                note += ` Il termine base di prescrizione è stato raddoppiato (es. L. 172/2012).`;
+            }
+
+            // 3. Calcolo termine massimo con interruzione (Art. 161)
+            let termineMassimoAnni;
+            let aumentoDesc = '';
+            
+            if (limitiArt161 === 'no_limit') {
+                termineMassimoAnni = Infinity;
+                aumentoDesc = '(Nessun limite ex art. 161 c.2 c.p. - es. art. 51 c.3-bis)';
+            } else if (limitiArt161 === 'recidiva_art161') {
+                // La legge parla di metà O due terzi. Usiamo 2/3 come massimo per il calcolo.
+                termineMassimoAnni = termineAnni * (1 + 2/3);
+                aumentoDesc = '(base + 2/3, per recidiva reiterata ecc.)';
+            } else {
+                // Caso 'nessuna' (standard)
+                termineMassimoAnni = termineAnni * 1.25;
+                aumentoDesc = '(base + 1/4)';
+            }
+            
+            // Calcolo sospensioni
+            let giorniAggiuntivi = 0;
+            if (applicaSospensioneCovid) {
+                const fineSospensioneCovid = new Date('2020-05-11');
+                if (dataReato > fineSospensioneCovid) {
+                    alert("Attenzione: La sospensione Covid è applicabile solo ai reati commessi prima dell'11 maggio 2020, il cui termine di prescrizione era in corso.");
+                } else {
+                    giorniAggiuntivi += 64;
+                    document.getElementById('infoSospensione').innerHTML = `<strong>Sospensione Covid:</strong> Applicato un aumento di 64 giorni.`;
+                }
+            }
+
+            if(document.getElementById('sospensioneGiudiceCheck').checked) {
+                const giorniSospGiudice = parseInt(document.getElementById('giorniSospensioneGiudice').value, 10) || 0;
+                if (giorniSospGiudice > 0) {
+                    giorniAggiuntivi += giorniSospGiudice;
+                    document.getElementById('infoSospensioneGiudice').innerHTML = `<strong>Sospensione del giudice:</strong> Applicato un aumento di ${giorniSospGiudice} giorni.`;
+                }
+            }
+
+
+            // Visualizzazione dei risultati
+            document.getElementById('disciplinaApplicabile').innerHTML = `<strong>Disciplina Applicabile:</strong> ${disciplina}`;
+            document.getElementById('termineBase').innerHTML = `<strong>Termine di prescrizione (base):</strong> ${termineAnni.toLocaleString('it-IT')} anni.`;
+            
+            if (termineMassimoAnni === Infinity) {
+                document.getElementById('termineMassimo').innerHTML = `<strong>Termine massimo dopo interruzione (art. 161 c.p.):</strong> Nessun limite ${aumentoDesc}.`;
+            } else {
+                document.getElementById('termineMassimo').innerHTML = `<strong>Termine massimo dopo interruzione (art. 161 c.p.):</strong> ${termineMassimoAnni.toLocaleString('it-IT')} anni ${aumentoDesc}.`;
+            }
+
+
+            const dataPrescrizione = new Date(dataReato);
+            dataPrescrizione.setFullYear(dataPrescrizione.getFullYear() + Math.floor(termineAnni));
+            const restoAnni = termineAnni % 1;
+            if (restoAnni > 0) {
+                 dataPrescrizione.setMonth(dataPrescrizione.getMonth() + Math.round(restoAnni * 12));
+            }
+            dataPrescrizione.setDate(dataPrescrizione.getDate() + giorniAggiuntivi);
+            document.getElementById('dataPrescrizione').innerHTML = `<strong>Data di prescrizione (in assenza di interruzioni):</strong> ${dataPrescrizione.toLocaleDateString('it-IT')}.`;
+            
+            if (dataAttoInterruttivoStr) {
+                if (termineMassimoAnni === Infinity) {
+                    document.getElementById('dataPrescrizioneMassima').innerHTML = `<strong>Data di prescrizione massima:</strong> Non applicabile. Il termine ricomincia da capo ad ogni atto interruttivo senza un limite temporale massimo.`;
+                } else {
+                    const dataPrescrizioneMassima = new Date(dataReato);
+                    dataPrescrizioneMassima.setFullYear(dataPrescrizioneMassima.getFullYear() + Math.floor(termineMassimoAnni));
+                    const restoAnniMax = termineMassimoAnni % 1;
+                    if (restoAnniMax > 0) {
+                        dataPrescrizioneMassima.setMonth(dataPrescrizioneMassima.getMonth() + Math.round(restoAnniMax * 12));
+                    }
+                    dataPrescrizioneMassima.setDate(dataPrescrizioneMassima.getDate() + giorniAggiuntivi);
+                    document.getElementById('dataPrescrizioneMassima').innerHTML = `<strong>Data di prescrizione massima (considerando l'interruzione):</strong> ${dataPrescrizioneMassima.toLocaleDateString('it-IT')}.`;
+                }
+            }
+
+            if (note) {
+                 document.getElementById('noteAggiuntive').innerHTML = `<strong>Note:</strong> ${note}`;
+            }
+        }
+        
+        function calcolaTermineRocco(pena, tipo) {
+            if (tipo.startsWith('contravvenzione')) {
+                return tipo === 'contravvenzione_arresto' ? 3 : 2;
+            } else { // Delitto
+                if (pena >= 24) return 20;
+                if (pena >= 10) return 15;
+                if (pena >= 5) return 10;
+                return 5;
+            }
+        }
+
+        function calcolaTermineCirielli(pena, tipo, aggravanti, isFavorReiCheck) {
+            let termine;
+            if (tipo.startsWith('contravvenzione')) {
+                termine = Math.max(pena, 4);
+            } else { // Delitto
+                 if (isFavorReiCheck && pena < 5) {
+                     termine = pena; 
+                 } else {
+                     termine = Math.max(pena, 6);
+                 }
+            }
+            return termine;
+        }
+
+    </script>
+
+</body>
+</html>

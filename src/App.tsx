@@ -11,6 +11,8 @@ import SitoView from './pages/SitoView';
 import Documenti from './pages/Documenti';
 import MiniApps from './pages/MiniApps';
 import MiniAppView from './pages/MiniAppView';
+import ProcessoTelematico from './pages/ProcessoTelematico';
+import SourceNews from './pages/SourceNews';
 import AreaRiservata from './pages/AreaRiservata';
 import Info from './pages/Info';
 
@@ -45,6 +47,8 @@ const App: React.FC = () => (
           <Route exact path="/documenti" component={Documenti} />
           <Route exact path="/miniapps" component={MiniApps} />
           <Route exact path="/miniapps/:id" component={MiniAppView} />
+          <Route exact path="/processo-telematico" component={ProcessoTelematico} />
+          <Route exact path="/processo-telematico/:sourceId" component={SourceNews} />
           <Route exact path="/area-riservata" component={AreaRiservata} />
           <Route exact path="/info" component={Info} />
           <Route exact path="/" render={() => <Redirect to="/home" />} />

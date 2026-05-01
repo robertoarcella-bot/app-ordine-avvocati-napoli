@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Compensi Patrocinio Stato - Protocollo Napoli (v18 - Layout)</title>
+    <style>
+        /* Stili CSS (come v17) */
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 900px; margin: auto; }
+        h1, h2, h3 { color: #333; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        h2 { margin-top: 30px; }
+        h3 { margin-top: 20px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        label.required::after { content: " *"; color: red; }
+        input[type="text"], input[type="date"], input[type="number"], input[type="email"], select, textarea { width: 95%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input.invalid { border-color: #dc3545; box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25); }
+        input.valid { border-color: #28a745; box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25); }
+        form:not(.fields-optional) input:required:invalid:not(.valid):not(.invalid) { border-color: #ffc107; }
+        .validation-message { font-size: 0.8em; color: #dc3545; display: none; margin-top: 2px; }
+        input.invalid + .validation-message { display: block; }
+        input[type="checkbox"], input[type="radio"] { margin-right: 5px; vertical-align: middle;}
+        .fee-item { margin-bottom: 8px; padding-left: 10px; position: relative; display: flex; align-items: center; }
+        .fee-item label { font-weight: normal; display: inline; margin-left: 3px; }
+        .phase-group { margin-top: 15px; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background-color: #fdfdfd;}
+        button, .action-button { padding: 10px 15px; margin-top: 15px; margin-right: 10px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 1em; }
+        button:hover, .action-button:hover { background-color: #0056b3; }
+        .action-button.secondary { background-color: #6c757d; }
+        .action-button.secondary:hover { background-color: #5a6268; }
+        #results, #outputArea { margin-top: 20px; padding: 15px; border: 1px solid #d0d0d0; background-color: #f0f0f0; border-radius: 5px; }
+        #outputIstanza { width: 95%; height: 400px; margin-top: 10px; font-family: monospace; white-space: pre; }
+        .total-line { font-weight: bold; margin-top: 10px; }
+        .placeholder { color: #888; font-style: italic; }
+        .section-title { font-weight: bold; text-transform: uppercase; margin-top: 15px; margin-bottom: 5px; display: block; }
+        .inline-fields { display: flex; gap: 2%; align-items: flex-start; }
+        .inline-fields > div { flex: 1; }
+        .inline-fields label { margin-top: 0; }
+        .inline-fields input { width: 90%; }
+        .tooltip-trigger { display: inline-block; margin-left: 8px; cursor: help; font-weight: bold; color: #007bff; border: 1px solid #007bff; border-radius: 50%; width: 16px; height: 16px; line-height: 14px; text-align: center; font-size: 12px; position: relative; vertical-align: middle;}
+        .tooltip-text { visibility: hidden; width: 250px; background-color: #555; color: #fff; text-align: left; border-radius: 6px; padding: 8px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -125px; opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.4; }
+        .tooltip-trigger:hover .tooltip-text { visibility: visible; opacity: 1; }
+        label .tooltip-trigger { margin-left: 5px; }
+         footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc; font-size: 0.9em; color: #666; }
+         .optional-toggle { margin-bottom: 20px; padding: 10px; background-color: #e9ecef; border-radius: 5px; }
+         .optional-toggle label { display: inline; font-weight: normal; margin-left: 5px;}
+         .cookie-warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9em; }
+         .lawyer-data-actions { margin-top: 10px; margin-bottom: 10px; padding-top: 10px; /* Adjusted padding */ }
+    </style>
+</head>
+<body>
+
+    <h1>Compilazione Istanza Liquidazione Compensi Patrocinio a Spese dello Stato</h1>
+    <p>Basato sul Protocollo di Napoli e Tabelle Compensi. I campi con * sono obbligatori (se non diversamente specificato sotto). Passa il mouse su (?) per i dettagli.</p>
+
+    <div class="optional-toggle">
+        <input type="checkbox" id="make_optional_cb" onchange="toggleRequiredFields(this.checked)">
+        <label for="make_optional_cb">Rendi tutti i campi facoltativi (genera solo modello con calcoli)</label>
+    </div>
+
+     <div class="cookie-warning">
+         <strong>Nota sull'uso dei Cookie:</strong> Cliccando su "Salva Dati Difensore", i dati identificativi del difensore (Nome, Indirizzo, CF, P.IVA, PEC) verranno salvati in un cookie sul tuo computer per velocizzare la compilazione futura. Questi dati rimangono solo sul tuo dispositivo. Utilizzando questa funzione accetti l'uso di questo cookie tecnico.
+     </div>
+
+    <form id="istanzaForm">
+        <h2>Dati Generali</h2>
+        <label for="autorita" class="required">Autorità Giudiziaria:</label>
+        <input type="text" id="autorita" name="autorita" placeholder="Es. Tribunale di Napoli" required>
+        <div class="inline-fields">
+             <div><label for="sezione" class="required">Sezione:</label><input type="text" id="sezione" name="sezione" required></div>
+             <div><label for="collegio">Collegio:</label><input type="text" id="collegio" name="collegio"></div>
+        </div>
+        <label for="giudice">Giudice:</label>
+        <input type="text" id="giudice" name="giudice" placeholder="Es. Dott. Rossi">
+        <label for="rgnr" class="required">Numero R.G.N.R.:</label>
+        <input type="text" id="rgnr" name="rgnr" required>
+        <div><label for="rg">Numero R.G.:</label><span class="tooltip-trigger" style="vertical-align: baseline;">?<span class="tooltip-text">Indicare la tipologia specifica del registro (es. RG DIB, RG GIP, RG. APP., RG TRIB, etc.) insieme al numero e all'anno.</span></span></div>
+        <input type="text" id="rg" name="rg">
+        <label for="dif_gp" class="required">Numero GP:</label>
+        <input type="text" id="dif_gp" name="dif_gp" placeholder="Es. Numero Iscrizione Gratuito Patrocinio" required>
+
+        <label>Tipo Nomina Difensore:</label>
+        <div><input type="radio" id="nomina_fiducia" name="tipo_nomina" value="fiducia" checked><label for="nomina_fiducia" style="display: inline; font-weight: normal;">Di Fiducia</label></div>
+        <div><input type="radio" id="nomina_ufficio" name="tipo_nomina" value="ufficio"><label for="nomina_ufficio" style="display: inline; font-weight: normal;">D'Ufficio</label></div>
+
+        <h2>Dati Difensore</h2>
+        <label for="dif_cognome_nome" class="required">Cognome e Nome:</label>
+        <input type="text" id="dif_cognome_nome" name="dif_cognome_nome" required>
+        <label for="dif_indirizzo" class="required">Indirizzo:</label>
+        <input type="text" id="dif_indirizzo" name="dif_indirizzo" required>
+        <div><label for="dif_cf" class="required">Codice Fiscale:</label><input type="text" id="dif_cf" name="dif_cf" placeholder="16 caratteri alfanumerici" onblur="validateCF(this)" maxlength="16" required><span class="validation-message">Formato CF non valido o codice di controllo errato.</span></div>
+        <div><label for="dif_piva" class="required">Partita Iva:</label><input type="text" id="dif_piva" name="dif_piva" placeholder="11 cifre numeriche" onblur="validatePIVA(this)" maxlength="11" required><span class="validation-message">La Partita IVA deve contenere 11 cifre e superare il controllo.</span></div>
+        <label for="dif_pec" class="required">PEC:</label>
+        <input type="email" id="dif_pec" name="dif_pec" required>
+
+         <div class="lawyer-data-actions">
+             <button type="button" class="action-button secondary" onclick="saveLawyerData()">Salva Dati Difensore</button>
+             <button type="button" class="action-button secondary" onclick="loadLawyerData()">Carica Dati Difensore</button>
+         </div>
+
+        <label>Regime Fiscale:</label>
+        <input type="radio" id="regime_ordinario" name="regime_fiscale" value="ordinario" checked onchange="calculateFees()"><label for="regime_ordinario" style="display: inline; font-weight: normal;">Contabilità Ordinaria</label><br>
+        <input type="radio" id="regime_forfettario" name="regime_fiscale" value="forfettario" onchange="calculateFees()"><label for="regime_forfettario" style="display: inline; font-weight: normal;">Forfettario</label>
+
+        <h2>Dati Parte Ammessa</h2>
+        <label for="parte_cognome_nome" class="required">Cognome e Nome:</label>
+        <input type="text" id="parte_cognome_nome" name="parte_cognome_nome" required>
+         <div><label for="parte_cf" class="required">Codice Fiscale:</label><input type="text" id="parte_cf" name="parte_cf" placeholder="16 caratteri alfanumerici" onblur="validateCF(this)" maxlength="16" required><span class="validation-message">Formato CF non valido o codice di controllo errato.</span></div>
+        <label for="parte_indirizzo" class="required">Indirizzo:</label>
+        <input type="text" id="parte_indirizzo" name="parte_indirizzo" required>
+
+        <h2>Dati Istanza</h2>
+        <label for="data_istanza" class="required">Data Istanza:</label>
+        <input type="date" id="data_istanza" name="data_istanza" required>
+        <label for="data_ammissione" class="required">Data Provvedimento Ammissione:</label>
+        <input type="date" id="data_ammissione" name="data_ammissione" required>
+        <label for="luogo_firma" class="required">Luogo Firma:</label>
+        <input type="text" id="luogo_firma" name="luogo_firma" placeholder="Es. Napoli" required>
+        <label for="descrizione_attivita">Breve Descrizione Attività Svolta:</label>
+        <textarea id="descrizione_attivita" name="descrizione_attivita" rows="4" placeholder="Descrivere brevemente l'attività difensiva prestata..."></textarea>
+
+        <h2>Fasi Svolte e Calcolo Competenze</h2>
+        <p>Selezionare le voci corrispondenti alle attività svolte:</p>
+         <div class="phase-group">
+            <h3>FASE INDAGINI PRELIMINARI</h3>
+            <div class="fee-item"><input type="checkbox" id="ind_1" value="650" onchange="calculateFees()"><label for="ind_1">Attività rilevanti (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Comprende: interrogatorio indagato, atti ex art 360 cpp, perquisizione/sequestro, CTP, indagini difensive, opposizione D.P., oblazione.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ind_2" value="850" onchange="calculateFees()"><label for="ind_2">Cumulo attività rilevanti (€ 850)</label><span class="tooltip-trigger">?<span class="tooltip-text">In caso di svolgimento di più attività tra quelle indicate nella nota 1.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ind_3" value="900" onchange="calculateFees()"><label for="ind_3">Opposizione archiviazione + udienza (€ 900)</label><span class="tooltip-trigger">?<span class="tooltip-text">Comprende redazione opposizione a richiesta archiviazione e partecipazione a successiva udienza camerale; o redazione opposizione e udienza ex art 411 co 1 bis. Liquidabile autonomamente.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ind_4" value="600" onchange="calculateFees()"><label for="ind_4">Sola udienza camerale (senza opposizione) (€ 600)</label><span class="tooltip-trigger">?<span class="tooltip-text">Partecipazione alla sola udienza camerale ex artt. 409-411 co 1 bis senza aver redatto l'opposizione. Liquidabile autonomamente.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ind_5" value="800" onchange="calculateFees()"><label for="ind_5">Appl. pena / Messa alla prova (art. 464 ter) (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Per applicazione della pena nel corso delle indagini preliminari o sospensione del procedimento con messa alla prova ex art 464 ter. Liquidabile autonomamente.</span></span></div>
+        </div>
+        <div class="phase-group">
+            <h3>FASE PREDIBATTIMENTALE</h3>
+            <div class="fee-item"><input type="checkbox" id="pre_1" value="500" onchange="calculateFees()"><label for="pre_1">Udienza senza rito altern. / prosc. 129 (€ 500)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza predibattimentale senza richiesta o ammissione di riti alternativi, o conclusa con proscioglimento ex art. 129 cpp. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_2" value="400" onchange="calculateFees()"><label for="pre_2">Udienza con sentenza ex art. 420 quater (€ 400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza definita con sentenza di non doversi procedere per mancata conoscenza della pendenza del processo da parte dell'imputato. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_3" value="500" onchange="calculateFees()"><label for="pre_3">Eccezioni preliminari (esito definitorio) (€ 500)</label><span class="tooltip-trigger">?<span class="tooltip-text">Formulazione eccezioni preliminari ex art. 554 ter cpp che determinano un esito definitorio del giudizio o la restituzione degli atti al PM. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_4" value="800" onchange="calculateFees()"><label for="pre_4">Udienza con patteggiamento (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza predibattimentale definita con applicazione della pena su richiesta delle parti. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_5" value="800" onchange="calculateFees()"><label for="pre_5">Udienza con abbr. semplice / documentale (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza predibattimentale definita con rito abbreviato semplice o condizionato ad integrazione probatoria documentale. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_6" value="1200" onchange="calculateFees()"><label for="pre_6">Udienza con abbr. condiz. testimoniale (€ 1200)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza predibattimentale definita con rito abbreviato condizionato ad integrazione probatoria testimoniale o altra attività istruttoria. Liquidabile solo se definitoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="pre_7" value="800" onchange="calculateFees()"><label for="pre_7">Udienza con MAP / Estinzione reato 162 ter (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Giudizio conclusosi con Messa alla Prova o con sentenza di estinzione del reato per condotte riparatorie ex art 162 ter c.p.. Liquidabile solo se definitoria.</span></span></div>
+        </div>
+        <div class="phase-group">
+            <h3>FASE GIP/GUP</h3>
+            <div class="fee-item"><input type="checkbox" id="gip_1" value="900" onchange="calculateFees()"><label for="gip_1">Ud. prel. semplice / def. ex 129 (€ 900)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza preliminare senza attività istruttoria integrativa o definita ex art. 129 c.p.p..</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_2" value="1200" onchange="calculateFees()"><label for="gip_2">Ud. prel. con integr. istruttoria (€ 1200)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza preliminare con richiesta e/o svolgimento di integrazione istruttoria (es. ex art. 421 bis).</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_3" value="1000" onchange="calculateFees()"><label for="gip_3">Ud. prel. con patteggiamento (€ 1000)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza preliminare definita con applicazione della pena su richiesta delle parti.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_4" value="1000" onchange="calculateFees()"><label for="gip_4">Ud. prel. con abbr. semplice/docum. (€ 1000)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza preliminare definita con rito abbreviato semplice o condizionato ad integrazione documentale.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_5" value="1400" onchange="calculateFees()"><label for="gip_5">Ud. prel. abbr. condiz. / integr. / MAP (€ 1400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Udienza preliminare definita con abbreviato condizionato testimoniale/istruttorio, o con integrazione istruttoria ex 421 bis, o conclusa con MAP.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_6" value="400" onchange="calculateFees()"><label for="gip_6">Sentenza ex art. 420 quater (€ 400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Emissione di sentenza di non doversi procedere per mancata conoscenza della pendenza del processo da parte dell'imputato.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="gip_7" value="700" onchange="calculateFees()"><label for="gip_7">Udienza convalida + ist. cautelare (€ 700)</label><span class="tooltip-trigger">?<span class="tooltip-text">Partecipazione all'udienza di convalida dell'arresto o del fermo, con eventuale discussione e richiesta relativa a misure cautelari.</span></span></div>
+        </div>
+         <div class="phase-group">
+            <h3>FASE GIUDIZIO MONOCRATICO</h3>
+            <div class="fee-item"><input type="checkbox" id="mono_1" value="1200" onchange="calculateFees()"><label for="mono_1">Rito ordinario fino a 3 ud. trattazione (€ 1200)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito monocratico ordinario con un massimo di 3 udienze di trattazione effettiva (vedi definizione nel protocollo).</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_2" value="1400" onchange="calculateFees()"><label for="mono_2">Rito ordinario oltre 3 ud. trattazione (€ 1400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito monocratico ordinario con più di 3 udienze di trattazione effettiva (fino a 5).</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_3" value="1800" onchange="calculateFees()"><label for="mono_3">Rito ordinario oltre 5 ud. trattazione (€ 1800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito monocratico ordinario con più di 5 udienze di trattazione effettiva.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_4" value="350" onchange="calculateFees()"><label for="mono_4">Redazione motivi appello G.d.P. Penale (€ 350)</label><span class="tooltip-trigger">?<span class="tooltip-text">Redazione dei motivi di appello avverso sentenze del Giudice di Pace in materia penale. Cumulabile con nota 5 o 6.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_5" value="650" onchange="calculateFees()"><label for="mono_5">Udienza appello G.d.P. Penale (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Partecipazione all'udienza di appello (senza rinnovazione istruttoria) avverso sentenze del Giudice di Pace in materia penale. Cumulabile con nota 4.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_6" value="1000" onchange="calculateFees()"><label for="mono_6">Ud. appello G.d.P. con rinnov. istrutt. (€ 1000)</label><span class="tooltip-trigger">?<span class="tooltip-text">Partecipazione all'udienza di appello avverso sentenze del G.d.P. Penale con rinnovazione dell'istruttoria dibattimentale testimoniale. Cumulabile con nota 4.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="mono_7" value="350" onchange="calculateFees()"><label for="mono_7">Istanza reclamo ex art. 410 bis c.p.p. (€ 350)</label><span class="tooltip-trigger">?<span class="tooltip-text">Instaurazione della procedura di reclamo al GIP avverso il decreto di archiviazione per mancato accoglimento della richiesta di avocazione.</span></span></div>
+        </div>
+        <div class="phase-group">
+            <h3>FASE GIUDIZIO COLLEGIALE</h3>
+            <div class="fee-item"><input type="checkbox" id="coll_1" value="650" onchange="calculateFees()"><label for="coll_1">Prosc. ex 129/469 senza istruttoria (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale definito con sentenza di proscioglimento ex artt. 129/469 c.p.p. senza che sia stata svolta attività istruttoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="coll_2" value="1400" onchange="calculateFees()"><label for="coll_2">Rito ordinario fino a 3 ud. trattazione (€ 1400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale ordinario con un massimo di 3 udienze di trattazione effettiva.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="coll_3" value="1800" onchange="calculateFees()"><label for="coll_3">Rito ordinario oltre 3 ud. trattazione (€ 1800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale ordinario con più di 3 udienze di trattazione effettiva (fino a 5).</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="coll_4" value="2600" onchange="calculateFees()"><label for="coll_4">Rito ordinario oltre 5 ud. trattazione (€ 2600)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale ordinario con più di 5 udienze di trattazione effettiva.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="coll_5" value="950" onchange="calculateFees()"><label for="coll_5">Patteggiamento, abbr. semplice/docum. (€ 950)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale definito con applicazione pena su richiesta, o rito abbreviato semplice o documentale.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="coll_6" value="1400" onchange="calculateFees()"><label for="coll_6">Abbreviato condizionato testimoniale (€ 1400)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito collegiale definito con rito abbreviato condizionato ad integrazione probatoria testimoniale o altra attività istruttoria.</span></span></div>
+        </div>
+        <div class="phase-group">
+            <h3>FASE GIUDIZIO DIRETTISSIMO</h3>
+            <div class="fee-item"><input type="checkbox" id="dir_1" value="1500" onchange="calculateFees()"><label for="dir_1">Monocr. convalida + rito alternativo (€ 1500)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito direttissimo davanti al Tribunale Monocratico con convalida e successiva definizione tramite rito alternativo (patteggiamento/abbreviato). Comprensivo di eventuali istanze cautelari.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="dir_2" value="1600" onchange="calculateFees()"><label for="dir_2">Colleg. convalida + rito alternativo (€ 1600)</label><span class="tooltip-trigger">?<span class="tooltip-text">Rito direttissimo davanti al Tribunale Collegiale con convalida e successiva definizione tramite rito alternativo (patteggiamento/abbreviato). Comprensivo di eventuali istanze cautelari.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="dir_3" value="700" onchange="calculateFees()"><label for="dir_3">Convalida con trasf. in ord. Monocr. (€ 700)</label><span class="tooltip-trigger">?<span class="tooltip-text">Presenza all'udienza di convalida dell'arresto/fermo con trasformazione del rito direttissimo in rito ordinario presso il Tribunale Monocratico (la fase dibattimentale ordinaria andrà liquidata a parte).</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="dir_4" value="800" onchange="calculateFees()"><label for="dir_4">Convalida con trasf. in ord. Colleg. (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Presenza all'udienza di convalida dell'arresto/fermo con trasformazione del rito direttissimo in rito ordinario presso il Tribunale Collegiale (la fase dibattimentale ordinaria andrà liquidata a parte).</span></span></div>
+        </div>
+        <div class="phase-group">
+            <h3>IMPUGNAZIONI CAUTELARI (Riesame/Appello)</h3>
+            <div class="fee-item"><input type="checkbox" id="imp_1" value="1000" onchange="calculateFees()"><label for="imp_1">Riesame/Appello cautelare (+ istanze) (€ 1000)</label><span class="tooltip-trigger">?<span class="tooltip-text">Procedimento di riesame ex art. 309/324 cpp o appello ex art. 310/322 bis cpp. Comprende anche le relative istanze cautelari presentate al giudice procedente.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="imp_2" value="1500" onchange="calculateFees()"><label for="imp_2">Cumulo procedimenti incidentali Riesame (€ 1500)</label><span class="tooltip-trigger">?<span class="tooltip-text">In caso di proposizione di più procedimenti incidentali (es. riesame + appello o più riesami/appelli) davanti al Tribunale del Riesame, comprensivi delle relative istanze al giudice procedente.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="imp_3" value="450" onchange="calculateFees()"><label for="imp_3">Istanza cautelare (senza incidente) (€ 450)</label><span class="tooltip-trigger">?<span class="tooltip-text">Presentazione di singola istanza cautelare al giudice procedente cui non segue impugnazione incidentale al Tribunale del Riesame.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="imp_4" value="650" onchange="calculateFees()"><label for="imp_4">Cumulo istanze cautelari (senza incidente) (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Presentazione di più istanze cautelari al giudice procedente cui non segue impugnazione incidentale al Tribunale del Riesame.</span></span></div>
+        </div>
+         <div class="phase-group">
+            <h3>FASE ESECUTIVA</h3>
+            <div class="fee-item"><input type="checkbox" id="ese_1" value="650" onchange="calculateFees()"><label for="ese_1">Incid. esec. senza intr. (GIP/GUP) (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al GIP/GUP senza fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_2" value="1000" onchange="calculateFees()"><label for="ese_2">Incid. esec. con intr. (GIP/GUP) (€ 1000)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al GIP/GUP con fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_3" value="650" onchange="calculateFees()"><label for="ese_3">Incid. esec. senza intr. (GM) (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al Giudice Monocratico senza fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_4" value="800" onchange="calculateFees()"><label for="ese_4">Incid. esec. con intr. (GM) (€ 800)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al Giudice Monocratico con fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_5" value="650" onchange="calculateFees()"><label for="ese_5">Incid. esec. senza intr. (Collegiale) (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al Tribunale Collegiale senza fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_6" value="900" onchange="calculateFees()"><label for="ese_6">Incid. esec. con intr. (Collegiale) (€ 900)</label><span class="tooltip-trigger">?<span class="tooltip-text">Incidente di esecuzione davanti al Tribunale Collegiale con fase introduttiva/istruttoria preliminare. Maggiorabile 30% con istruttoria ex 666 c.5.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="ese_7" value="0" onchange="calculateFees()"><label for="ese_7">Attività istruttoria ex art 666 co 5</label><span class="tooltip-trigger">?<span class="tooltip-text">Selezionare questa casella se nell'incidente di esecuzione è stata svolta attività istruttoria ai sensi art. 666 co 5 cpp. Comporta maggiorazione del 30% sulla nota spese della fase esecutiva selezionata.</span></span></div>
+        </div>
+        <div class="phase-group">
+             <h3>PROCEDIMENTO MISURE DI PREVENZIONE</h3>
+            <div class="fee-item"><input type="checkbox" id="prev_1" value="650" onchange="calculateFees()"><label for="prev_1">Procedura personale senza istruttoria (€ 650)</label><span class="tooltip-trigger">?<span class="tooltip-text">Procedimento per l'applicazione di misure di prevenzione personali senza svolgimento di attività istruttoria.</span></span></div>
+            <div class="fee-item"><input type="checkbox" id="prev_2" value="1100" onchange="calculateFees()"><label for="prev_2">Procedura personale con istruttoria (€ 1100)</label><span class="tooltip-trigger">?<span class="tooltip-text">Procedimento per l'applicazione di misure di prevenzione personali con svolgimento di attività istruttoria.</span></span></div>
+        </div>
+
+        <div class="phase-group">
+            <h3>Maggiorazione per Assistiti Multipli</h3>
+             <label for="num_assistiti_extra">Numero di assistiti *oltre* il primo (fino a 30):</label>
+            <input type="number" id="num_assistiti_extra" name="num_assistiti_extra" value="0" min="0" max="30" onchange="calculateFees()" style="width: 100px;">
+            <small>(+30% fino a 10 extra, +10% per ogni ulteriore assistito da 11 a 30 extra)</small>
+        </div>
+
+        <div id="results">
+             <h3>Risultato Calcolo</h3>
+             <div id="competenze">Competenze Selezionate: € 0.00</div>
+             <div id="maggiorazione_assistiti">Maggiorazione Assistiti Multipli: € 0.00</div>
+             <div class="total-line" id="totale_competenze">Totale Competenze (con Maggiorazione): € 0.00</div>
+             <div id="rimborso_forfettario">Rimborso Spese Forfettarie (15%): € 0.00</div>
+             <div class="total-line" id="totale_lordo">TOTALE LORDO RICHIESTO: € 0.00</div>
+             <div class="total-line" id="regime_fiscale_testo">Regime Fiscale: Oltre IVA e CPA</div>
+        </div>
+
+        <button type="button" onclick="checkAndGenerate()">Genera/Aggiorna Testo Istanza</button>
+
+        <div id="outputArea" style="display:none;">
+            <h3>Testo Istanza Generato (per Copia/TXT/RTF)</h3>
+            <textarea id="outputIstanza" readonly></textarea><br>
+            <button type="button" onclick="copyText()">Copia Testo</button>
+            <button type="button" id="saveTxtBtn" onclick="saveText()">Salva come TXT</button>
+            <button type="button" id="saveRtfBtn" onclick="saveRtf()">Salva come RTF</button>
+        </div>
+
+    </form>
+
+     <footer>
+         <p>Applicazione ideata e realizzata dall'Avv. Roberto Arcella, Consigliere dell'Ordine degli Avvocati di Napoli</p>
+     </footer>
+
+    <script id="app-logic">
+
+        // --- Helper Functions (same as v17) ---
+        function getVal(id, isRequiredByDefault = false) { const element = document.getElementById(id); if (!element) { console.error(`Element with ID '${id}' not found.`); return `[ERRORE: ID '${id}' NON TROVATO]`; } const value = element.value.trim(); const isOptionalMode = document.getElementById('make_optional_cb').checked; const effectivelyRequired = isRequiredByDefault && !isOptionalMode; if (!value && effectivelyRequired) { return '[CAMPO OBBLIGATORIO MANCANTE]'; } if (!value && !effectivelyRequired) { const placeholderText = element.placeholder || ('Inserire ' + id.replace(/_/g, ' ')); return `[${placeholderText}]`; } return value; }
+        function getDate(id, isRequiredByDefault = false) { const element = document.getElementById(id); if (!element) { console.error(`Element with ID '${id}' not found.`); return `[ERRORE: ID '${id}' NON TROVATO]`; } const dateVal = element.value; const isOptionalMode = document.getElementById('make_optional_cb').checked; const effectivelyRequired = isRequiredByDefault && !isOptionalMode; if (!dateVal) { return effectivelyRequired ? '[DATA OBBLIGATORIA MANCANTE]' : `[Inserire Data ${id.replace('data_', '')}]`; } try { const [year, month, day] = dateVal.split('-'); if (year && month && day && year.length === 4) { return `${day}/${month}/${year}`; } return dateVal; } catch (e) { console.warn("Could not parse date:", dateVal); return '[Data non valida]'; } }
+        // --- End Helper Functions ---
+
+        // --- CORRECTED CHECKSUM VALIDATION FUNCTIONS (same as v17) ---
+        function checkPIVA(piva) { if (!/^[0-9]{11}$/.test(piva)) return false; let s = 0; for (let i = 0; i < 11; i++) { let n = parseInt(piva[i], 10); if ((i + 1) % 2 === 0) { n *= 2; if (n > 9) n -= 9; } s += n; } return (s % 10 === 0); }
+        function validatePIVA(inputElement) { const piva = inputElement.value.trim(); const isEffectivelyRequired = inputElement.required; const isValid = (piva === "" && !isEffectivelyRequired) || checkPIVA(piva); inputElement.classList.toggle('invalid', !isValid && piva !== ""); inputElement.classList.toggle('valid', isValid && piva !== ""); const messageSpan = inputElement.parentElement.querySelector('.validation-message'); if (messageSpan) { messageSpan.style.display = (!isValid && piva !== "") ? 'block' : 'none'; } return isValid; }
+        function checkCF(cf) { cf = cf.toUpperCase(); if (!/^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/.test(cf)) { return false; } let s = 0; const oddMap = { '0': 1, '1': 0, '2': 5, '3': 7, '4': 9, '5': 13, '6': 15, '7': 17, '8': 19, '9': 21, 'A': 1, 'B': 0, 'C': 5, 'D': 7, 'E': 9, 'F': 13, 'G': 15, 'H': 17, 'I': 19, 'J': 21, 'K': 2, 'L': 4, 'M': 18, 'N': 20, 'O': 11, 'P': 3, 'Q': 6, 'R': 8, 'S': 12, 'T': 14, 'U': 16, 'V': 10, 'W': 22, 'X': 25, 'Y': 24, 'Z': 23 }; const evenMap = { '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9, 'K': 10, 'L': 11, 'M': 12, 'N': 13, 'O': 14, 'P': 15, 'Q': 16, 'R': 17, 'S': 18, 'T': 19, 'U': 20, 'V': 21, 'W': 22, 'X': 23, 'Y': 24, 'Z': 25 }; for (let i = 0; i < 15; i++) { const char = cf[i]; if ((i + 1) % 2 !== 0) { if (oddMap[char] === undefined) return false; s += oddMap[char]; } else { if (evenMap[char] === undefined) return false; s += evenMap[char]; } } const expectedCheckChar = String.fromCharCode('A'.charCodeAt(0) + (s % 26)); return cf[15] === expectedCheckChar; }
+        function validateCF(inputElement) { const cf = inputElement.value.trim(); const isEffectivelyRequired = inputElement.required; const isValid = (cf === "" && !isEffectivelyRequired) || checkCF(cf); inputElement.classList.toggle('invalid', !isValid && cf !== ""); inputElement.classList.toggle('valid', isValid && cf !== ""); const messageSpan = inputElement.parentElement.querySelector('.validation-message'); if (messageSpan) { messageSpan.style.display = (!isValid && cf !== "") ? 'block' : 'none'; } return isValid; }
+        // --- END CHECKSUM VALIDATION ---
+
+        // --- Fee Calculation Logic (same as v17) ---
+        function calculateFees() { /* ... same ... */
+             let totalCompetenzeSelezionate = 0; let totaleFaseEsecutiva = 0; const checkboxes = document.querySelectorAll('#istanzaForm input[type="checkbox"]'); checkboxes.forEach(cb => { if (cb.checked && !cb.id.startsWith('ese_7')) { const value = parseFloat(cb.value); totalCompetenzeSelezionate += value; if (cb.id.startsWith('ese_') && cb.id !== 'ese_7') { totaleFaseEsecutiva += value; } } }); let maggiorazioneEsecutiva = 0; if (document.getElementById('ese_7').checked && totaleFaseEsecutiva > 0) { maggiorazioneEsecutiva = totaleFaseEsecutiva * 0.30; totalCompetenzeSelezionate += maggiorazioneEsecutiva; } let maggiorazioneAssistiti = 0; const numAssistitiExtra = parseInt(document.getElementById('num_assistiti_extra').value) || 0; if (numAssistitiExtra > 0 && totalCompetenzeSelezionate > 0) { const baseCompetenzePerAssistiti = (totalCompetenzeSelezionate - maggiorazioneEsecutiva); if (baseCompetenzePerAssistiti > 0) { if (numAssistitiExtra <= 10) { maggiorazioneAssistiti = baseCompetenzePerAssistiti * 0.30; } else { maggiorazioneAssistiti = baseCompetenzePerAssistiti * 0.30 + baseCompetenzePerAssistiti * 0.10 * (numAssistitiExtra - 10); } } } const totaleConMaggiorazioneAssistiti = totalCompetenzeSelezionate + maggiorazioneAssistiti; const rimborsoForfettario = totaleConMaggiorazioneAssistiti * 0.15; const totaleLordo = totaleConMaggiorazioneAssistiti + rimborsoForfettario; const regime = document.querySelector('input[name="regime_fiscale"]:checked').value; const regimeTesto = regime === 'ordinario' ? "oltre IVA e CPA come per legge" : "oltre CPA e bolli come per legge"; document.getElementById('competenze').textContent = `Competenze Selezionate (incl. magg. esec.): € ${totalCompetenzeSelezionate.toFixed(2)}`; document.getElementById('maggiorazione_assistiti').textContent = `Maggiorazione Assistiti Multipli: € ${maggiorazioneAssistiti.toFixed(2)}`; document.getElementById('totale_competenze').textContent = `Totale Competenze (con Magg. Assistiti): € ${totaleConMaggiorazioneAssistiti.toFixed(2)}`; document.getElementById('rimborso_forfettario').textContent = `Rimborso Spese Forfettarie (15%): € ${rimborsoForfettario.toFixed(2)}`; document.getElementById('totale_lordo').textContent = `TOTALE LORDO RICHIESTO: € ${totaleLordo.toFixed(2)}`; document.getElementById('regime_fiscale_testo').textContent = `Regime Fiscale: ${regimeTesto.replace('oltre', '').replace('come per legge', '').trim()}`; if(document.getElementById('outputArea').style.display !== 'none') { generateInstanceText(false); }
+        }
+        // --- End Fee Calculation ---
+
+        // --- Check Required Fields Function (same as v15) ---
+         function checkRequiredFields() { /* ... same ... */
+             const isOptionalMode = document.getElementById('make_optional_cb').checked; if (isOptionalMode) { document.querySelectorAll('#istanzaForm input.invalid').forEach(el => el.classList.remove('invalid')); document.querySelectorAll('#istanzaForm .validation-message').forEach(el => el.style.display = 'none'); return true; } const requiredInputs = document.querySelectorAll('#istanzaForm [data-is-required="true"]'); let allRequiredFilled = true; let firstMissingElement = null; requiredInputs.forEach(input => { input.classList.remove('invalid', 'valid'); const messageSpan = input.parentElement.querySelector('.validation-message'); if (messageSpan) messageSpan.style.display = 'none'; if (!input.value.trim()) { allRequiredFilled = false; input.classList.add('invalid'); if (!firstMissingElement) firstMissingElement = input; } else { let fieldIsValid = true; if (input.id === 'dif_cf' || input.id === 'parte_cf') { fieldIsValid = validateCF(input); } else if (input.id === 'dif_piva') { fieldIsValid = validatePIVA(input); } if (!fieldIsValid) { allRequiredFilled = false; if (!firstMissingElement) firstMissingElement = input; } else { input.classList.add('valid'); } } }); const collegioInput = document.getElementById('collegio'); const giudiceInput = document.getElementById('giudice'); collegioInput.classList.remove('invalid', 'valid'); giudiceInput.classList.remove('invalid', 'valid'); let authorityOk = true; if (!collegioInput.value.trim() && !giudiceInput.value.trim()) { authorityOk = false; allRequiredFilled = false; collegioInput.classList.add('invalid'); giudiceInput.classList.add('invalid'); if (!firstMissingElement) firstMissingElement = giudiceInput; alert("È obbligatorio compilare almeno uno tra i campi 'Collegio' e 'Giudice'."); } if (!allRequiredFilled && firstMissingElement) { if (authorityOk) { alert('Compilare tutti i campi obbligatori contrassegnati con * e verificare i campi evidenziati.'); } firstMissingElement.focus(); } return allRequiredFilled;
+         }
+        // --- End Check Required ---
+
+        // --- Text Generation Logic (same as v15) ---
+        function generateInstanceText(showAlerts = true) { /* ... same ... */
+            const newline = "\n"; const separator = "------------------------------------" + newline; const fullProtocolTitle = `Protocollo per la liquidazione degli onorari ai difensori dei cittadini non abbienti ammessi al patrocinio a spese dello Stato nei procedimenti penali e procedure assimilate, sottoscritto il 29/11/2024 dal Presidente del Tribunale di Napoli, dal Presidente del Consiglio dell'Ordine degli Avvocati di Napoli e dal Presidente della Camera Penale di Napoli`; const isOptionalMode = document.getElementById('make_optional_cb').checked; let instanceText = "ISTANZA DI LIQUIDAZIONE COMPENSI - PATROCINIO A SPESE DELLO STATO" + newline + newline; instanceText += "Autorità Giudiziaria: " + getVal('autorita', !isOptionalMode) + newline; instanceText += "Sezione: " + getVal('sezione', !isOptionalMode) + newline; instanceText += "Collegio: " + getVal('collegio') + newline; instanceText += "Giudice: " + getVal('giudice') + newline + newline; instanceText += "Numero R.G.N.R.: " + getVal('rgnr', !isOptionalMode) + newline; instanceText += "Numero R.G.: " + getVal('rg') + newline; instanceText += "Numero GP: " + getVal('dif_gp', !isOptionalMode) + newline; /* Moved GP here in text */ instanceText += "(Altri dati procedimento): " + getVal('altri_dati_proc') + newline + newline; const nominaTypeRadio = document.querySelector('input[name="tipo_nomina"]:checked'); const nominaTypeText = nominaTypeRadio.value === 'fiducia' ? 'Di Fiducia' : 'D\'Ufficio'; instanceText += "Tipo Nomina Difensore: " + nominaTypeText + newline + newline; instanceText += "DIFENSORE:" + newline; instanceText += "    Cognome e Nome: " + getVal('dif_cognome_nome', !isOptionalMode) + newline; instanceText += "    Indirizzo: " + getVal('dif_indirizzo', !isOptionalMode) + newline; instanceText += "    Codice Fiscale: " + getVal('dif_cf', !isOptionalMode) + newline; instanceText += "    Partita Iva: " + getVal('dif_piva', !isOptionalMode) + newline; /* Removed GP from here */ instanceText += "    PEC: " + getVal('dif_pec', !isOptionalMode) + newline; const regimeRadio = document.querySelector('input[name="regime_fiscale"]:checked'); instanceText += "    Regime Fiscale: " + (regimeRadio.id === 'regime_ordinario' ? 'Contabilità Ordinaria' : 'Forfettario') + newline + newline; instanceText += "PARTE AMMESSA AL PATROCINIO A SPESE DELLO STATO:" + newline; instanceText += "    Cognome e Nome: " + getVal('parte_cognome_nome', !isOptionalMode) + newline; instanceText += "    Codice Fiscale: " + getVal('parte_cf', !isOptionalMode) + newline; instanceText += "    Indirizzo: " + getVal('parte_indirizzo', !isOptionalMode) + newline + newline; instanceText += "Data Istanza: " + getDate('data_istanza', !isOptionalMode) + newline; instanceText += "Data Provvedimento Ammissione al Patrocinio: " + getDate('data_ammissione', !isOptionalMode) + newline + newline; instanceText += "BREVE DESCRIZIONE DELL'ATTIVITA' SVOLTA:" + newline; instanceText += getVal('descrizione_attivita') + newline + newline; instanceText += separator; instanceText += "DICHIARAZIONE ADESIONE AL PROTOCOLLO" + newline; instanceText += `Il sottoscritto difensore dichiara di aderire al "${fullProtocolTitle}" e rinuncia preventivamente all'opposizione al decreto di pagamento qualora sia totalmente conforme, per voci ed importi, ai valori concordati nel suddetto protocollo.` + newline; instanceText += separator + newline; instanceText += "NOTA SPESE (ai sensi del Protocollo)" + newline + newline; let totalCompetenzeSelezionate = 0; let totaleFaseEsecutiva = 0; const checkboxes = document.querySelectorAll('#istanzaForm input[type="checkbox"]'); checkboxes.forEach(cb => { if (cb.checked && !cb.id.startsWith('ese_7')) { const value = parseFloat(cb.value); const label = document.querySelector(`label[for='${cb.id}']`).textContent; instanceText += `- ${label.replace(/ \(\€ \d+\.?\d*\)/, '')}: € ${value.toFixed(2)}\n`; totalCompetenzeSelezionate += value; if (cb.id.startsWith('ese_') && cb.id !== 'ese_7') { totaleFaseEsecutiva += value; } } }); let maggiorazioneEsecutiva = 0; if (document.getElementById('ese_7').checked && totaleFaseEsecutiva > 0) { maggiorazioneEsecutiva = totaleFaseEsecutiva * 0.30; instanceText += `- Maggiorazione 30% Fase Esecutiva (art. 666 c.5): € ${maggiorazioneEsecutiva.toFixed(2)}\n`; totalCompetenzeSelezionate += maggiorazioneEsecutiva; } instanceText += newline; let maggiorazioneAssistiti = 0; const numAssistitiExtra = parseInt(document.getElementById('num_assistiti_extra').value) || 0; if (numAssistitiExtra > 0 && totalCompetenzeSelezionate > 0) { const baseCompetenzePerAssistiti = (totalCompetenzeSelezionate - maggiorazioneEsecutiva); if (baseCompetenzePerAssistiti > 0) { if (numAssistitiExtra <= 10) { maggiorazioneAssistiti = baseCompetenzePerAssistiti * 0.30; } else { maggiorazioneAssistiti = baseCompetenzePerAssistiti * 0.30 + baseCompetenzePerAssistiti * 0.10 * (numAssistitiExtra - 10); } instanceText += `Maggiorazione per ${numAssistitiExtra} assistiti aggiuntivi: € ${maggiorazioneAssistiti.toFixed(2)}\n`; } } const totaleConMaggiorazioneAssistiti = totalCompetenzeSelezionate + maggiorazioneAssistiti; const rimborsoForfettario = totaleConMaggiorazioneAssistiti * 0.15; const totaleLordo = totaleConMaggiorazioneAssistiti + rimborsoForfettario; const regime = document.querySelector('input[name="regime_fiscale"]:checked').value; const regimeTesto = regime === 'ordinario' ? "oltre IVA e CPA come per legge" : "oltre CPA e bolli come per legge"; instanceText += newline + "Totale Competenze (incl. magg. esec. e assistiti): € " + totaleConMaggiorazioneAssistiti.toFixed(2) + newline; instanceText += "Rimborso Spese Forfettarie (15%): € " + rimborsoForfettario.toFixed(2) + newline; instanceText += separator; instanceText += "TOTALE LORDO RICHIESTO: € " + totaleLordo.toFixed(2) + newline; instanceText += separator + newline; instanceText += "REGIME FISCALE APPLICATO:" + newline; instanceText += `Si chiede la liquidazione della somma di € ${totaleLordo.toFixed(2)} ${regimeTesto}.` + newline + newline; instanceText += separator; instanceText += "ALLEGATI:" + newline; instanceText += "1. Decreto di ammissione al patrocinio a spese dello Stato" + newline; instanceText += "2. Nota spese (come sopra dettagliata)" + newline; instanceText += "3. Eventuale provvedimento conclusivo del procedimento" + newline + newline; const luogo = getVal('luogo_firma', !isOptionalMode); instanceText += `${luogo}, ${getDate('data_istanza', !isOptionalMode)}` + newline + newline; instanceText += "Firma del Difensore" + newline; instanceText += "_________________________" + newline; instanceText += getVal('dif_cognome_nome', !isOptionalMode) + newline;
+            document.getElementById('outputIstanza').value = instanceText; document.getElementById('outputArea').style.display = 'block';
+        }
+        // --- End Text Generation ---
+
+        // --- Action Button Functions ---
+        function checkAndGenerate() { if (checkRequiredFields()) { generateInstanceText(); } }
+        function copyText() { /* ... same ... */ if (document.getElementById('outputIstanza').value) { const textarea = document.getElementById('outputIstanza'); textarea.select(); try { document.execCommand('copy'); alert('Testo copiato negli appunti!'); } catch (err) { alert('Errore: impossibile copiare il testo.'); console.error('Copy error:', err); } } else { alert("Generare prima il testo dell'istanza."); } }
+        function saveText() { /* ... same, uses checkRequiredFields ... */ if (checkRequiredFields()) { try { const text = document.getElementById('outputIstanza').value; const blob = new Blob([text], { type: 'text/plain;charset=utf-8' }); const filename = `Istanza_Liquidazione_${getVal('dif_cognome_nome').replace(/[^a-z0-9]/gi, '_')}_per_${getVal('parte_cognome_nome').replace(/[^a-z0-9]/gi, '_')}.txt`; const anchor = document.createElement('a'); const url = window.URL.createObjectURL(blob); anchor.href = url; anchor.download = filename; anchor.style.display = 'none'; document.body.appendChild(anchor); anchor.click(); document.body.removeChild(anchor); window.URL.revokeObjectURL(url); } catch (e) { console.error("Error saving TXT:", e); alert("Errore durante il salvataggio del file TXT."); } } }
+        function saveRtf() { /* ... same, uses checkRequiredFields ... */ if (checkRequiredFields()) { try { const plainText = document.getElementById('outputIstanza').value; let rtfContent = `{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}\n`; let rtfBody = plainText; rtfBody = rtfBody.replace(/\\/g, "\\\\").replace(/{/g, "\\{").replace(/}/g, "\\}"); const accentMap = { 'è': "\\'e8", 'é': "\\'e9", 'à': "\\'e0", 'ì': "\\'ec", 'ò': "\\'f2", 'ù': "\\'f9", 'È': "\\'c8", 'É': "\\'c9", 'À': "\\'c0", 'Ì': "\\'cc", 'Ò': "\\'d2", 'Ù': "\\'d9", '€': "\\'80" }; rtfBody = rtfBody.replace(/[èéàìòùÈÉÀÌÒÙ€]/g, char => accentMap[char] || char); rtfBody = rtfBody.replace(/\n/g, "\\par\r\n"); rtfBody = rtfBody.replace(/^([A-Z\s\(\):-]+(?: \(.+\))?)$/gm, '{\\b $1}\\par\r\n'); rtfBody = rtfBody.replace(/^(DIFENSORE:|PARTE AMMESSA AL PATROCINIO A SPESE DELLO STATO:|TOTALE LORDO RICHIESTO:|REGIME FISCALE APPLICATO:|ALLEGATI:)/gm, '{\\b $1}'); rtfBody = rtfBody.replace(/\\par\r\n{\\b TOTALE LORDO RICHIESTO:/g, '{\\b TOTALE LORDO RICHIESTO:}'); rtfContent += rtfBody + "\n}"; const blob = new Blob([rtfContent], { type: 'application/rtf;charset=utf-8' }); const filename = `Istanza_Liquidazione_${getVal('dif_cognome_nome').replace(/[^a-z0-9]/gi, '_')}_per_${getVal('parte_cognome_nome').replace(/[^a-z0-9]/gi, '_')}.rtf`; const anchor = document.createElement('a'); const url = window.URL.createObjectURL(blob); anchor.href = url; anchor.download = filename; anchor.style.display = 'none'; document.body.appendChild(anchor); anchor.click(); document.body.removeChild(anchor); window.URL.revokeObjectURL(url); } catch (e) { console.error("Error saving RTF:", e); alert("Errore durante il salvataggio del file RTF."); } } }
+        // --- End Action Button Functions ---
+
+         // --- Optional Fields Toggle Logic (same as v15) ---
+         function toggleRequiredFields(isOptional) { /* ... same ... */ const form = document.getElementById('istanzaForm'); const inputsToToggle = form.querySelectorAll('[data-is-required="true"]'); if (isOptional) { form.classList.add('fields-optional'); inputsToToggle.forEach(input => { input.required = false; input.classList.remove('invalid', 'valid'); const messageSpan = input.parentElement.querySelector('.validation-message'); if (messageSpan) messageSpan.style.display = 'none'; }); document.getElementById('collegio').classList.remove('invalid'); document.getElementById('giudice').classList.remove('invalid'); } else { form.classList.remove('fields-optional'); inputsToToggle.forEach(input => { input.required = true; if (input.onblur) { input.onblur(); } }); } }
+         function setInitialRequiredState() { /* ... same ... */ const requiredIds = ['autorita', 'sezione', 'rgnr', 'dif_cognome_nome', 'dif_indirizzo', 'dif_cf', 'dif_piva', 'dif_gp', 'dif_pec', 'parte_cognome_nome', 'parte_cf', 'parte_indirizzo', 'data_istanza', 'data_ammissione', 'luogo_firma']; requiredIds.forEach(id => { const el = document.getElementById(id); if (el) { el.dataset.isRequired = "true"; } else { console.warn(`Element with ID '${id}' not found during initial setup.`); } }); toggleRequiredFields(document.getElementById('make_optional_cb').checked); }
+         // --- End Optional Fields Logic ---
+
+        // --- Cookie Save/Load Logic (same as v17) ---
+        function saveLawyerData() { /* ... same ... */ const lawyerData = { nome: document.getElementById('dif_cognome_nome').value, indirizzo: document.getElementById('dif_indirizzo').value, cf: document.getElementById('dif_cf').value, piva: document.getElementById('dif_piva').value, pec: document.getElementById('dif_pec').value }; if (!lawyerData.nome && !lawyerData.cf && !lawyerData.piva && !lawyerData.pec) { alert("Nessun dato del difensore da salvare."); return; } try { const jsonData = JSON.stringify(lawyerData); const expires = new Date(); expires.setTime(expires.getTime() + (365 * 24 * 60 * 60 * 1000)); const cookieString = `lawyerData=${encodeURIComponent(jsonData)};expires=${expires.toUTCString()};path=/;SameSite=Strict`; console.log("Saving cookie:", cookieString); document.cookie = cookieString; alert("Dati difensore salvati localmente (cookie)."); } catch (e) { console.error("Error saving cookie:", e); alert("Errore durante il salvataggio dei dati."); } }
+        function loadLawyerData() { /* ... same ... */ console.log("Attempting to load lawyer data from cookie..."); const cookies = document.cookie.split(';'); let lawyerDataCookie = null; for (let i = 0; i < cookies.length; i++) { let cookie = cookies[i].trim(); if (cookie.startsWith("lawyerData=")) { lawyerDataCookie = cookie.substring("lawyerData=".length, cookie.length); console.log("Found lawyerData cookie raw value:", lawyerDataCookie); break; } } if (lawyerDataCookie) { try { const decodedCookie = decodeURIComponent(lawyerDataCookie); console.log("Decoded cookie:", decodedCookie); const lawyerData = JSON.parse(decodedCookie); console.log("Parsed lawyer data:", lawyerData); document.getElementById('dif_cognome_nome').value = lawyerData.nome || ''; document.getElementById('dif_indirizzo').value = lawyerData.indirizzo || ''; document.getElementById('dif_cf').value = lawyerData.cf || ''; document.getElementById('dif_piva').value = lawyerData.piva || ''; document.getElementById('dif_pec').value = lawyerData.pec || ''; validateCF(document.getElementById('dif_cf')); validatePIVA(document.getElementById('dif_piva')); console.log("Dati difensore caricati nei campi."); } catch (e) { console.error("Error parsing lawyer data cookie:", e); document.cookie = "lawyerData=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; console.log("Invalid lawyerData cookie deleted."); } } else { console.log("Nessun cookie 'lawyerData' trovato."); } }
+        // --- End Cookie Logic ---
+
+        // --- Page Load Logic ---
+        window.addEventListener('load', function() {
+             console.log("Page loaded. Initializing...");
+             setInitialRequiredState();
+             loadLawyerData();
+             calculateFees();
+         });
+        // --- End Page Load Logic ---
+
+    </script>
+
+</body>
+</html>

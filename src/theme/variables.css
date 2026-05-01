@@ -1,12 +1,14 @@
-/* COA Napoli — palette istituzionale */
+/* Consiglio dell'Ordine degli Avvocati di Napoli — palette istituzionale AgID
+ * (allineata alle linee guida AgID per i siti della PA italiana —
+ * Bootstrap Italia: primary #0066CC) */
 :root {
-  /* Verde scuro istituzionale (tono dello stemma) */
-  --ion-color-primary: #0B3D2E;
-  --ion-color-primary-rgb: 11, 61, 46;
+  /* Blu istituzionale AgID */
+  --ion-color-primary: #0066CC;
+  --ion-color-primary-rgb: 0, 102, 204;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #093529;
-  --ion-color-primary-tint: #245044;
+  --ion-color-primary-shade: #003F7F;
+  --ion-color-primary-tint: #1A75D1;
 
   /* Oro istituzionale (accenti) */
   --ion-color-secondary: #C9A24A;
@@ -62,7 +64,7 @@
   /* Toolbar e background */
   --ion-toolbar-background: var(--ion-color-primary);
   --ion-toolbar-color: #ffffff;
-  --ion-background-color: #f8f8f8;
+  --ion-background-color: #ffffff;
 
   --coa-card-radius: 12px;
   --coa-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -71,10 +73,10 @@
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ion-background-color: #0d1410;
-    --ion-background-color-rgb: 13, 20, 16;
+    --ion-background-color: #0a1428;
+    --ion-background-color-rgb: 10, 20, 40;
     --ion-text-color: #ffffff;
     --ion-text-color-rgb: 255, 255, 255;
-    --ion-toolbar-background: #093529;
+    --ion-toolbar-background: #003F7F;
   }
 }

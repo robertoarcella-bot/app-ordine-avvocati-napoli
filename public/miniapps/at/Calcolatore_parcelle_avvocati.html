@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcolatore Parcella Forense - D.M. 147/2022</title>
+  <style>
+    /* ... (stili CSS precedenti invariati) ... */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 10px;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1,
+    h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+    }
+
+    h3 {
+      color: #2c3e50;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 1.8em;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      font-size: 1.4em;
+      margin-top: 25px;
+      margin-bottom: 15px;
+    }
+
+    .box {
+      padding: 0;
+      margin-bottom: 20px;
+      border: none;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    select,
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+      background-color: #fff;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 10px top 50%;
+      background-size: 10px auto;
+      padding-right: 30px;
+    }
+
+    select:disabled {
+      background-color: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    select:focus {
+      outline: 2px solid #3498db;
+    }
+
+    button,
+    .action-button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 17px;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+      /* Ridotto per i pulsanti azione */
+      -webkit-appearance: none;
+    }
+
+    #calcola-btn {
+      /* Pulsante principale potrebbe essere più grande o avere più margine */
+      margin-top: 20px;
+    }
+
+    button:hover,
+    .action-button:hover {
+      background-color: #2980b9;
+    }
+
+    button:disabled,
+    .action-button:disabled {
+      background-color: #bdc3c7;
+      cursor: not-allowed;
+    }
+
+    .action-button.secondary {
+      background-color: #7f8c8d;
+    }
+
+    .action-button.secondary:hover {
+      background-color: #95a5a6;
+    }
+
+    .action-button.whatsapp {
+      background-color: #25D366;
+    }
+
+    .action-button.whatsapp:hover {
+      background-color: #1DA851;
+    }
+
+
+    .checkbox-container,
+    .radio-container {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-container input[type="checkbox"],
+    .radio-container input[type="radio"] {
+      width: auto;
+      margin-right: 10px;
+      margin-top: 0;
+      accent-color: #3498db;
+      cursor: pointer;
+    }
+
+    .checkbox-container label,
+    .radio-container label {
+      font-weight: normal;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    #fasi-container {
+      margin-top: 10px;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      min-height: 50px;
+    }
+
+    #fasi-container p {
+      color: #666;
+      font-style: italic;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #e9ecef;
+      color: #495057;
+      font-weight: bold;
+    }
+
+    td:last-child {
+      text-align: right;
+      font-family: 'Menlo', 'Monaco', monospace;
+    }
+
+    td.warning {
+      color: #e67e22;
+      font-style: italic;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #777;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+
+    #results {
+      display: none;
+      margin-top: 30px;
+    }
+
+    #action-buttons-container {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    #percentuale-container {
+      display: none;
+    }
+
+    .info-note {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+      display: block;
+    }
+
+    #copy-feedback {
+      display: none;
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #2ecc71;
+      color: white;
+      text-align: center;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      select,
+      input[type="number"],
+      input[type="text"],
+      button,
+      .action-button {
+        font-size: 15px;
+        padding: 9px;
+      }
+
+      th,
+      td {
+        padding: 10px;
+      }
+
+      #action-buttons-container {
+        grid-template-columns: 1fr;
+        /* Pulsanti azione in colonna su mobile */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Calcolatore Parcella Forense</h1>
+    <p style="text-align:center; margin-top:-15px; margin-bottom:10px; color:#555;">Basato su D.M. 147/2022</p>
+    <div style="text-align:center; margin-bottom:25px; font-size: 0.9em;">
+      <a href="https://avvocatotelematico.studiolegalearcella.it/apps/"
+        style="color: #3498db; text-decoration: none; font-weight: 500;">Torna alla pagina apps</a>
+    </div>
+
+    <form id="parcella-form">
+      <div class="box">
+        <h2>Dati del procedimento</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="materia">Materia:</label>
+            <select id="materia" onchange="cambiaMateriaHandler()">
+              <option value="">-- Seleziona --</option>
+              <option value="civile">Civile</option>
+              <option value="penale">Penale</option>
+              <option value="stragiudiziale">Stragiudiziale</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="procedimento">Tipo di procedimento:</label>
+            <select id="procedimento" onchange="cambiaProcedimentoHandler()" disabled>
+              <option value="">-- Seleziona --</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="valore-container">
+            <label for="valore">Valore della controversia:</label>
+            <select id="valore" disabled>
+              <option value="">-- Seleziona --</option>
+              <option value="s1">fino a € 1.100,00</option>
+              <option value="s2">da € 1.100,01 a € 5.200,00</option>
+              <option value="s3">da € 5.200,01 a € 26.000,00</option>
+              <option value="s4">da € 26.000,01 a € 52.000,00</option>
+              <option value="s5">da € 52.000,01 a € 260.000,00</option>
+              <option value="s6">da € 260.000,01 a € 520.000,00</option>
+              <option value="s7">oltre € 520.000,00</option>
+              <option value="ind_basso">Indeterminabile - Bassa Complessità (fino a € 26.000)</option>
+              <option value="ind_medio">Indeterminabile - Media Complessità (da € 26.001 a € 260.000)</option>
+              <option value="ind_alto">Indeterminabile - Alta Complessità (da € 260.001 a € 520.000)</option>
+            </select>
+            <span class="info-note">Rif. Art. 5 c.6 D.M. 55/2014 per valori indeterminabili (verificare D.M.
+              147/2022).</span>
+          </div>
+
+          <div class="form-group">
+            <label for="parametri">Applicazione parametri:</label>
+            <select id="parametri" onchange="togglePercentuale()">
+              <option value="media">Valori Medi (Tabellari)</option>
+              <option value="minimi">Valori Minimi (-50%)</option>
+              <option value="massimi">Valori Massimi (+50%/+80%)</option>
+              <option value="aumento_custom">Aumento Personalizzato</option>
+              <option value="riduzione_custom">Riduzione Personalizzata</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="percentuale-container">
+            <label for="percentuale">Percentuale (+/-):</label>
+            <input type="number" id="percentuale" min="1" max="80" value="20" step="1">
+            <span class="info-note">Inserire solo il numero (es. 30 per 30%).</span>
+          </div>
+
+          <div class="form-group">
+            <label for="num_parti">Numero parti assistite:</label>
+            <input type="number" id="num_parti" value="1" min="1" max="30" step="1">
+            <span class="info-note">Rif. Art. 4 c.2 D.M. 55/2014 (verificare D.M. 147/2022).</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="box">
+        <h2>Fasi procedurali svolte</h2>
+        <div id="fasi-container">
+          <p>Seleziona prima la materia e il tipo di procedimento.</p>
+        </div>
+      </div>
+
+      <div class="box">
+        <h2>Opzioni Fiscali</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Regime fiscale:</label>
+            <div class="radio-container">
+              <input type="radio" id="regime_ord" name="regime" value="ordinario" checked>
+              <label for="regime_ord">Ordinario (con IVA 22%)</label>
+            </div>
+            <div class="radio-container">
+              <input type="radio" id="regime_forf" name="regime" value="forfettario">
+              <label for="regime_forf">Forfettario (senza IVA)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Applica Ritenuta d'Acconto?</label>
+            <div class="radio-container">
+              <input type="radio" id="ritenuta_no" name="ritenuta" value="no" checked>
+              <label for="ritenuta_no">No</label>
+            </div>
+            <div class="radio-container">
+              <input type="radio" id="ritenuta_si" name="ritenuta" value="si">
+              <label for="ritenuta_si">Sì (20% su compensi + 15%)</label>
+            </div>
+            <span class="info-note">Solo se il cliente è sostituto d'imposta.</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" id="calcola-btn" onclick="calcolaParcella()">Calcola Parcella</button>
+    </form>
+
+    <div id="results">
+      <h2>Risultato del Calcolo</h2>
+
+      <div class="box">
+        <h3>Dettaglio Compensi per Fase</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Fase Svolta</th>
+              <th>Compenso Base (Medio)</th>
+              <th>Compenso Applicato</th>
+            </tr>
+          </thead>
+          <tbody id="dettaglio-fasi">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box">
+        <h3>Riepilogo Parcella</h3>
+        <table>
+          <tbody>
+            <tr>
+              <td>Totale Compensi</td>
+              <td id="totale-compensi"></td>
+            </tr>
+            <tr id="aumento-parti-row" style="display:none;">
+              <td>Maggiorazione per pluralità parti <span id="perc-aumento-parti"></span></td>
+              <td id="importo-aumento-parti"></td>
+            </tr>
+            <tr>
+              <td><strong>Subtotale Compensi Maggiorati</strong></td>
+              <td id="subtotale-compensi-maggiorati" style="font-weight:bold"></td>
+            </tr>
+            <tr>
+              <td>Rimborso Forfettario Spese Generali (15%)</td>
+              <td id="rimborso-forfettario"></td>
+            </tr>
+            <tr>
+              <td>Cassa Previdenza Avvocati (CPA 4%)</td>
+              <td id="cpa"></td>
+            </tr>
+            <tr id="iva-row">
+              <td>Imposta Valore Aggiunto (IVA 22%)</td>
+              <td id="iva"></td>
+            </tr>
+            <tr id="ritenuta-row" style="display:none;">
+              <td>Ritenuta d'Acconto (20%)</td>
+              <td id="ritenuta-acconto"></td>
+            </tr>
+            <tr>
+              <td style="font-weight:bold; font-size: 1.1em; color: #3498db;">TOTALE PARCELLA</td>
+              <td id="totale-parcella" style="font-weight:bold; font-size: 1.1em; color: #3498db;"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="action-buttons-container">
+        <button type="button" class="action-button secondary" onclick="salvaComeTXT()">Salva Risultato (.txt)</button>
+        <button type="button" class="action-button secondary" onclick="copiaSuAppunti()">Copia Risultato</button>
+        <button type="button" class="action-button whatsapp" onclick="inviaTramiteWhatsApp()">Invia tramite
+          WhatsApp</button>
+      </div>
+      <div id="copy-feedback">Testo copiato negli appunti!</div>
+
+    </div>
+
+    <div class="footer">
+      <p>Sviluppato da Avv. Roberto Arcella</p>
+      <p>Questo strumento fornisce una stima basata sul D.M. 147/2022. **È FONDAMENTALE verificare tutti i valori
+        tariffari sulle tabelle ministeriali ufficiali prima di qualsiasi uso professionale.** L'assenza di un valore
+        tariffario per una fase comporterà un compenso pari a zero per quella specifica fase nel calcolo.</p>
+    </div>
+  </div>
+
+  <script>
+    // --- DATI ---
+    const PROCEDIMENTI = {
+      civile: {
+        "civ_gdp": "Giudice di Pace (Tab. 1 DM 147/22)",
+        "civ_trib": "Tribunale - Ordinario/Sommario (Tab. 2 DM 147/22)",
+        "civ_app": "Corte d'Appello (Tab. 12 DM 147/22)",
+        "civ_cass": "Corte di Cassazione (Tab. 13 DM 147/22)",
+        "civ_lav": "Cause di Lavoro (Tab. 3 DM 147/22)",
+        "civ_prev": "Cause di Previdenza (Tab. 4 DM 147/22)",
+        "civ_convalida": "Convalida Licenza/Sfratto (Tab. 5 DM 147/22)",
+        "civ_precetto": "Atto di Precetto (Tab. 6 DM 147/22)",
+        "civ_monitorio": "Procedimento Monitorio (Tab. 8 DM 147/22)",
+        "civ_volontaria": "Volontaria Giurisdizione (Tab. 7 DM 147/22)",
+        "civ_istr_prev": "Istruzione Preventiva (Tab. 9 DM 147/22)",
+        "civ_cautelare": "Procedimenti Cautelari (Tab. 10 DM 147/22)"
+      },
+      penale: {
+        "pen_gdp": "Giudice di Pace Penale (Tab. 15 DM 147/22)",
+        "pen_indagini": "Indagini Preliminari (Tab. 15 DM 147/22)",
+        "pen_gipgup": "GIP / GUP (Tab. 15 DM 147/22)",
+        "pen_mono": "Tribunale Monocratico (Tab. 15 DM 147/22)",
+        "pen_coll": "Tribunale Collegiale (Tab. 15 DM 147/22)",
+        "pen_app": "Corte d'Appello Penale (Tab. 15 DM 147/22)",
+        "pen_cass": "Corte di Cassazione Penale (Tab. 15 DM 147/22)"
+      },
+      stragiudiziale: {
+        "str_assistenza": "Assistenza Stragiudiziale (Tab. 25 DM 147/22)",
+        "str_mediazione": "Mediazione / Negoziazione (Tab. 25-bis DM 147/22)"
+      }
+    };
+
+    const FASI = {
+      "civ_gdp": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_trib": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_app": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_cass": ["studio", "introduttiva", "decisionale"],
+      "civ_lav": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_prev": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_convalida": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "civ_precetto": ["fase_unica_precetto"],
+      "civ_monitorio": ["fase_unica_monitorio"],
+      "civ_volontaria": ["fase_unica_volontaria"],
+      "civ_istr_prev": ["studio", "introduttiva", "istruttoria"],
+      "civ_cautelare": ["studio", "introduttiva", "istruttoria", "decisionale"],
+      "pen_gdp": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+      "pen_indagini": ["studio", "introduttiva", "istruttoria_pen", "decisionale_pen"],
+      "pen_gipgup": ["studio", "introduttiva", "istruttoria_pen", "decisionale_pen"],
+      "pen_mono": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+      "pen_coll": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+      "pen_app": ["studio", "introduttiva", "istruttoria_dibattimentale", "decisionale_pen"],
+      "pen_cass": ["studio", "introduttiva", "decisionale_pen"],
+      "str_assistenza": ["fase_unica_stragiudiziale"],
+      "str_mediazione": ["attivazione", "negoziazione", "conciliazione"]
+    };
+
+    const FASE_NOMI = {
+      "studio": "Fase di studio della controversia",
+      "introduttiva": "Fase introduttiva del giudizio",
+      "istruttoria": "Fase istruttoria e/o di trattazione",
+      "decisionale": "Fase decisionale",
+      "istruttoria_dibattimentale": "Fase istruttoria e/o dibattimentale",
+      "istruttoria_pen": "Fase istruttoria/investigativa",
+      "decisionale_pen": "Fase decisionale",
+      "fase_unica_precetto": "Compenso Atto di Precetto",
+      "fase_unica_monitorio": "Compenso Procedimento Monitorio",
+      "fase_unica_volontaria": "Compenso Volontaria Giurisdizione",
+      "fase_unica_stragiudiziale": "Compenso Assistenza Stragiudiziale",
+      "attivazione": "Fase di attivazione (Mediaz./Negoz.)",
+      "negoziazione": "Fase di negoziazione (Mediaz./Negoz.)",
+      "conciliazione": "Fase di conciliazione / redazione accordo (Mediaz./Negoz.)"
+    };
+
+    const PARAMETRI = {
+      "civ_gdp": { "s1": { "studio": 68.00, "introduttiva": 68.00, "istruttoria": 68.00, "decisionale": 142.00 }, "s2": { "studio": 236.00, "introduttiva": 252.00, "istruttoria": 352.00, "decisionale": 425.00 }, "s3": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s4": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s5": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s6": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s7": { "studio": 425.00, "introduttiva": 352.00, "istruttoria": 567.00, "decisionale": 746.00 } },
+      "civ_trib": { "s1": { "studio": 131.00, "introduttiva": 131.00, "istruttoria": 200.00, "decisionale": 200.00 }, "s2": { "studio": 425.00, "introduttiva": 425.00, "istruttoria": 851.00, "decisionale": 851.00 }, "s3": { "studio": 919.00, "introduttiva": 777.00, "istruttoria": 1680.00, "decisionale": 1701.00 }, "s4": { "studio": 1701.00, "introduttiva": 1204.00, "istruttoria": 1806.00, "decisionale": 2905.00 }, "s5": { "studio": 2552.00, "introduttiva": 1628.00, "istruttoria": 5670.00, "decisionale": 4253.00 }, "s6": { "studio": 3544.00, "introduttiva": 2338.00, "istruttoria": 10411.00, "decisionale": 6164.00 }, "s7": { "studio": 3544.00, "introduttiva": 2338.00, "istruttoria": 10411.00, "decisionale": 6164.00 } },
+      "civ_lav": { "s1": { "studio": 210.00, "introduttiva": 126.00, "istruttoria": 126.00, "decisionale": 179.00 }, "s2": { "studio": 888.00, "introduttiva": 425.00, "istruttoria": 567.00, "decisionale": 746.00 }, "s3": { "studio": 1822.00, "introduttiva": 777.00, "istruttoria": 1172.00, "decisionale": 1617.00 }, "s4": { "studio": 3245.00, "introduttiva": 1202.00, "istruttoria": 1880.00, "decisionale": 2930.00 }, "s5": { "studio": 4763.00, "introduttiva": 1701.00, "istruttoria": 2678.00, "decisionale": 4253.00 }, "s6": { "studio": 6668.00, "introduttiva": 2336.00, "istruttoria": 3623.00, "decisionale": 6290.00 }, "s7": { "studio": 6668.00, "introduttiva": 2336.00, "istruttoria": 3623.00, "decisionale": 6290.00 } },
+      "civ_prev": { "s1": { "studio": 131.00, "introduttiva": 121.00, "istruttoria": 179.00, "decisionale": 247.00 }, "s2": { "studio": 425.00, "introduttiva": 425.00, "istruttoria": 851.00, "decisionale": 919.00 }, "s3": { "studio": 929.00, "introduttiva": 777.00, "istruttoria": 1664.00, "decisionale": 2021.00 }, "s4": { "studio": 1701.00, "introduttiva": 1204.00, "istruttoria": 2693.00, "decisionale": 3675.00 }, "s5": { "studio": 2552.00, "introduttiva": 1701.00, "istruttoria": 3827.00, "decisionale": 4148.00 }, "s6": { "studio": 3544.00, "introduttiva": 2336.00, "istruttoria": 5171.00, "decisionale": 7865.00 }, "s7": { "studio": 3544.00, "introduttiva": 2336.00, "istruttoria": 5171.00, "decisionale": 7865.00 } },
+      "civ_convalida": { "s1": { "studio": 179.00, "introduttiva": 179.00, "istruttoria": 42.00, "decisionale": 142.00 }, "s2": { "studio": 530.00, "introduttiva": 494.00, "istruttoria": 142.00, "decisionale": 425.00 }, "s3": { "studio": 919.00, "introduttiva": 709.00, "istruttoria": 210.00, "decisionale": 746.00 }, "s4": { "studio": 1701.00, "introduttiva": 1061.00, "istruttoria": 352.00, "decisionale": 1344.00 }, "s5": { "studio": 2478.00, "introduttiva": 1418.00, "istruttoria": 494.00, "decisionale": 1911.00 }, "s6": { "studio": 3544.00, "introduttiva": 1559.00, "istruttoria": 709.00, "decisionale": 2835.00 }, "s7": { "studio": 3544.00, "introduttiva": 1559.00, "istruttoria": 709.00, "decisionale": 2835.00 } },
+      "civ_precetto": { "s1": { "fase_unica_precetto": 142.00 }, "s2": { "fase_unica_precetto": 142.00 }, "s3": { "fase_unica_precetto": 236.00 }, "s4": { "fase_unica_precetto": 331.00 }, "s5": { "fase_unica_precetto": 425.00 }, "s6": { "fase_unica_precetto": 567.00 }, "s7": { "fase_unica_precetto": 567.00 } },
+      "civ_volontaria": { "s1": { "fase_unica_volontaria": 425.00 }, "s2": { "fase_unica_volontaria": 425.00 }, "s3": { "fase_unica_volontaria": 1418.00 }, "s4": { "fase_unica_volontaria": 2336.00 }, "s5": { "fase_unica_volontaria": 3329.00 }, "s6": { "fase_unica_volontaria": 4536.00 }, "s7": { "fase_unica_volontaria": 4536.00 } },
+      "civ_monitorio": { "s1": { "fase_unica_monitorio": 473.00 }, "s2": { "fase_unica_monitorio": 473.00 }, "s3": { "fase_unica_monitorio": 567.00 }, "s4": { "fase_unica_monitorio": 1370.00 }, "s5": { "fase_unica_monitorio": 2242.00 }, "s6": { "fase_unica_monitorio": 4394.00 }, "s7": { "fase_unica_monitorio": 4394.00 } },
+      "civ_istr_prev": { "s1": { "studio": 210.00, "introduttiva": 284.00, "istruttoria": 352.00 }, "s2": { "studio": 210.00, "introduttiva": 284.00, "istruttoria": 352.00 }, "s3": { "studio": 567.00, "introduttiva": 709.00, "istruttoria": 1061.00 }, "s4": { "studio": 992.00, "introduttiva": 788.00, "istruttoria": 1276.00 }, "s5": { "studio": 1134.00, "introduttiva": 992.00, "istruttoria": 1701.00 }, "s6": { "studio": 2126.00, "introduttiva": 1454.00, "istruttoria": 2336.00 }, "s7": { "studio": 2126.00, "introduttiva": 1454.00, "istruttoria": 2336.00 } },
+      "civ_cautelare": { "s1": { "studio": 210.00, "introduttiva": 142.00, "istruttoria": 210.00, "decisionale": 105.00 }, "s2": { "studio": 567.00, "introduttiva": 352.00, "istruttoria": 851.00, "decisionale": 389.00 }, "s3": { "studio": 992.00, "introduttiva": 672.00, "istruttoria": 1204.00, "decisionale": 635.00 }, "s4": { "studio": 1175.00, "introduttiva": 851.00, "istruttoria": 1985.00, "decisionale": 1202.00 }, "s5": { "studio": 2251.00, "introduttiva": 1202.00, "istruttoria": 2835.00, "decisionale": 1771.00 }, "s6": { "studio": 3686.00, "introduttiva": 1559.00, "istruttoria": 3969.00, "decisionale": 2552.00 }, "s7": { "studio": 3686.00, "introduttiva": 1559.00, "istruttoria": 3969.00, "decisionale": 2552.00 } },
+      "civ_app": { "s1": { "studio": 142.00, "introduttiva": 142.00, "istruttoria": 179.00, "decisionale": 210.00 }, "s2": { "studio": 536.00, "introduttiva": 536.00, "istruttoria": 992.00, "decisionale": 851.00 }, "s3": { "studio": 1134.00, "introduttiva": 921.00, "istruttoria": 1843.00, "decisionale": 1911.00 }, "s4": { "studio": 2058.00, "introduttiva": 1418.00, "istruttoria": 3045.00, "decisionale": 3470.00 }, "s5": { "studio": 2977.00, "introduttiva": 1911.00, "istruttoria": 4326.00, "decisionale": 5103.00 }, "s6": { "studio": 4389.00, "introduttiva": 2552.00, "istruttoria": 5880.00, "decisionale": 7298.00 }, "s7": { "studio": 4389.00, "introduttiva": 2552.00, "istruttoria": 5880.00, "decisionale": 7298.00 } },
+      "civ_cass": { "s1": { "studio": 252.00, "introduttiva": 284.00, "decisionale": 142.00 }, "s2": { "studio": 709.00, "introduttiva": 777.00, "decisionale": 389.00 }, "s3": { "studio": 1276.00, "introduttiva": 1134.00, "decisionale": 672.00 }, "s4": { "studio": 2336.00, "introduttiva": 1969.00, "decisionale": 1208.00 }, "s5": { "studio": 3402.00, "introduttiva": 2478.00, "decisionale": 1775.00 }, "s6": { "studio": 4961.00, "introduttiva": 3260.00, "decisionale": 2552.00 }, "s7": { "studio": 4961.00, "introduttiva": 3260.00, "decisionale": 2552.00 } },
+      "pen_gdp": { "penale": { "studio": 378.00, "introduttiva": 473.00, "istruttoria_dibattimentale": 756.00, "decisionale_pen": 662.00 } },
+      "pen_indagini": { "penale": { "studio": 851.00, "introduttiva": 662.00, "istruttoria_pen": 1040.00, "decisionale_pen": 1229.00 } },
+      "pen_gipgup": { "penale": { "studio": 851.00, "introduttiva": 756.00, "istruttoria_pen": 1040.00, "decisionale_pen": 1418.00 } },
+      "pen_mono": { "penale": { "studio": 473.00, "introduttiva": 567.00, "istruttoria_dibattimentale": 1134.00, "decisionale_pen": 1418.00 } },
+      "pen_coll": { "penale": { "studio": 473.00, "introduttiva": 756.00, "istruttoria_dibattimentale": 1418.00, "decisionale_pen": 1418.00 } },
+      "pen_app": { "penale": { "studio": 473.00, "introduttiva": 945.00, "istruttoria_dibattimentale": 1418.00, "decisionale_pen": 1418.00 } },
+      "pen_cass": { "penale": { "studio": 945.00, "introduttiva": 2646.00, "decisionale_pen": 2741.00 } },
+      "str_assistenza": { "s1": { "fase_unica_stragiudiziale": 284.00 }, "s2": { "fase_unica_stragiudiziale": 1276.00 }, "s3": { "fase_unica_stragiudiziale": 1985.00 }, "s4": { "fase_unica_stragiudiziale": 2410.00 }, "s5": { "fase_unica_stragiudiziale": 4536.00 }, "s6": { "fase_unica_stragiudiziale": 6164.00 }, "s7": { "fase_unica_stragiudiziale": 6164.00 } },
+      "str_mediazione": { "s1": { "attivazione": 63.00, "negoziazione": 126.00, "conciliazione": 246.00 }, "s2": { "attivazione": 284.00, "negoziazione": 567.00, "conciliazione": 1106.00 }, "s3": { "attivazione": 441.00, "negoziazione": 882.00, "conciliazione": 1720.00 }, "s4": { "attivazione": 536.00, "negoziazione": 1071.00, "conciliazione": 2088.00 }, "s5": { "attivazione": 1008.00, "negoziazione": 2016.00, "conciliazione": 3931.00 }, "s6": { "attivazione": 1370.00, "negoziazione": 2741.00, "conciliazione": 5343.00 }, "s7": { "attivazione": 1370.00, "negoziazione": 2741.00, "conciliazione": 5343.00 } }
+    };
+
+    // --- FUNZIONI ---
+
+    function formatCurrency(value) {
+      if (isNaN(value) || value === null) return '€ 0,00';
+      return new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
+    function cambiaMateriaHandler() {
+      const materia = document.getElementById('materia').value;
+      const procedimentoSelect = document.getElementById('procedimento');
+      const valoreContainer = document.getElementById('valore-container');
+      const valoreSelect = document.getElementById('valore');
+      const fasiContainer = document.getElementById('fasi-container');
+
+      procedimentoSelect.innerHTML = '<option value="">-- Seleziona --</option>';
+      procedimentoSelect.disabled = true;
+
+      const valoreOptionsHTML = `
+            <option value="">-- Seleziona --</option>
+            <option value="s1">fino a € 1.100,00</option><option value="s2">da € 1.100,01 a € 5.200,00</option>
+            <option value="s3">da € 5.200,01 a € 26.000,00</option><option value="s4">da € 26.000,01 a € 52.000,00</option>
+            <option value="s5">da € 52.000,01 a € 260.000,00</option><option value="s6">da € 260.000,01 a € 520.000,00</option>
+            <option value="s7">oltre € 520.000,00</option><option value="ind_basso">Indeterminabile - Bassa Complessità (fino a € 26.000)</option>
+            <option value="ind_medio">Indeterminabile - Media Complessità (da € 26.001 a € 260.000)</option><option value="ind_alto">Indeterminabile - Alta Complessità (da € 260.001 a € 520.000)</option>
+        `;
+      valoreSelect.innerHTML = valoreOptionsHTML;
+      valoreSelect.disabled = true;
+      valoreContainer.style.display = 'block';
+      fasiContainer.innerHTML = '<p>Seleziona prima la materia e il tipo di procedimento.</p>';
+      document.getElementById('results').style.display = 'none';
+
+      if (!materia) return;
+
+      const procedimentiMateria = PROCEDIMENTI[materia];
+      if (procedimentiMateria && Object.keys(procedimentiMateria).length > 0) {
+        for (const id in procedimentiMateria) {
+          if (Object.hasOwnProperty.call(procedimentiMateria, id)) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = procedimentiMateria[id];
+            procedimentoSelect.appendChild(option);
+          }
+        }
+        procedimentoSelect.disabled = false;
+      } else {
+        procedimentoSelect.innerHTML = '<option value="" disabled>Nessun procedimento definito</option>';
+        procedimentoSelect.disabled = true;
+      }
+
+      valoreContainer.style.display = materia === 'penale' ? 'none' : 'block';
+      valoreSelect.disabled = materia === 'penale' || !materia;
+      if (materia === 'penale') valoreSelect.value = "";
+    }
+
+    function cambiaProcedimentoHandler() {
+      const materia = document.getElementById('materia').value;
+      const procedimento = document.getElementById('procedimento').value;
+      const fasiContainer = document.getElementById('fasi-container');
+
+      fasiContainer.innerHTML = '';
+      document.getElementById('results').style.display = 'none';
+
+      if (!materia || !procedimento) {
+        fasiContainer.innerHTML = '<p>Seleziona prima la materia e il tipo di procedimento.</p>';
+        return;
+      }
+
+      const fasiProcedimento = FASI[procedimento];
+      if (fasiProcedimento && fasiProcedimento.length > 0) {
+        fasiProcedimento.forEach(faseKey => {
+          const faseNome = FASE_NOMI[faseKey] || faseKey.replace(/_/g, ' ');
+          const container = document.createElement('div');
+          container.className = 'checkbox-container';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox'; checkbox.id = `fase-${faseKey}`; checkbox.name = 'fasi';
+          checkbox.value = faseKey; checkbox.checked = true;
+          const label = document.createElement('label');
+          label.htmlFor = `fase-${faseKey}`; label.textContent = faseNome;
+          container.appendChild(checkbox); container.appendChild(label);
+          fasiContainer.appendChild(container);
+        });
+      } else {
+        fasiContainer.innerHTML = '<p>Nessuna fase specifica definita per questo procedimento.</p>';
+      }
+    }
+
+    function togglePercentuale() {
+      document.getElementById('percentuale-container').style.display =
+        ['aumento_custom', 'riduzione_custom'].includes(document.getElementById('parametri').value) ? 'block' : 'none';
+    }
+
+    function getScaglioneFromValore(valoreId) {
+      const map = { 'ind_basso': 's3', 'ind_medio': 's5', 'ind_alto': 's6' };
+      return map[valoreId] || valoreId;
+    }
+
+    function generaTestoRisultati() {
+      let testo = "RIEPILOGO CALCOLO PARCELLA FORENSE (D.M. 147/2022)\n";
+      testo += "==================================================\n\n";
+
+      // Dati Input
+      testo += "DATI DEL PROCEDIMENTO:\n";
+      const materiaSelect = document.getElementById('materia');
+      testo += `- Materia: ${materiaSelect.options[materiaSelect.selectedIndex].text}\n`;
+      const procSelect = document.getElementById('procedimento');
+      testo += `- Tipo di procedimento: ${procSelect.options[procSelect.selectedIndex].text}\n`;
+
+      if (materiaSelect.value !== 'penale') {
+        const valoreSelect = document.getElementById('valore');
+        testo += `- Valore della controversia: ${valoreSelect.options[valoreSelect.selectedIndex].text}\n`;
+      }
+
+      const paramSelect = document.getElementById('parametri');
+      let paramTesto = paramSelect.options[paramSelect.selectedIndex].text;
+      if (['aumento_custom', 'riduzione_custom'].includes(paramSelect.value)) {
+        paramTesto += ` (${document.getElementById('percentuale').value}%)`;
+      }
+      testo += `- Applicazione parametri: ${paramTesto}\n`;
+      testo += `- Numero parti assistite: ${document.getElementById('num_parti').value}\n`;
+      testo += `- Regime fiscale: ${document.querySelector('input[name="regime"]:checked').value === 'ordinario' ? 'Ordinario (con IVA)' : 'Forfettario (senza IVA)'}\n`;
+      testo += `- Ritenuta d'acconto: ${document.querySelector('input[name="ritenuta"]:checked').value === 'si' ? 'Sì (20%)' : 'No'}\n\n`;
+
+      testo += "FASI SVOLTE E COMPENSI:\n";
+      const dettaglioFasiRows = document.getElementById('dettaglio-fasi').rows;
+      for (let i = 0; i < dettaglioFasiRows.length; i++) {
+        const row = dettaglioFasiRows[i];
+        testo += `- ${row.cells[0].innerText.replace(/\s\(Mancante\)/, '').replace(/\s\(\?\)/, '')}: ${row.cells[2].innerText.replace(/\s\(Mancante\)/, '')}\n`;
+      }
+      testo += "\n";
+
+      testo += "RIEPILOGO PARCELLA:\n";
+      testo += `- Totale Compensi: ${document.getElementById('totale-compensi').textContent}\n`;
+      if (document.getElementById('aumento-parti-row').style.display !== 'none') {
+        testo += `- Maggiorazione pluralità parti ${document.getElementById('perc-aumento-parti').textContent}: ${document.getElementById('importo-aumento-parti').textContent}\n`;
+      }
+      testo += `- Subtotale Compensi Maggiorati: ${document.getElementById('subtotale-compensi-maggiorati').textContent}\n`;
+      testo += `- Rimborso Forfettario (15%): ${document.getElementById('rimborso-forfettario').textContent}\n`;
+      testo += `- Cassa Previdenza (4%): ${document.getElementById('cpa').textContent}\n`;
+      if (document.getElementById('iva-row').style.display !== 'none') {
+        testo += `- IVA (22%): ${document.getElementById('iva').textContent}\n`;
+      }
+      if (document.getElementById('ritenuta-row').style.display !== 'none') {
+        testo += `- Ritenuta d'acconto (20%): ${document.getElementById('ritenuta-acconto').textContent}\n`;
+      }
+      testo += `\n- TOTALE PARCELLA: ${document.getElementById('totale-parcella').textContent}\n`;
+      testo += "==================================================\n";
+      testo += "Calcolo effettuato in data: " + new Date().toLocaleString('it-IT') + "\n";
+      testo += "ATTENZIONE: Il presente calcolo è una stima. Verificare con le tabelle ministeriali.\n";
+      return testo;
+    }
+
+    function salvaComeTXT() {
+      if (document.getElementById('results').style.display !== 'block') {
+        alert("Nessun calcolo da salvare. Effettua prima un calcolo.");
+        return;
+      }
+      const testo = generaTestoRisultati();
+      const blob = new Blob([testo], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `parcella_forense_${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function copiaSuAppunti() {
+      if (document.getElementById('results').style.display !== 'block') {
+        alert("Nessun calcolo da copiare. Effettua prima un calcolo.");
+        return;
+      }
+      const testo = generaTestoRisultati();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(testo).then(() => {
+          const feedback = document.getElementById('copy-feedback');
+          feedback.style.display = 'block';
+          setTimeout(() => { feedback.style.display = 'none'; }, 2000);
+        }).catch(err => {
+          console.error('Errore nel copiare il testo: ', err);
+          alert('Errore nel copiare il testo. Potrebbe essere necessario copiare manualmente.');
+          // Fallback per browser meno recenti o contesti non sicuri
+          fallbackCopiaTesto(testo);
+        });
+      } else {
+        fallbackCopiaTesto(testo);
+      }
+    }
+    function fallbackCopiaTesto(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed"; // Previene lo scrolling
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.width = "2em"; // Dimensioni minime
+      textArea.style.height = "2em";
+      textArea.style.padding = "0";
+      textArea.style.border = "none";
+      textArea.style.outline = "none";
+      textArea.style.boxShadow = "none";
+      textArea.style.background = "transparent";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        const feedback = document.getElementById('copy-feedback');
+        feedback.textContent = 'Testo copiato (metodo fallback)!';
+        feedback.style.display = 'block';
+        setTimeout(() => { feedback.style.display = 'none'; feedback.textContent = 'Testo copiato negli appunti!'; }, 2000);
+      } catch (err) {
+        console.error('Fallback: Errore nel copiare il testo', err);
+        alert('Impossibile copiare il testo. Si prega di farlo manualmente.');
+      }
+      document.body.removeChild(textArea);
+    }
+
+
+    function inviaTramiteWhatsApp() {
+      if (document.getElementById('results').style.display !== 'block') {
+        alert("Nessun calcolo da inviare. Effettua prima un calcolo.");
+        return;
+      }
+      const testo = generaTestoRisultati();
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(testo)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+
+    function calcolaParcella() {
+      try {
+        const materia = document.getElementById('materia').value;
+        const procedimento = document.getElementById('procedimento').value;
+        const valoreId = document.getElementById('valore').value;
+        const tipoParametri = document.getElementById('parametri').value;
+        const numParti = parseInt(document.getElementById('num_parti').value) || 1;
+        let percentualeCustom = 0;
+        if (tipoParametri === 'aumento_custom' || tipoParametri === 'riduzione_custom') {
+          percentualeCustom = parseInt(document.getElementById('percentuale').value) || 0;
+          if (percentualeCustom < 1) percentualeCustom = 1;
+          if (percentualeCustom > 80) percentualeCustom = 80;
+        }
+
+        const regimeFiscale = document.querySelector('input[name="regime"]:checked').value;
+        const applicaRitenuta = document.querySelector('input[name="ritenuta"]:checked').value === 'si';
+
+        if (!materia) { throw new Error('Selezionare la Materia.'); }
+        if (!procedimento) { throw new Error('Selezionare il Tipo di Procedimento.'); }
+        if (materia !== 'penale' && !valoreId) { throw new Error('Selezionare il Valore della Causa.'); }
+        if (numParti < 1 || numParti > 30) { throw new Error('Il numero di parti deve essere tra 1 e 30.'); }
+
+        const fasiSelezionate = [];
+        document.querySelectorAll('input[name="fasi"]:checked').forEach(checkbox => {
+          fasiSelezionate.push(checkbox.value);
+        });
+        if (fasiSelezionate.length === 0) { throw new Error('Selezionare almeno una Fase Procedurale svolta.'); }
+
+        let tabellaParametri = PARAMETRI[procedimento];
+        let scaglioneEffettivo;
+
+        if (materia === 'penale') {
+          scaglioneEffettivo = 'penale';
+        } else {
+          scaglioneEffettivo = getScaglioneFromValore(valoreId);
+        }
+
+        if (!tabellaParametri) { throw new Error(`Definizione parametri non trovata per il procedimento ID '${procedimento}'.`); }
+        if (!tabellaParametri[scaglioneEffettivo]) { throw new Error(`Parametri tariffari non trovati per procedimento '${PROCEDIMENTI[materia][procedimento]}' e scaglione '${scaglioneEffettivo}'. Verificare PARAMETRI.`); }
+
+        const parametriScaglione = tabellaParametri[scaglioneEffettivo];
+        const dettagliFasi = [];
+        let totaleCompensiBase = 0;
+
+        fasiSelezionate.forEach(faseKey => {
+          let compensoMedio = 0;
+          let warning = null;
+
+          if (parametriScaglione.hasOwnProperty(faseKey)) {
+            compensoMedio = parametriScaglione[faseKey];
+            if (compensoMedio === null || compensoMedio === undefined) {
+              warning = `Valore tariffario per fase '${FASE_NOMI[faseKey] || faseKey}' non definito nello scaglione '${scaglioneEffettivo}'. Compilare PARAMETRI.`;
+              console.warn(warning);
+              compensoMedio = 0;
+            }
+          } else {
+            warning = `Definizione tariffaria per fase '${FASE_NOMI[faseKey] || faseKey}' non trovata nello scaglione '${scaglioneEffettivo}'. Compilare PARAMETRI.`;
+            console.warn(warning);
+            compensoMedio = 0;
+          }
+
+          let compensoApplicato = compensoMedio;
+          switch (tipoParametri) {
+            case 'minimi': compensoApplicato *= 0.50; break;
+            case 'massimi': compensoApplicato *= (materia === 'penale' ? 1.80 : 1.50); break;
+            case 'aumento_custom': compensoApplicato *= (1 + percentualeCustom / 100); break;
+            case 'riduzione_custom': compensoApplicato *= (1 - percentualeCustom / 100); break;
+          }
+          compensoApplicato = Math.round(compensoApplicato * 100) / 100;
+          dettagliFasi.push({
+            faseNome: FASE_NOMI[faseKey] || faseKey,
+            compensoMedio: compensoMedio,
+            compensoApplicato: compensoApplicato,
+            warning: warning
+          });
+          totaleCompensiBase += compensoApplicato;
+        });
+
+        let aumentoPartiPerc = 0;
+        let importoAumentoParti = 0;
+        if (numParti > 1) {
+          let partiOltrePrima = numParti - 1;
+          let aumentoFino10 = Math.min(partiOltrePrima, 9) * 30;
+          let aumentoOltre10 = Math.max(0, Math.min(partiOltrePrima - 9, 20)) * 10;
+          aumentoPartiPerc = aumentoFino10 + aumentoOltre10;
+          importoAumentoParti = Math.round((totaleCompensiBase * (aumentoPartiPerc / 100)) * 100) / 100;
+        }
+        const totaleCompensiMaggiorati = totaleCompensiBase + importoAumentoParti;
+        const rimborsoForfettario = Math.round((totaleCompensiMaggiorati * 0.15) * 100) / 100;
+        const cpaBase = totaleCompensiMaggiorati + rimborsoForfettario;
+        const cpa = Math.round((cpaBase * 0.04) * 100) / 100;
+        const imponibileLordo = cpaBase + cpa;
+        const applicaIva = regimeFiscale === 'ordinario';
+        const iva = applicaIva ? Math.round((imponibileLordo * 0.22) * 100) / 100 : 0;
+        const baseRitenuta = totaleCompensiMaggiorati + rimborsoForfettario;
+        const ritenuta = applicaRitenuta ? Math.round((baseRitenuta * 0.20) * 100) / 100 : 0;
+        const totaleParcella = imponibileLordo + iva - ritenuta;
+
+        const dettaglioFasiTbody = document.getElementById('dettaglio-fasi');
+        dettaglioFasiTbody.innerHTML = '';
+        dettagliFasi.forEach(item => {
+          const row = document.createElement('tr');
+          let compensoApplicatoCellContent = formatCurrency(item.compensoApplicato);
+          let compensoMedioCellContent = formatCurrency(item.compensoMedio);
+          let cellClass = '';
+          if (item.warning) {
+            compensoApplicatoCellContent += ` <em style="font-size:0.8em; color:#e67e22">(Mancante)</em>`;
+            compensoMedioCellContent += ` <em style="font-size:0.8em; color:#e67e22">(?)</em>`;
+            cellClass = 'warning';
+          }
+          row.innerHTML = `<td class="${cellClass}">${item.faseNome}</td><td class="${cellClass}">${compensoMedioCellContent}</td><td class="${cellClass}">${compensoApplicatoCellContent}</td>`;
+          dettaglioFasiTbody.appendChild(row);
+        });
+
+        document.getElementById('totale-compensi').textContent = formatCurrency(totaleCompensiBase);
+        const aumentoPartiRow = document.getElementById('aumento-parti-row');
+        if (numParti > 1) {
+          document.getElementById('perc-aumento-parti').textContent = `(${aumentoPartiPerc.toFixed(0)}%)`;
+          document.getElementById('importo-aumento-parti').textContent = formatCurrency(importoAumentoParti);
+          aumentoPartiRow.style.display = 'table-row';
+        } else {
+          aumentoPartiRow.style.display = 'none';
+        }
+        document.getElementById('subtotale-compensi-maggiorati').textContent = formatCurrency(totaleCompensiMaggiorati);
+        document.getElementById('rimborso-forfettario').textContent = formatCurrency(rimborsoForfettario);
+        document.getElementById('cpa').textContent = formatCurrency(cpa);
+        const ivaRow = document.getElementById('iva-row');
+        ivaRow.style.display = applicaIva ? 'table-row' : 'none';
+        document.getElementById('iva').textContent = formatCurrency(iva);
+        const ritenutaRow = document.getElementById('ritenuta-row');
+        ritenutaRow.style.display = applicaRitenuta ? 'table-row' : 'none';
+        document.getElementById('ritenuta-acconto').textContent = formatCurrency(-ritenuta);
+        document.getElementById('totale-parcella').textContent = formatCurrency(totaleParcella);
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.style.display = 'block';
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      } catch (error) {
+        alert("Errore nel calcolo: " + error.message + "\n\nControlla la console del browser (F12) per maggiori dettagli.");
+        console.error("Dettaglio Errore Calcolo:", error);
+        document.getElementById('results').style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      togglePercentuale();
+      cambiaMateriaHandler();
+    });
+
+  </script>
+</body>
+
+</html>
