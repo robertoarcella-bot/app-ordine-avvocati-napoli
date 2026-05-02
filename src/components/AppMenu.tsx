@@ -6,16 +6,28 @@ import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
   shieldHalfOutline, peopleOutline, businessOutline, bookOutline,
+  openOutline,
 } from 'ionicons/icons';
+import { Browser } from '@capacitor/browser';
 
 interface MenuItem {
   title: string;
+  /**
+   * URL della rotta interna (es. /home) oppure prefisso 'EXTERNAL:<url>'
+   * per aprire l'URL nel browser di sistema.
+   */
   url: string;
   icon: string;
+  /** true se apre in browser di sistema (mostra l'icona ↗ a destra) */
+  external?: boolean;
 }
 
 const ALBO_NA_URL = '/sito/view?u=' + encodeURIComponent('https://www.ordineavvocatinapoli.it/albo-elenchi/') + '&t=' + encodeURIComponent('Albo Avvocati Napoli');
-const ALBO_NAZ_URL = '/sito/view?u=' + encodeURIComponent('https://www.consiglionazionaleforense.it/ricerca-avvocati') + '&t=' + encodeURIComponent('Albo Nazionale Avvocati');
+/**
+ * L'Albo Nazionale (CNF) ha X-Frame-Options: SAMEORIGIN: non si lascia
+ * embeddare in iframe. Apriamo in browser di sistema (Chrome Custom Tabs).
+ */
+const ALBO_NAZ_URL = 'EXTERNAL:https://www.consiglionazionaleforense.it/ricerca-avvocati';
 
 const ITEMS: MenuItem[] = [
   { title: 'Home', url: '/home', icon: homeOutline },
@@ -24,7 +36,7 @@ const ITEMS: MenuItem[] = [
   { title: 'News dagli Uffici Giudiziari', url: '/news-uffici', icon: businessOutline },
   { title: 'Sito Ordine Avvocati', url: '/sito', icon: globeOutline },
   { title: 'Albo Avvocati Napoli', url: ALBO_NA_URL, icon: bookOutline },
-  { title: 'Albo Nazionale Avvocati', url: ALBO_NAZ_URL, icon: bookOutline },
+  { title: 'Albo Nazionale Avvocati', url: ALBO_NAZ_URL, icon: bookOutline, external: true },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
   { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },
@@ -35,6 +47,15 @@ const ITEMS: MenuItem[] = [
 ];
 
 const AppMenu: React.FC = () => {
+  const onItemClick = (item: MenuItem, e: React.MouseEvent) => {
+    if (item.external || item.url.startsWith('EXTERNAL:')) {
+      e.preventDefault();
+      const url = item.url.startsWith('EXTERNAL:') ? item.url.slice(9) : item.url;
+      void Browser.open({ url });
+    }
+    // altrimenti il routerLink di Ionic gestisce la navigazione interna
+  };
+
   return (
     <IonMenu contentId="main" type="overlay">
       <IonHeader>
@@ -57,13 +78,18 @@ const AppMenu: React.FC = () => {
           {ITEMS.map(item => (
             <IonMenuToggle key={item.url} autoHide={false}>
               <IonItem
-                routerLink={item.url}
+                routerLink={item.external ? undefined : item.url}
                 routerDirection="root"
                 lines="none"
                 detail={false}
+                button
+                onClick={(e) => onItemClick(item, e)}
               >
                 <IonIcon slot="start" icon={item.icon} color="primary" />
                 <IonLabel>{item.title}</IonLabel>
+                {item.external && (
+                  <IonIcon slot="end" icon={openOutline} color="medium" />
+                )}
               </IonItem>
             </IonMenuToggle>
           ))}
