@@ -14,7 +14,8 @@ interface MenuItem {
   icon: string;
 }
 
-const ALBO_URL = '/sito/view?u=' + encodeURIComponent('https://www.ordineavvocatinapoli.it/albo-elenchi/') + '&t=' + encodeURIComponent('Albo Avvocati');
+const ALBO_NA_URL = '/sito/view?u=' + encodeURIComponent('https://www.ordineavvocatinapoli.it/albo-elenchi/') + '&t=' + encodeURIComponent('Albo Avvocati Napoli');
+const ALBO_NAZ_URL = '/sito/view?u=' + encodeURIComponent('https://www.consiglionazionaleforense.it/ricerca-avvocati') + '&t=' + encodeURIComponent('Albo Nazionale Avvocati');
 
 const ITEMS: MenuItem[] = [
   { title: 'Home', url: '/home', icon: homeOutline },
@@ -22,7 +23,8 @@ const ITEMS: MenuItem[] = [
   { title: 'News dal Consiglio', url: '/news', icon: newspaperOutline },
   { title: 'News dagli Uffici Giudiziari', url: '/news-uffici', icon: businessOutline },
   { title: 'Sito Ordine Avvocati', url: '/sito', icon: globeOutline },
-  { title: 'Albo Avvocati', url: ALBO_URL, icon: bookOutline },
+  { title: 'Albo Avvocati Napoli', url: ALBO_NA_URL, icon: bookOutline },
+  { title: 'Albo Nazionale Avvocati', url: ALBO_NAZ_URL, icon: bookOutline },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
   { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },
