@@ -95,10 +95,14 @@ const ProcessoTelematico: React.FC = () => {
           </IonItem>
           {notifyOn && (
             <IonItem lines="full">
-              <IonNote style={{ fontSize: 11, padding: '6px 0' }}>
-                Le notifiche vengono verificate all'apertura dell'app e quando
-                torna in primo piano. Per la versione background continuativa
-                serve un servizio dedicato (in roadmap).
+              <IonNote style={{ fontSize: 11, padding: '6px 0', whiteSpace: 'normal' }}>
+                Le notifiche vengono controllate periodicamente in background
+                (circa una volta all'ora; il sistema Android decide il timing
+                preciso in base al risparmio batteria) e ad ogni apertura
+                dell'app. Su alcuni dispositivi con ottimizzazione batteria
+                aggressiva può essere necessario escludere l'app dalle
+                impostazioni di risparmio energetico per ricevere le notifiche
+                con regolarità.
               </IonNote>
             </IonItem>
           )}
