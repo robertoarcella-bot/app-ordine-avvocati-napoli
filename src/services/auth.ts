@@ -284,4 +284,11 @@ export const AUTH_URLS = {
   // Idealmente, ad area riservata vera e propria; per ora la pagina login
   // mostra link autenticati a "Profilo", "Modifica dati", ecc.
   reservedHome: LOGIN_PAGE,
+  /**
+   * URL dell'Area Riservata Consiglieri vera e propria. Per "difetto" del
+   * sito, il login non redirige automaticamente qui: l'utente deve cliccare
+   * un secondo link dopo essersi autenticato. L'app evidenzia questo URL
+   * come step 2 dopo il login.
+   */
+  areaConsiglieri: 'https://www.ordineavvocatinapoli.it/area-riservata-consiglieri/',
 };
