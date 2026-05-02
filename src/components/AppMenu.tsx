@@ -6,7 +6,7 @@ import {
   homeOutline, newspaperOutline, globeOutline, documentsOutline,
   appsOutline, lockClosedOutline, informationCircleOutline,
   shieldHalfOutline, peopleOutline, businessOutline, bookOutline,
-  openOutline,
+  openOutline, createOutline,
 } from 'ionicons/icons';
 import { Browser } from '@capacitor/browser';
 
@@ -39,6 +39,7 @@ const ITEMS: MenuItem[] = [
   { title: 'Albo Nazionale Avvocati', url: ALBO_NAZ_URL, icon: bookOutline, external: true },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
+  { title: 'Note di Udienza (Diritto Pratico)', url: '/sito/view?u=' + encodeURIComponent('https://note.dirittopratico.it/') + '&t=' + encodeURIComponent('Note di Udienza'), icon: createOutline },
   { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },
   { title: 'Processo Telematico', url: '/processo-telematico', icon: shieldHalfOutline },
   { title: 'Area Riservata', url: '/area-riservata', icon: lockClosedOutline },

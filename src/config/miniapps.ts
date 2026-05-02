@@ -153,6 +153,15 @@ export const MINIAPPS: MiniApp[] = [
     author: AT_AUTHOR,
     origin: AT_ORIGIN,
   },
+  {
+    id: 'note-dirittopratico',
+    title: 'Note di Udienza — Diritto Pratico',
+    subtitle: 'Verbalizzazione delle note di udienza nell\'era del PCT (note.dirittopratico.it)',
+    webviewUrl: 'https://note.dirittopratico.it/',
+    icon: 'create-outline',
+    jurisdiction: 'comuni',
+    offlineReady: false,
+  },
   // ============ CIVILE ============
   {
     id: 'termini-cpc-cartabia',
