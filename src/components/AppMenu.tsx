@@ -19,7 +19,8 @@ const ALBO_URL = '/sito/view?u=' + encodeURIComponent('https://www.ordineavvocat
 const ITEMS: MenuItem[] = [
   { title: 'Home', url: '/home', icon: homeOutline },
   { title: 'Consiglio dell\'Ordine', url: '/consiglio', icon: peopleOutline },
-  { title: 'News', url: '/news', icon: newspaperOutline },
+  { title: 'News dal Consiglio', url: '/news', icon: newspaperOutline },
+  { title: 'News dagli Uffici Giudiziari', url: '/news-uffici', icon: businessOutline },
   { title: 'Sito Ordine Avvocati', url: '/sito', icon: globeOutline },
   { title: 'Albo Avvocati', url: ALBO_URL, icon: bookOutline },
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },

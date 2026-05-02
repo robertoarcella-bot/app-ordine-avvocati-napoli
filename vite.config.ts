@@ -16,6 +16,18 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/proxy\/coa/, ''),
         secure: true,
       },
+      '/proxy/tnna': {
+        target: 'https://tribunale-napoli.giustizia.it',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/proxy\/tnna/, ''),
+        secure: true,
+      },
+      '/proxy/cana': {
+        target: 'https://ca-napoli.giustizia.it',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/proxy\/cana/, ''),
+        secure: true,
+      },
       '/proxy/pst': {
         target: 'https://pst.giustizia.it',
         changeOrigin: true,

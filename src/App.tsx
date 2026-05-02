@@ -6,6 +6,7 @@ import AppMenu from './components/AppMenu';
 import Home from './pages/Home';
 import News from './pages/News';
 import NewsDetail from './pages/NewsDetail';
+import UfficiNews from './pages/UfficiNews';
 import Sito from './pages/Sito';
 import SitoView from './pages/SitoView';
 import Documenti from './pages/Documenti';
@@ -34,10 +35,31 @@ import '@ionic/react/css/display.css';
 /* Tema COA */
 import './theme/variables.css';
 
+import { useEffect } from 'react';
+import { App as CapApp } from '@capacitor/app';
+import { checkAndNotifyNewPstNews } from './services/notifications';
+
 setupIonicReact({ mode: 'md' });
 
-const App: React.FC = () => (
-  <IonApp>
+/**
+ * Polling delle news PST: all'avvio + ogni volta che l'app torna in
+ * foreground. Se ci sono news non viste, schedula una notifica locale
+ * (solo se l'utente ha attivato le notifiche dalla pagina Processo
+ * Telematico).
+ */
+const useNewsPolling = () => {
+  useEffect(() => {
+    void checkAndNotifyNewPstNews();
+    const sub = CapApp.addListener('appStateChange', state => {
+      if (state.isActive) void checkAndNotifyNewPstNews();
+    });
+    return () => { void sub.then(s => s.remove()); };
+  }, []);
+};
+
+const AppShell: React.FC = () => {
+  useNewsPolling();
+  return (
     <IonReactRouter>
       <IonSplitPane contentId="main" when="lg">
         <AppMenu />
@@ -45,6 +67,7 @@ const App: React.FC = () => (
           <Route exact path="/home" component={Home} />
           <Route exact path="/news" component={News} />
           <Route exact path="/news/:id" component={NewsDetail} />
+          <Route exact path="/news-uffici" component={UfficiNews} />
           <Route exact path="/sito" component={Sito} />
           <Route exact path="/sito/view" component={SitoView} />
           <Route exact path="/documenti" component={Documenti} />
@@ -61,6 +84,12 @@ const App: React.FC = () => (
         </IonRouterOutlet>
       </IonSplitPane>
     </IonReactRouter>
+  );
+};
+
+const App: React.FC = () => (
+  <IonApp>
+    <AppShell />
   </IonApp>
 );
 
