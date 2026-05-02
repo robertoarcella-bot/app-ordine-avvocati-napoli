@@ -74,8 +74,9 @@ sudo gem install cocoapods
 # Aggiunge la piattaforma iOS al progetto Capacitor
 npx cap add ios
 
-# Genera icone e splash screen iOS dall'immagine sorgente in resources/splash.png
-npx capacitor-assets generate --ios --splashBackgroundColor "#FDF9F5"
+# Genera icone e splash screen iOS dalle immagini sorgente
+# (resources/icon.png 1024×1024 e resources/splash.png 2732×2732)
+npx capacitor-assets generate --ios --iconBackgroundColor "#FDF9F5" --splashBackgroundColor "#FDF9F5"
 
 # Build delle web assets + sync con il progetto iOS
 npm run build:web

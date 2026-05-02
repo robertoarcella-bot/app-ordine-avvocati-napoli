@@ -1,6 +1,6 @@
 # App Ordine Avvocati Napoli — Documentazione tecnica
 
-App mobile **non ufficiale** per gli iscritti al Consiglio dell'Ordine degli Avvocati di Napoli. Distribuita inizialmente come APK Android sideload; build iOS gestita su fork separato (vedi [docs/BUILD_iOS.md](docs/BUILD_iOS.md)).
+App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a beneficio degli iscritti. Distribuita inizialmente come APK Android sideload; build iOS gestita su fork separato (vedi [docs/BUILD_iOS.md](docs/BUILD_iOS.md)).
 
 - **Autore originario**: Avv. Roberto Arcella
 - **Idea e collaborazione**: Commissione Informatica del COA Napoli
@@ -358,11 +358,11 @@ Palette istituzionale **AgID** per siti della PA italiana, definita in `src/them
 | `--ion-color-tertiary` | `#6B1E2A` | Bordeaux toga, CTA secondari |
 | Splash background | `#FDF9F5` | Crema (sfondo immagine "Apertura_app") |
 
-Logo: `public/logo.jpg` (321×157, fornito dall'utente). Splash sorgente: `resources/splash.png` (canvas 2732×2732 con immagine centrata).
+Logo: `public/logo.jpg` (600×600, stemma quadrato COA Napoli). Sorgenti per generare gli asset nativi: `resources/icon.png` (1024×1024) e `resources/splash.png` (canvas 2732×2732 su sfondo crema `#FDF9F5` con stemma centrato).
 
-App icon Android: `android/app/src/main/res/mipmap-*/ic_launcher.png`. Per rigenerarli da un PNG quadrato:
+App icon Android: `android/app/src/main/res/mipmap-*/ic_launcher.png`. Per rigenerarli dopo aver aggiornato le sorgenti:
 ```bash
-npx capacitor-assets generate --android --iconBackgroundColor "#0066CC"
+npx capacitor-assets generate --android --iconBackgroundColor "#FDF9F5" --splashBackgroundColor "#FDF9F5"
 ```
 
 ---

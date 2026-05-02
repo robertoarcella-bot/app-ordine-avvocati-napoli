@@ -1,4 +1,7 @@
-import { IonContent, IonPage, IonText } from '@ionic/react';
+import {
+  IonContent, IonPage, IonText,
+  IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton,
+} from '@ionic/react';
 import { useParams } from 'react-router';
 import { useEffect, useRef } from 'react';
 import { Browser } from '@capacitor/browser';
@@ -10,8 +13,9 @@ interface RouteParams { id: string }
  * Visualizzatore di mini-webapp HTML.
  *
  * Comportamento:
- *  - Full-screen, niente header (per tornare indietro: back hardware Android,
- *    o swipe iOS). Massimo spazio alla webapp.
+ *  - Header compatto con back button verso /miniapps. Necessario su iOS, dove
+ *    non esiste un back hardware: senza freccia l'utente sarebbe costretto a
+ *    chiudere l'app per uscire dallo strumento.
  *  - Inietta uno script che intercetta `window.open(...)` e i click su link
  *    target="_blank" / href esterni (whatsapp:, mailto:, https://...) e li
  *    passa al parent via postMessage. Il parent li apre con Browser.open()
@@ -167,6 +171,14 @@ const MiniAppView: React.FC = () => {
   if (!app || !app.file) {
     return (
       <IonPage>
+        <IonHeader>
+          <IonToolbar>
+            <IonButtons slot="start">
+              <IonBackButton defaultHref="/miniapps" />
+            </IonButtons>
+            <IonTitle>Strumento</IonTitle>
+          </IonToolbar>
+        </IonHeader>
         <IonContent fullscreen className="ion-padding">
           <IonText color="medium">Strumento non disponibile in questa modalità.</IonText>
         </IonContent>
@@ -176,6 +188,14 @@ const MiniAppView: React.FC = () => {
 
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/miniapps" />
+          </IonButtons>
+          <IonTitle style={{ fontSize: 16 }}>{app.title}</IonTitle>
+        </IonToolbar>
+      </IonHeader>
       {/* scrollY=false: lasciamo che sia l'iframe a gestire lo scroll interno,
           altrimenti IonContent intercetta i touch e l'iframe resta bloccato. */}
       <IonContent fullscreen scrollY={false}>

@@ -12,7 +12,7 @@ import {
 import { useHistory } from 'react-router';
 import { openExternal } from '../services/download';
 
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.0.1';
 
 const Info: React.FC = () => {
   const history = useHistory();
@@ -174,8 +174,8 @@ const Info: React.FC = () => {
         <div style={{ padding: '8px 24px 32px', textAlign: 'center' }}>
           <IonText color="medium">
             <small>
-              Quest'app è uno strumento informativo non ufficiale realizzato a beneficio
-              degli iscritti. I contenuti sono attinti dal sito istituzionale dell'Ordine degli Avvocati di Napoli.
+              Quest'app è lo strumento informativo ufficiale del Consiglio dell'Ordine degli Avvocati di Napoli,
+              realizzato a beneficio degli iscritti. I contenuti sono attinti dal sito istituzionale dell'Ordine.
             </small>
           </IonText>
         </div>
