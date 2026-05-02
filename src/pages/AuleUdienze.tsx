@@ -1,15 +1,16 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonMenuButton, IonText,
-  IonList, IonItem, IonIcon, IonLabel,
+  IonList, IonItem, IonIcon, IonLabel, IonItemDivider,
 } from '@ionic/react';
 import {
   chevronForwardOutline, openOutline,
-  cloudOfflineOutline, wifiOutline,
+  cloudOfflineOutline, wifiOutline, businessOutline,
 } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
 import { MINIAPPS, type MiniApp } from '../config/miniapps';
+import { UFFICI } from '../config/uffici-giudiziari-na';
 
 const AuleUdienze: React.FC = () => {
   const history = useHistory();
@@ -48,6 +49,31 @@ const AuleUdienze: React.FC = () => {
           </IonText>
         </div>
         <IonList lines="full">
+          <IonItemDivider color="light" sticky>
+            <IonLabel><strong>Uffici Giudiziari di Napoli</strong></IonLabel>
+          </IonItemDivider>
+          {Object.values(UFFICI).map(office => (
+            <IonItem
+              key={office.id}
+              button
+              detail={false}
+              onClick={() => history.push(`/aule-udienze/${office.id}`)}
+            >
+              <IonIcon slot="start" icon={businessOutline} color="primary" />
+              <IonLabel>
+                <h3>{office.label}</h3>
+                <p style={{ whiteSpace: 'normal' }}>
+                  Magistrati ({office.magistrati.length}), uffici e cancellerie ({office.uffici.length})
+                  {office.dislocazione ? `, dislocazione (${office.dislocazione.length})` : ''}
+                </p>
+              </IonLabel>
+              <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
+            </IonItem>
+          ))}
+
+          <IonItemDivider color="light" sticky>
+            <IonLabel><strong>Calendari e canali</strong></IonLabel>
+          </IonItemDivider>
           {items.length === 0 && (
             <div style={{ padding: 24, textAlign: 'center' }}>
               <IonText color="medium">Nessuna voce disponibile.</IonText>
