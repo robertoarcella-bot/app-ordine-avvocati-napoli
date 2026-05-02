@@ -1,685 +1,312 @@
 """
 Genera il Manuale Utente dell'app Ordine Avvocati Napoli.
 
-- Crea wireframe PNG simulati delle schermate principali con PIL
-- Compone il documento .docx con python-docx
-- Output: ../Manuale_App_OrdineAvvocatiNapoli.docx
+Output (entrambi):
+  - ../Manuale_App_OrdineAvvocatiNapoli.docx  (Microsoft Word)
+  - ../Manuale_App_OrdineAvvocatiNapoli.md    (Markdown, leggibile su GitHub)
+
+Le immagini sono reali screenshot dell'app (cartella FOTO_Manuale del workspace).
 """
-import os
+import shutil
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
 
 from docx import Document
 from docx.shared import Cm, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_ALIGN_VERTICAL
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 
 # ============== Setup percorsi ==============
-ROOT = Path(__file__).resolve().parents[1]               # app-coa/
-WORKSPACE = ROOT.parent                                   # APP_COA/
+ROOT = Path(__file__).resolve().parents[1]
+WORKSPACE = ROOT.parent
+PHOTO_SRC = WORKSPACE / "FOTO_Manuale"
 IMAGES_DIR = ROOT / "scripts" / "manual-images"
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
-OUTPUT = WORKSPACE / "Manuale_App_OrdineAvvocatiNapoli.docx"
+OUT_DOCX = WORKSPACE / "Manuale_App_OrdineAvvocatiNapoli.docx"
+OUT_MD = WORKSPACE / "Manuale_App_OrdineAvvocatiNapoli.md"
 
-# ============== Palette istituzionale ==============
-PRIMARY = (0, 102, 204)        # #0066CC AgID
-PRIMARY_DARK = (0, 63, 127)
-SECONDARY = (201, 162, 74)      # oro
-TERTIARY = (107, 30, 42)        # bordeaux
-SUCCESS = (45, 211, 111)
-BG = (248, 248, 248)
-CARD = (255, 255, 255)
-TEXT = (33, 37, 41)
-MUTED = (110, 117, 130)
-BORDER = (225, 230, 236)
-SPLASH_BG = (253, 249, 245)
-
-
-def _font(size, bold=False):
-    """Best-effort: prova Segoe UI / Arial; fallback default."""
-    candidates = [
-        ("seguibl.ttf" if bold else "segoeui.ttf", "C:/Windows/Fonts/"),
-        ("arialbd.ttf" if bold else "arial.ttf", "C:/Windows/Fonts/"),
-    ]
-    for name, base in candidates:
-        try:
-            return ImageFont.truetype(base + name, size)
-        except OSError:
-            continue
-    try:
-        return ImageFont.truetype("DejaVuSans" + ("-Bold" if bold else "") + ".ttf", size)
-    except OSError:
-        return ImageFont.load_default()
+# Mapping screenshot → nome semantico
+PHOTO_MAPPING = [
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (6).jpeg", "home.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (5).jpeg", "menu.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (1).jpeg", "consiglio.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (4).jpeg", "news.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (3).jpeg", "strumenti.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53 (2).jpeg", "processo_telematico.jpeg"),
+    ("WhatsApp Image 2026-05-02 at 09.12.53.jpeg", "commissione.jpeg"),
+]
 
 
-def _measure(draw, text, font):
-    bbox = draw.textbbox((0, 0), text, font=font)
-    return bbox[2] - bbox[0], bbox[3] - bbox[1]
-
-
-def _frame(width=540, height=960, status_dark=True):
-    img = Image.new("RGB", (width, height), BG)
-    draw = ImageDraw.Draw(img)
-    # status bar finta
-    if status_dark:
-        draw.rectangle([0, 0, width, 22], fill=PRIMARY_DARK)
-    return img, draw
-
-
-def _toolbar(draw, width, title, has_menu=True, has_back=False):
-    draw.rectangle([0, 22, width, 78], fill=PRIMARY)
-    f = _font(18, bold=True)
-    if has_menu:
-        # 3 lineette
-        for i, y in enumerate([42, 50, 58]):
-            draw.line([(20, y), (44, y)], fill="white", width=3)
-    elif has_back:
-        # freccia
-        draw.line([(28, 50), (40, 38)], fill="white", width=3)
-        draw.line([(28, 50), (40, 62)], fill="white", width=3)
-    draw.text((60 if (has_menu or has_back) else 20, 38), title, fill="white", font=f)
-
-
-def _card(draw, x, y, w, h, fill=CARD, border=BORDER, radius=12):
-    """rounded rect approssimato con rettangolo arrotondato."""
-    draw.rounded_rectangle([x, y, x + w, y + h], radius=radius,
-                           fill=fill, outline=border, width=1)
-
-
-def _text(draw, x, y, txt, size=14, bold=False, color=TEXT):
-    draw.text((x, y), txt, fill=color, font=_font(size, bold))
-
-
-def _wrap(draw, x, y, txt, size, bold, color, max_w):
-    """Divide il testo in linee in base alla larghezza."""
-    f = _font(size, bold)
-    words = txt.split(" ")
-    line = ""
-    cy = y
-    for w in words:
-        test = (line + " " + w).strip()
-        tw, _ = _measure(draw, test, f)
-        if tw <= max_w:
-            line = test
-        else:
-            draw.text((x, cy), line, fill=color, font=f)
-            cy += int(size * 1.25)
-            line = w
-    if line:
-        draw.text((x, cy), line, fill=color, font=f)
-        cy += int(size * 1.25)
-    return cy
-
-
-# ============== Wireframe singole schermate ==============
-
-def make_splash():
-    img = Image.new("RGB", (540, 960), SPLASH_BG)
-    draw = ImageDraw.Draw(img)
-    title = _font(40, bold=True)
-    sub = _font(14, bold=False)
-    color = (15, 32, 70)
-    # "Ordine Avvocati"
-    w1, h1 = _measure(draw, "Ordine Avvocati", title)
-    draw.text(((540 - w1) // 2, 380), "Ordine Avvocati", fill=color, font=title)
-    # "Napoli"
-    w2, h2 = _measure(draw, "Napoli", title)
-    draw.text(((540 - w2) // 2, 380 + h1 + 8), "Napoli", fill=color, font=title)
-    # rombo divisorio
-    cy = 380 + h1 + h2 + 30
-    draw.line([(120, cy), (260, cy)], fill=color, width=1)
-    draw.polygon([(270, cy - 6), (276, cy), (270, cy + 6), (264, cy)], fill=color)
-    draw.line([(282, cy), (420, cy)], fill=color, width=1)
-    # subtitle
-    s = "App sviluppata da Avv. Roberto Arcella"
-    w3, _ = _measure(draw, s, sub)
-    draw.text(((540 - w3) // 2, cy + 20), s, fill=color, font=sub)
-    return img
-
-
-def make_home():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Ordine Avvocati Napoli")
-    # Logo + titolo
-    _card(draw, 16, 90, 508, 90, fill=CARD)
-    _text(draw, 30, 105, "🏛  Logo", size=18, bold=True, color=PRIMARY_DARK)
-    _text(draw, 30, 138, "Consiglio dell'Ordine degli Avvocati di Napoli",
-          size=11, bold=True, color=TEXT)
-
-    tiles = [
-        ("📰", "News", PRIMARY),
-        ("🌐", "Sito", SECONDARY),
-        ("📄", "Documenti", TERTIARY),
-        ("🔧", "Strumenti", PRIMARY),
-        ("🏛", "Aule Udienze", SECONDARY),
-        ("⚖", "Processo Telematico", TERTIARY),
-        ("🔒", "Area riservata", PRIMARY),
-        ("👤", "Riconosco", SECONDARY),
-    ]
-    cell_w, cell_h = 240, 130
-    margin_x, margin_y = 16, 200
-    gap = 12
-    for i, (icon, label, color) in enumerate(tiles):
-        col = i % 2
-        row = i // 2
-        x = margin_x + col * (cell_w + gap)
-        y = margin_y + row * (cell_h + gap)
-        _card(draw, x, y, cell_w, cell_h)
-        _text(draw, x + cell_w // 2 - 14, y + 22, icon, size=36, bold=False, color=color)
-        # label centrata
-        f = _font(13, bold=True)
-        tw, _h = _measure(draw, label, f)
-        draw.text((x + (cell_w - tw) // 2, y + cell_h - 36), label, fill=TEXT, font=f)
-    return img
-
-
-def make_menu():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Menu")
-    # Logo nel menu
-    _card(draw, 0, 78, 540, 110, fill=CARD, border=CARD)
-    _text(draw, 540 // 2 - 20, 100, "🏛", size=36, color=PRIMARY)
-    _text(draw, 100, 145, "Consiglio dell'Ordine", size=11, bold=True, color=MUTED)
-    _text(draw, 130, 162, "degli Avvocati di Napoli", size=11, bold=False, color=MUTED)
-
-    items = [
-        ("🏠", "Home"),
-        ("👥", "Consiglio dell'Ordine"),
-        ("📰", "News"),
-        ("🌐", "Sito Ordine Avvocati"),
-        ("📚", "Albo Avvocati"),
-        ("📄", "Documenti"),
-        ("🔧", "Strumenti"),
-        ("🏛", "Aule Udienze Napoli"),
-        ("⚖", "Processo Telematico"),
-        ("🔒", "Area Riservata"),
-        ("💡", "Commissione Informatica"),
-        ("ℹ", "Info & Crediti"),
-    ]
-    y = 200
-    for icon, label in items:
-        _text(draw, 24, y, icon, size=18, color=PRIMARY)
-        _text(draw, 60, y + 2, label, size=14, bold=False, color=TEXT)
-        draw.line([(20, y + 30), (520, y + 30)], fill=BORDER, width=1)
-        y += 44
-    return img
-
-
-def make_strumenti():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Strumenti", has_back=True, has_menu=False)
-    # Hint
-    _text(draw, 16, 90, "☁ funziona offline    📶 serve internet",
-          size=10, bold=False, color=MUTED)
-    # Sezioni
-    sections = [
-        ("Servizi di interesse generale", [
-            ("Parametri Forensi (D.M. 147/2022)", "☁"),
-            ("Calcolo Fattura Avvocato", "☁"),
-            ("Preventivo professionale", "☁"),
-            ("Contributo Unificato (Civ/Trib/Amm)", "📶"),
-            ("Interessi Legali e Moratori", "📶"),
-        ]),
-        ("Civile", [
-            ("Termini c.p.c. (Cartabia)", "☁"),
-            ("Termini Esecuzioni Civili", "☁"),
-            ("Danno alla persona — TUN 2025", "☁"),
-            ("FAQ Patrocinio Spese Stato (Civile)", "☁"),
-        ]),
-        ("Penale", [
-            ("Calcolo Prescrizione Penale", "☁"),
-            ("Patrocinio S.S. Penale (Napoli)", "☁"),
-            ("PEC Uffici Giudiziari (PPT)", "☁"),
-        ]),
-    ]
-    y = 120
-    for title, items in sections:
-        # divider
-        draw.rectangle([0, y, 540, y + 28], fill=(244, 245, 248))
-        _text(draw, 16, y + 7, title, size=12, bold=True, color=TEXT)
-        y += 38
-        for label, badge in items:
-            _text(draw, 24, y + 6, "•", size=18, color=PRIMARY)
-            _text(draw, 44, y + 8, label, size=12, color=TEXT)
-            _text(draw, 480, y + 8, badge, size=14, color=SUCCESS if badge == "☁" else (255, 196, 9))
-            y += 30
-        y += 6
-        if y > 920:
-            break
-    return img
-
-
-def make_aule_lavoro():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Aule Udienze Napoli", has_back=True, has_menu=False)
-    _text(draw, 16, 92, "Calendario Udienze", size=18, bold=True, color=PRIMARY_DARK)
-    _text(draw, 16, 118, "Sezione Lavoro — Tribunale di Napoli", size=10, color=MUTED)
-
-    # search
-    _card(draw, 16, 144, 508, 38, border=BORDER)
-    _text(draw, 28, 156, "Cerca giudice…", size=12, color=MUTED)
-
-    # day filters chips
-    chips = [("Tutti", False), ("Lun", False), ("Mar", True),
-             ("Mer", False), ("Gio", False), ("Ven", False)]
-    cx = 16
-    cy = 198
-    for label, active in chips:
-        cw = 56 if label != "Tutti" else 60
-        if active:
-            draw.rounded_rectangle([cx, cy, cx + cw, cy + 28], radius=14,
-                                   fill=PRIMARY, outline=PRIMARY)
-            _text(draw, cx + 12, cy + 6, label, size=11, bold=True, color=(255, 255, 255))
-        else:
-            draw.rounded_rectangle([cx, cy, cx + cw, cy + 28], radius=14,
-                                   fill=(230, 240, 250), outline=(230, 240, 250))
-            _text(draw, cx + 12, cy + 6, label, size=11, bold=True, color=PRIMARY_DARK)
-        cx += cw + 6
-
-    # judge cards
-    judges = [
-        ("ALFANO", "III", "10", ["Martedì", "Giovedì"]),
-        ("ARMATO", "II", "9", ["Martedì", "Giovedì"]),
-        ("BORRELLI", "I", "8", ["Martedì", "Giovedì"]),
-        ("CARDELLICCHIO", "I", "7", ["Martedì", "Giovedì"]),
-    ]
-    cy = 248
-    for name, sez, piano, days in judges:
-        _card(draw, 16, cy, 508, 130)
-        _text(draw, 28, cy + 12, name, size=15, bold=True, color=PRIMARY_DARK)
-        draw.line([(28, cy + 38), (508, cy + 38)], fill=BORDER, width=1)
-        # pill sezione (oro)
-        draw.rounded_rectangle([28, cy + 50, 130, cy + 78], radius=8,
-                               fill=SECONDARY, outline=SECONDARY)
-        _text(draw, 38, cy + 56, "SEZIONE", size=8, bold=True, color=(74, 58, 20))
-        _text(draw, 100, cy + 54, sez, size=14, bold=True, color=(0, 0, 0))
-        # pill piano
-        draw.rounded_rectangle([140, cy + 50, 240, cy + 78], radius=8,
-                               fill=(238, 244, 251), outline=(180, 210, 240))
-        _text(draw, 152, cy + 56, "PIANO", size=8, bold=True, color=MUTED)
-        _text(draw, 200, cy + 54, piano, size=14, bold=True, color=PRIMARY_DARK)
-        # giorni
-        _text(draw, 28, cy + 86, "GIORNI DI UDIENZA", size=9, bold=True, color=MUTED)
-        dx = 28
-        for d in days:
-            _text(draw, dx, cy + 102, d, size=11, bold=True, color=PRIMARY_DARK)
-            dx += 80
-        cy += 138
-        if cy > 880:
-            break
-    return img
-
-
-def make_processo_telematico():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Processo Telematico", has_back=True, has_menu=False)
-    _wrap(draw, 16, 90, "Notizie e avvisi ufficiali sui processi telematici, "
-          "raggruppati per area di competenza.", 11, False, MUTED, 508)
-
-    # Fonti news
-    draw.rectangle([0, 138, 540, 168], fill=(244, 245, 248))
-    _text(draw, 16, 145, "Fonti di news ufficiali", size=12, bold=True, color=TEXT)
-
-    sources = [
-        ("🛡", "PST — Min. Giustizia",
-         "Avvisi ufficiali su PCT, PPT, malfunzionamenti…"),
-        ("🏢", "Giustizia Amministrativa",
-         "Pronunce del Consiglio di Stato e dei TAR"),
-        ("💼", "Giustizia Tributaria",
-         "Avvisi e rassegne sentenze (RSS ufficiale)"),
-    ]
-    y = 178
-    for icon, title, desc in sources:
-        _text(draw, 24, y + 12, icon, size=22, color=PRIMARY)
-        _text(draw, 60, y + 8, title, size=12, bold=True, color=TEXT)
-        _text(draw, 60, y + 28, desc, size=10, color=MUTED)
-        draw.line([(0, y + 56), (540, y + 56)], fill=BORDER)
-        y += 64
-
-    # Strumenti operativi
-    draw.rectangle([0, y, 540, y + 30], fill=(244, 245, 248))
-    _text(draw, 16, y + 7, "Strumenti operativi", size=12, bold=True, color=TEXT)
-    y += 40
-    tools = [
-        ("💼", "Depositi CCII (Crisi d'impresa)"),
-        ("🧬", "Mappa XSD Depositi PCT"),
-        ("🏢", "SIGP — Consultazione Giudice di Pace"),
-    ]
-    for icon, name in tools:
-        _text(draw, 24, y + 6, icon, size=20, color=PRIMARY)
-        _text(draw, 60, y + 8, name, size=12, color=TEXT)
-        draw.line([(0, y + 36), (540, y + 36)], fill=BORDER)
-        y += 44
-    return img
-
-
-def make_area_riservata():
-    img, draw = _frame()
-    _toolbar(draw, 540, "Area Riservata", has_back=True, has_menu=False)
-    # card principale
-    _card(draw, 16, 100, 508, 380)
-    _text(draw, 30, 116, "🔒 Accesso al sito ufficiale", size=15, bold=True, color=PRIMARY_DARK)
-    _wrap(draw, 30, 154,
-          "L'area riservata viene aperta nel browser di sistema, dove "
-          "potrai effettuare il login con le credenziali del sito "
-          "istituzionale del Consiglio.",
-          11, False, TEXT, 480)
-    _wrap(draw, 30, 256,
-          "Il browser di sistema mantiene la sessione tra aperture e "
-          "supporta i password manager del telefono.",
-          10, False, MUTED, 480)
-    # bottone primary
-    draw.rounded_rectangle([30, 340, 510, 380], radius=8, fill=PRIMARY)
-    _text(draw, 100, 352, "🔑 Apri area riservata nel browser  ⤴",
-          size=12, bold=True, color=(255, 255, 255))
-    # security note
-    _wrap(draw, 30, 400,
-          "🛡 Le credenziali vengono inserite direttamente sul sito ufficiale "
-          "del COA: l'app non le vede e non le memorizza.",
-          10, False, MUTED, 480)
-    return img
-
-
-# ============== Genera tutte le immagini ==============
-def generate_images():
-    images = {
-        "splash": make_splash(),
-        "home": make_home(),
-        "menu": make_menu(),
-        "strumenti": make_strumenti(),
-        "aule": make_aule_lavoro(),
-        "pct": make_processo_telematico(),
-        "area_riservata": make_area_riservata(),
-    }
+def copy_photos():
+    """Copia gli screenshot nella cartella manual-images con nomi semantici."""
     paths = {}
-    for k, img in images.items():
-        p = IMAGES_DIR / f"{k}.png"
-        img.save(p, format="PNG")
-        paths[k] = p
-        print(f"  [OK] {p.name}")
+    for src_name, dst_name in PHOTO_MAPPING:
+        src = PHOTO_SRC / src_name
+        if not src.exists():
+            print(f"  [SKIP] {src_name} non trovato")
+            continue
+        dst = IMAGES_DIR / dst_name
+        shutil.copy2(src, dst)
+        paths[dst_name.replace(".jpeg", "")] = dst
+        print(f"  [OK] {dst_name}")
     return paths
 
 
-# ============== Manuale ==============
-
-def add_heading(doc, text, level=1):
-    h = doc.add_heading(text, level=level)
-    for run in h.runs:
-        run.font.color.rgb = RGBColor(*PRIMARY_DARK)
-    return h
+# ============== Palette colori ==============
+PRIMARY_DARK = (0, 63, 127)
+PRIMARY = (0, 102, 204)
+MUTED = (110, 117, 130)
 
 
-def add_para(doc, text, bold=False, italic=False, size=11, color=None):
-    p = doc.add_paragraph()
-    r = p.add_run(text)
-    r.bold = bold
-    r.italic = italic
-    r.font.size = Pt(size)
-    if color:
-        r.font.color.rgb = RGBColor(*color)
-    return p
+# ============== Modello del manuale ==============
+# Lista di elementi: ogni elemento è (tipo, payload).
+# Tipi: H1, H2, H3, P, BULLET, NUM, IMG (path, caption opzionale),
+#       NOTE (paragrafo evidenziato), PAGEBREAK, QUOTE
+def build_content(images):
+    C = []  # lista di elementi
+    h1 = lambda t: C.append(("H1", t))
+    h2 = lambda t: C.append(("H2", t))
+    h3 = lambda t: C.append(("H3", t))
+    p = lambda t: C.append(("P", t))
+    b = lambda t: C.append(("BULLET", t))
+    n = lambda t: C.append(("NUM", t))
+    img = lambda key, cap=None: C.append(("IMG", (images.get(key), cap)))
+    note = lambda t: C.append(("NOTE", t))
+    pb = lambda: C.append(("PAGEBREAK", None))
+    quote = lambda t: C.append(("QUOTE", t))
 
+    # ===================================================================
+    # FRONTESPIZIO
+    # ===================================================================
+    C.append(("TITLE", "Manuale d'uso"))
+    C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
+    C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
+    img("home", "Schermata principale dell'app")
+    C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
+    C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
+    pb()
 
-def add_bullet(doc, text):
-    p = doc.add_paragraph(text, style="List Bullet")
-    return p
-
-
-def add_image(doc, path, width_cm=10, caption=None):
-    p = doc.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run()
-    r.add_picture(str(path), width=Cm(width_cm))
-    if caption:
-        cap = doc.add_paragraph()
-        cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        cr = cap.add_run(caption)
-        cr.italic = True
-        cr.font.size = Pt(9)
-        cr.font.color.rgb = RGBColor(*MUTED)
-
-
-def build_manuale(images):
-    doc = Document()
-
-    # Stili globali base
-    styles = doc.styles
-    normal = styles["Normal"]
-    normal.font.name = "Calibri"
-    normal.font.size = Pt(11)
-
-    # === FRONTESPIZIO ===
-    title = doc.add_paragraph()
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = title.add_run("Manuale d'uso")
-    r.font.size = Pt(28)
-    r.bold = True
-    r.font.color.rgb = RGBColor(*PRIMARY_DARK)
-
-    sub = doc.add_paragraph()
-    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = sub.add_run("App Ordine Avvocati Napoli")
-    r.font.size = Pt(20)
-    r.font.color.rgb = RGBColor(*PRIMARY)
-
-    sub2 = doc.add_paragraph()
-    sub2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = sub2.add_run("Consiglio dell'Ordine degli Avvocati di Napoli")
-    r.italic = True
-    r.font.size = Pt(13)
-
-    doc.add_paragraph()
-    add_image(doc, images["splash"], width_cm=8,
-              caption="Schermata di apertura dell'app")
-    doc.add_paragraph()
-
-    credit = doc.add_paragraph()
-    credit.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = credit.add_run("Autore: Avv. Roberto Arcella")
-    r.bold = True
-    r.font.size = Pt(11)
-    credit2 = doc.add_paragraph()
-    credit2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = credit2.add_run("Idea e collaborazione: Commissione Informatica del COA Napoli")
-    r.font.size = Pt(10)
-    r.font.color.rgb = RGBColor(*MUTED)
-
-    doc.add_page_break()
-
-    # === SOMMARIO ===
-    add_heading(doc, "Sommario", level=1)
+    # ===================================================================
+    # SOMMARIO
+    # ===================================================================
+    h1("Sommario")
     sezioni = [
         "1. Introduzione",
         "2. Installazione",
         "3. Schermata principale (Home)",
         "4. Menu di navigazione",
         "5. Consiglio dell'Ordine",
-        "6. News",
-        "7. Sito Ordine Avvocati",
-        "8. Albo Avvocati",
-        "9. Documenti",
-        "10. Strumenti",
-        "11. Aule Udienze Napoli",
-        "12. Processo Telematico",
-        "13. Area Riservata",
+        "6. News dal Consiglio",
+        "7. News dagli Uffici Giudiziari",
+        "8. Sito Ordine Avvocati",
+        "9. Albo Avvocati Napoli e Albo Nazionale",
+        "10. Documenti",
+        "11. Strumenti",
+        "12. Aule Udienze Napoli",
+        "    12.1 Tribunale di Napoli",
+        "    12.2 Corte d'Appello di Napoli",
+        "    12.3 Sezione Lavoro, Aule Penali, Calendario GdP",
+        "13. Processo Telematico",
+        "    13.1 Notifiche di nuovi avvisi PST",
+        "    13.2 Fonti di news ufficiali",
+        "    13.3 Strumenti operativi PCT",
         "14. Riconosco",
-        "15. Commissione Informatica",
-        "16. Info & Crediti",
-        "17. Funzionalità trasversali",
-        "18. Privacy e sicurezza",
-        "19. Risoluzione problemi",
+        "15. Area Riservata Consiglieri",
+        "16. Commissione Informatica",
+        "17. Info & Crediti",
+        "18. Funzionalità trasversali",
+        "19. Privacy e sicurezza",
+        "20. Risoluzione problemi",
     ]
     for s in sezioni:
-        doc.add_paragraph(s, style="List Number")
+        n(s)
+    pb()
 
-    doc.add_page_break()
-
-    # === 1. INTRODUZIONE ===
-    add_heading(doc, "1. Introduzione", level=1)
-    add_para(doc,
-             "L'app Ordine Avvocati Napoli è uno strumento informativo e operativo "
-             "realizzato per gli iscritti al Consiglio dell'Ordine degli Avvocati di Napoli. "
-             "Concentra in un unico punto le funzioni più frequentemente utili al "
-             "professionista forense: news del Consiglio, accesso rapido al sito "
-             "istituzionale, modulistica, calcolatori e strumenti operativi, "
-             "informazioni sui processi telematici (PCT, PPT, processo amministrativo "
-             "e tributario) e accesso all'area riservata.")
-    add_para(doc,
-             "L'app è stata sviluppata dall'Avv. Roberto Arcella su idea e con la "
-             "collaborazione della Commissione Informatica del Consiglio dell'Ordine "
-             "degli Avvocati di Napoli.")
-
-    add_heading(doc, "Caratteristiche principali", level=2)
-    for p in [
-        "Funziona prevalentemente offline: i calcolatori e gli strumenti sono "
+    # ===================================================================
+    # 1. INTRODUZIONE
+    # ===================================================================
+    h1("1. Introduzione")
+    p("L'app Ordine Avvocati Napoli è uno strumento informativo e operativo "
+      "realizzato per gli iscritti al Consiglio dell'Ordine degli Avvocati di Napoli. "
+      "Concentra in un unico punto le funzioni più frequentemente utili al "
+      "professionista forense: news del Consiglio, news degli Uffici Giudiziari "
+      "di Napoli, accesso rapido al sito istituzionale, modulistica, calcolatori "
+      "e strumenti operativi, informazioni sui processi telematici (PCT, PPT, "
+      "amministrativo e tributario), accesso all'area riservata, dislocazione "
+      "magistrati e cancellerie del Tribunale e della Corte d'Appello.")
+    p("L'app è stata sviluppata dall'Avv. Roberto Arcella su idea e con la "
+      "collaborazione della Commissione Informatica del Consiglio dell'Ordine "
+      "degli Avvocati di Napoli.")
+    h2("Caratteristiche principali")
+    for x in [
+        "Funziona prevalentemente offline: i calcolatori, gli strumenti, "
+        "l'elenco di magistrati e cancellerie, i contatti del Consiglio, "
+        "la composizione del Consiglio e della Commissione Informatica sono "
         "incorporati nel pacchetto e non richiedono connessione.",
-        "News in tempo reale dal sito ufficiale del Consiglio, con cache locale "
-        "(continuano a essere consultabili anche offline le ultime già lette).",
+        "News in tempo reale dal sito ufficiale del Consiglio (via API REST "
+        "WordPress), con cache locale (le ultime news sono consultabili "
+        "anche offline).",
+        "News aggregate da Tribunale di Napoli e Corte d'Appello di Napoli, "
+        "presentate in ordine cronologico.",
         "Aggregatore di notizie sui processi telematici da fonti istituzionali: "
-        "Ministero della Giustizia (PST), Giustizia Amministrativa, Dipartimento "
-        "della Giustizia Tributaria.",
-        "Accesso integrato all'area riservata del sito tramite il browser interno "
-        "dell'app, con le credenziali del Consiglio.",
+        "Ministero della Giustizia (PST), Giustizia Amministrativa, "
+        "Dipartimento della Giustizia Tributaria.",
+        "Notifiche automatiche di nuovi avvisi PST (background fetch periodico, "
+        "previa autorizzazione dell'utente).",
+        "Accesso integrato all'area riservata Consiglieri tramite il browser "
+        "di sistema, con flusso a 2 step esplicito.",
         "Tema istituzionale conforme alle linee guida AgID per i siti della "
         "Pubblica Amministrazione italiana.",
         "Supporto del tema scuro automatico in base alle preferenze del telefono.",
     ]:
-        add_bullet(doc, p)
+        b(x)
+    pb()
 
-    doc.add_page_break()
-
-    # === 2. INSTALLAZIONE ===
-    add_heading(doc, "2. Installazione", level=1)
-    add_para(doc,
-             "Nella prima fase l'app viene distribuita come file APK Android, "
-             "da installare manualmente. Il file installer si chiama "
-             "OrdineAvvocatiNapoli-debug.apk.")
-    add_heading(doc, "Procedura su Android", level=2)
-    for p in [
+    # ===================================================================
+    # 2. INSTALLAZIONE
+    # ===================================================================
+    h1("2. Installazione")
+    p("Nella prima fase l'app viene distribuita come file APK Android, da "
+      "installare manualmente. Il file installer si chiama "
+      "OrdineAvvocatiNapoli-debug.apk.")
+    h2("Procedura su Android")
+    for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
         "Aprire il file. Android chiederà di abilitare l'installazione da fonti "
         "sconosciute per il browser o file manager: confermare.",
         "Avviare l'installazione. L'app appare come Ordine Avvocati Napoli con "
         "icona blu istituzionale.",
-        "Al primo avvio compare lo splash screen istituzionale, poi la schermata "
-        "principale.",
+        "Al primo avvio compare lo splash screen istituzionale (logo COA su "
+        "fondo crema), poi la schermata principale.",
     ]:
-        add_bullet(doc, p)
-    add_para(doc,
-             "All'avvio non sono richieste registrazioni: l'app è subito utilizzabile "
-             "in tutta la parte ad accesso libero. L'area riservata richiede le "
-             "credenziali del sito istituzionale del Consiglio.",
-             italic=True, color=MUTED)
+        b(x)
+    p("All'avvio non sono richieste registrazioni: l'app è subito utilizzabile "
+      "in tutta la parte ad accesso libero. L'area riservata Consiglieri "
+      "richiede le credenziali del sito istituzionale del Consiglio.")
+    note("Versione iOS (iPhone): per ora la build iOS è gestita su un fork "
+         "separato della repo (vedi documento BUILD_iOS.md sul repository GitHub). "
+         "Richiede un Mac con Xcode e — per la distribuzione su TestFlight o "
+         "App Store — un Apple Developer Program (~99 €/anno).")
+    pb()
 
-    doc.add_page_break()
-
-    # === 3. HOME ===
-    add_heading(doc, "3. Schermata principale (Home)", level=1)
-    add_para(doc,
-             "La home presenta in alto il logo del Consiglio e la denominazione "
-             "completa, e a seguire una griglia di otto riquadri rapidi che danno "
-             "accesso alle aree principali dell'app:")
-    add_image(doc, images["home"], width_cm=8,
-              caption="Home — griglia 2×4 di accesso rapido")
-
-    add_heading(doc, "Riquadri disponibili", level=2)
+    # ===================================================================
+    # 3. HOME
+    # ===================================================================
+    h1("3. Schermata principale (Home)")
+    p("La home presenta in alto il logo del Consiglio e la denominazione "
+      "completa, e a seguire una griglia di otto riquadri rapidi che danno "
+      "accesso alle aree principali dell'app.")
+    img("home", "Home — griglia 2×4 di accesso rapido")
+    h2("Riquadri disponibili")
     tiles = [
         ("News", "Ultime news del Consiglio dell'Ordine"),
         ("Sito", "Sezioni del sito istituzionale (in WebView interna)"),
         ("Documenti", "Modulistica, Albo, Trasparenza, Verbali"),
         ("Strumenti", "Oltre 20 calcolatori e strumenti professionali"),
-        ("Aule Udienze", "Sezione Lavoro, Aule Penali, Calendario GdP"),
+        ("Aule Udienze", "Tribunale, Corte d'Appello, Sezione Lavoro, Aule Penali, GdP"),
         ("Processo Telematico", "Notizie da PST, GA, Giustizia Tributaria"),
-        ("Area Riservata", "Accesso area riservata del sito (consiglieri)"),
+        ("Area Riservata", "Accesso area riservata Consiglieri (browser di sistema)"),
         ("Riconosco", "Sistema di identità digitale dei consigli forensi"),
     ]
     for name, desc in tiles:
-        p = doc.add_paragraph(style="List Bullet")
-        r = p.add_run(name)
-        r.bold = True
-        p.add_run(f" — {desc}")
+        b(f"**{name}** — {desc}")
+    p("In ogni schermata è disponibile l'icona ☰ in alto a sinistra che apre "
+      "il menu laterale con tutte le voci di navigazione (vedi sezione 4).")
+    pb()
 
-    add_para(doc,
-             "Sotto la griglia sono mostrate, in formato sintetico, le ultime tre "
-             "news pubblicate dal Consiglio. Tirando verso il basso (gesto di "
-             "pull-to-refresh) le news vengono aggiornate.",
-             color=MUTED)
-
-    doc.add_page_break()
-
-    # === 4. MENU ===
-    add_heading(doc, "4. Menu di navigazione", level=1)
-    add_para(doc,
-             "Toccando l'icona ☰ in alto a sinistra (o scorrendo dal bordo "
-             "sinistro dello schermo) si apre il menu laterale con tutte le "
-             "voci di navigazione dell'app, in ordine logico di consultazione.")
-    add_image(doc, images["menu"], width_cm=8,
-              caption="Menu laterale (hamburger)")
-
-    add_heading(doc, "Voci del menu", level=2)
+    # ===================================================================
+    # 4. MENU
+    # ===================================================================
+    h1("4. Menu di navigazione")
+    p("Toccando l'icona ☰ in alto a sinistra (o scorrendo dal bordo sinistro "
+      "dello schermo) si apre il menu laterale con tutte le voci di "
+      "navigazione dell'app, in ordine logico di consultazione.")
+    img("menu", "Menu laterale (hamburger)")
+    h2("Voci del menu")
     for v in [
-        "Home — Torna alla schermata principale.",
-        "Consiglio dell'Ordine — Composizione del Consiglio in carica.",
-        "News — Tutte le news del Consiglio con ricerca e infinite scroll.",
-        "Sito Ordine Avvocati — Indice delle sezioni del sito istituzionale.",
-        "Albo Avvocati — Apre l'albo iscritti direttamente nel browser interno.",
-        "Documenti — Modulistica e documenti pubblici di rilievo.",
-        "Strumenti — Calcolatori e strumenti operativi.",
-        "Aule Udienze Napoli — Calendario udienze e dislocazione aule.",
-        "Processo Telematico — Notizie e strumenti per i processi telematici.",
-        "Area Riservata — Accesso area riservata consiglieri.",
-        "Commissione Informatica — Componenti della Commissione che ha "
-        "ideato l'app.",
-        "Info & Crediti — Contatti del Consiglio (offline) e crediti dell'app.",
+        "**Home** — Torna alla schermata principale.",
+        "**Consiglio dell'Ordine** — Composizione del Consiglio in carica (Presidenza + Consiglieri).",
+        "**News dal Consiglio** — Tutte le news del Consiglio, con ricerca e infinite scroll.",
+        "**News dagli Uffici Giudiziari** — News aggregate da Tribunale e Corte d'Appello di Napoli.",
+        "**Sito Ordine Avvocati** — Indice delle sezioni del sito istituzionale.",
+        "**Albo Avvocati Napoli** — Apre l'albo iscritti al COA Napoli direttamente nel browser interno.",
+        "**Albo Nazionale Avvocati** — Apre il portale ricerca avvocati del CNF in browser di sistema.",
+        "**Documenti** — Modulistica e documenti pubblici di rilievo.",
+        "**Strumenti** — Calcolatori e strumenti operativi.",
+        "**Aule Udienze Napoli** — Tribunale, Corte d'Appello, calendari e canali.",
+        "**Processo Telematico** — Notizie e strumenti per i processi telematici, notifiche di nuovi avvisi.",
+        "**Area Riservata** — Accesso area riservata Consiglieri (browser di sistema).",
+        "**Commissione Informatica** — Componenti della Commissione che ha ideato l'app.",
+        "**Info & Crediti** — Contatti del Consiglio (offline) e crediti dell'app.",
     ]:
-        add_bullet(doc, v)
+        b(v)
+    pb()
 
-    doc.add_page_break()
+    # ===================================================================
+    # 5. CONSIGLIO
+    # ===================================================================
+    h1("5. Consiglio dell'Ordine")
+    p("Mostra la composizione completa del Consiglio dell'Ordine in carica, "
+      "suddivisa in due sezioni: l'Ufficio di Presidenza (Presidente, "
+      "Segretario, Tesoriera, Vice Presidenti) e i Consiglieri, in ordine "
+      "di pubblicazione sul sito istituzionale.")
+    img("consiglio", "Composizione del Consiglio dell'Ordine")
+    p("Per ciascun componente è indicato il nome con il prefisso Avv. e, "
+      "sotto, la carica ricoperta. Una piccola icona evidenzia "
+      "l'appartenenza all'Ufficio di Presidenza.")
+    note("Questa pagina contiene dati offline-first incorporati nell'app. "
+         "Vanno aggiornati ad ogni rinnovo del Consiglio o sostituzione di "
+         "un componente, ricompilando l'app.")
 
-    # === 5. CONSIGLIO ===
-    add_heading(doc, "5. Consiglio dell'Ordine", level=1)
-    add_para(doc,
-             "Mostra la composizione completa del Consiglio dell'Ordine in "
-             "carica, suddivisa in due sezioni:")
-    add_bullet(doc, "Ufficio di Presidenza (Presidente, Segretario, Tesoriera, "
-               "Vice Presidenti)")
-    add_bullet(doc, "Consiglieri (in ordine di pubblicazione sul sito)")
-    add_para(doc,
-             "Per ciascun componente è indicato il nome con il prefisso Avv. "
-             "e, sotto, la carica ricoperta. Una piccola icona evidenzia "
-             "l'appartenenza all'Ufficio di Presidenza.")
-
-    # === 6. NEWS ===
-    add_heading(doc, "6. News", level=1)
-    add_para(doc,
-             "Aggregatore delle news pubblicate sul sito istituzionale del "
-             "Consiglio. Le news sono recuperate tramite l'API REST ufficiale "
-             "di WordPress del sito (no scraping), con cache locale di 30 minuti "
-             "per ridurre il consumo di dati.")
-    add_heading(doc, "Funzioni", level=2)
-    for f in [
+    # ===================================================================
+    # 6. NEWS COA
+    # ===================================================================
+    h1("6. News dal Consiglio")
+    p("Aggregatore delle news pubblicate sul sito istituzionale del Consiglio. "
+      "Le news sono recuperate tramite l'API REST ufficiale di WordPress "
+      "del sito (no scraping), con cache locale di 30 minuti per ridurre "
+      "il consumo di dati.")
+    img("news", "Lista news con barra di ricerca")
+    h2("Funzioni")
+    for x in [
         "Ricerca testuale all'interno delle news (campo cerca in alto).",
         "Pull-to-refresh per forzare il ricaricamento.",
         "Scroll infinito: scorrendo in basso vengono caricate le news più datate.",
         "Tocco su una news per leggere il contenuto completo.",
         "Pulsante condividi per inviare la news via WhatsApp, e-mail o altre app.",
         "Pulsante \"Apri sul sito\" per visualizzare la news direttamente sul "
-        "sito istituzionale (dentro l'app o in browser esterno).",
+        "sito istituzionale.",
     ]:
-        add_bullet(doc, f)
+        b(x)
+    pb()
 
-    doc.add_page_break()
+    # ===================================================================
+    # 7. NEWS UFFICI
+    # ===================================================================
+    h1("7. News dagli Uffici Giudiziari")
+    p("Sezione dedicata che aggrega in un unico flusso cronologico le news "
+      "pubblicate dai siti istituzionali del Tribunale di Napoli e della "
+      "Corte d'Appello di Napoli. Ogni news riporta un chip con l'indicazione "
+      "dell'ufficio di provenienza, la data, il titolo e l'estratto.")
+    h2("Funzioni")
+    for x in [
+        "Aggregazione in tempo reale dei due flussi, ordinati per data discendente.",
+        "Cache locale di 30 minuti.",
+        "Pull-to-refresh per forzare il ricaricamento.",
+        "Tocco su una news per aprirla nel browser di sistema sul sito di origine.",
+        "Robusto a fallimenti parziali: se una delle due fonti è temporaneamente "
+        "indisponibile, l'altra continua a essere mostrata.",
+    ]:
+        b(x)
+    pb()
 
-    # === 7. SITO ===
-    add_heading(doc, "7. Sito Ordine Avvocati", level=1)
-    add_para(doc,
-             "Indice delle sezioni del sito istituzionale rese accessibili "
-             "direttamente dall'app, ciascuna in WebView interna ottimizzata "
-             "per dispositivi mobili.")
-    add_heading(doc, "Sezioni disponibili", level=2)
+    # ===================================================================
+    # 8. SITO
+    # ===================================================================
+    h1("8. Sito Ordine Avvocati")
+    p("Indice delle sezioni del sito istituzionale rese accessibili "
+      "direttamente dall'app, ciascuna in WebView interna ottimizzata per "
+      "dispositivi mobili.")
+    h2("Sezioni disponibili")
     for s in [
         "Componenti C.O.A.",
         "Commissioni",
@@ -691,20 +318,30 @@ def build_manuale(images):
         "Deposito negoziazioni assistite (sito esterno)",
         "Contatti",
     ]:
-        add_bullet(doc, s)
+        b(s)
 
-    # === 8. ALBO ===
-    add_heading(doc, "8. Albo Avvocati", level=1)
-    add_para(doc,
-             "Voce di menu autonoma che apre direttamente la sezione Albo ed "
-             "Elenchi del sito ufficiale (avvocati, praticanti, elenchi "
-             "specialistici) all'interno del browser dell'app.")
+    # ===================================================================
+    # 9. ALBI
+    # ===================================================================
+    h1("9. Albo Avvocati Napoli e Albo Nazionale")
+    h2("Albo Avvocati Napoli")
+    p("Voce di menu autonoma che apre direttamente la sezione Albo ed Elenchi "
+      "del sito ufficiale del COA Napoli (avvocati, praticanti, elenchi "
+      "specialistici) all'interno del browser dell'app.")
+    h2("Albo Nazionale Avvocati")
+    p("Apre il portale di ricerca avvocati del Consiglio Nazionale Forense "
+      "(consiglionazionaleforense.it/ricerca-avvocati). Per ragioni tecniche "
+      "(il sito CNF blocca il caricamento in iframe tramite header X-Frame-Options) "
+      "viene aperto nel browser di sistema, dove la sessione e l'esperienza "
+      "utente sono pienamente garantite.")
+    pb()
 
-    # === 9. DOCUMENTI ===
-    add_heading(doc, "9. Documenti", level=1)
-    add_para(doc,
-             "Catalogo dei documenti pubblici di rilievo del Consiglio, con "
-             "accesso in un solo tocco a:")
+    # ===================================================================
+    # 10. DOCUMENTI
+    # ===================================================================
+    h1("10. Documenti")
+    p("Catalogo dei documenti pubblici di rilievo del Consiglio, con accesso "
+      "in un solo tocco a:")
     for s in [
         "Modulistica Ordine Professionale",
         "Albo ed Elenchi",
@@ -712,22 +349,23 @@ def build_manuale(images):
         "Verbali delle sedute consiliari",
         "Amministrazione Trasparente",
     ]:
-        add_bullet(doc, s)
+        b(s)
+    pb()
 
-    doc.add_page_break()
-
-    # === 10. STRUMENTI ===
-    add_heading(doc, "10. Strumenti", level=1)
-    add_para(doc,
-             "Catalogo di calcolatori e strumenti professionali, raggruppati "
-             "per area di competenza, in totale circa 22 strumenti tutti "
-             "incorporati nell'app. Una piccola icona accanto al titolo "
-             "indica se lo strumento funziona offline (☁) o richiede "
-             "internet (📶).")
-    add_image(doc, images["strumenti"], width_cm=8,
-              caption="Strumenti — raggruppamento per giurisdizione")
-
-    add_heading(doc, "Servizi di interesse generale", level=2)
+    # ===================================================================
+    # 11. STRUMENTI
+    # ===================================================================
+    h1("11. Strumenti")
+    p("Catalogo di calcolatori e strumenti professionali, raggruppati per "
+      "area di competenza, in totale circa 19 strumenti tutti incorporati "
+      "nell'app. Una piccola icona accanto al titolo indica se lo strumento "
+      "funziona offline (☁) o richiede internet (📶).")
+    img("strumenti", "Strumenti — raggruppamento per area di competenza")
+    note("Lo screenshot qui sopra mostra una versione precedente del catalogo, "
+         "che includeva l'Anonimizzatore atti, il Markdown→PDF e InvoicyLex; "
+         "questi tre strumenti sono stati successivamente rimossi perché poco "
+         "adatti all'uso da smartphone.")
+    h2("Servizi di interesse generale")
     for s in [
         "Parametri Forensi (D.M. 147/2022) — calcolatore parcelle",
         "Calcolo Fattura Avvocato (CPA, IVA, ritenuta)",
@@ -735,12 +373,9 @@ def build_manuale(images):
         "Contributo Unificato (Civile/Tributario/Amministrativo)",
         "Interessi Legali e Moratori (tasso legale, BCE)",
         "Procura alle liti — generatore",
-        "Anonimizzatore atti e provvedimenti",
-        "Markdown → PDF Converter",
-        "InvoicyLex — Dashboard Fiscale",
     ]:
-        add_bullet(doc, s)
-    add_heading(doc, "Civile", level=2)
+        b(s)
+    h2("Civile")
     for s in [
         "Termini c.p.c. (Cartabia) — calcolatore termini processuali",
         "Termini Esecuzioni Civili",
@@ -752,201 +387,246 @@ def build_manuale(images):
         "Analizzatore atti D.M. 110/2023",
         "Analisi Verbale Ricerca Beni",
     ]:
-        add_bullet(doc, s)
-    add_heading(doc, "Penale", level=2)
+        b(s)
+    h2("Penale")
     for s in [
         "Calcolo Prescrizione Penale (avanzato)",
         "Patrocinio S.S. Penale — Protocollo Napoli",
         "PEC Uffici Giudiziari (PPT)",
     ]:
-        add_bullet(doc, s)
-    add_para(doc,
-             "Tutti gli strumenti tradizionalmente pubblicati su "
-             "avvocatotelematico.studiolegalearcella.it sono inclusi nel pacchetto "
-             "dell'app a beneficio degli iscritti.",
-             italic=True, color=MUTED)
+        b(s)
+    note("Tutti gli strumenti tradizionalmente pubblicati su "
+         "avvocatotelematico.studiolegalearcella.it sono inclusi nel pacchetto "
+         "dell'app a beneficio degli iscritti.")
+    pb()
 
-    doc.add_page_break()
+    # ===================================================================
+    # 12. AULE UDIENZE
+    # ===================================================================
+    h1("12. Aule Udienze Napoli")
+    p("Sezione dedicata alla logistica delle udienze e alla dislocazione "
+      "degli uffici giudiziari di Napoli. La home della sezione mostra in "
+      "cima i due grandi blocchi (Tribunale e Corte d'Appello), seguiti dai "
+      "calendari e canali specifici.")
 
-    # === 11. AULE ===
-    add_heading(doc, "11. Aule Udienze Napoli", level=1)
-    add_para(doc,
-             "Strumenti dedicati alla logistica delle udienze presso il Tribunale "
-             "di Napoli e gli uffici dei giudici di pace.")
-    add_image(doc, images["aule"], width_cm=8,
-              caption="Aule Sezione Lavoro — vista a card")
-
-    add_heading(doc, "Aule Sezione Lavoro Napoli", level=2)
-    add_para(doc,
-             "Mostra il calendario delle udienze dei giudici della Sezione Lavoro "
-             "in formato a card responsive (1, 2 o 3 colonne in base alla larghezza "
-             "del dispositivo). Per ciascun giudice sono visibili in modo evidente:")
-    add_bullet(doc, "Cognome del giudice in evidenza")
-    add_bullet(doc, "Sezione (I, II o III) in pillola dorata")
-    add_bullet(doc, "Piano dell'aula in pillola azzurra")
-    add_bullet(doc, "Giorni di udienza")
-    add_para(doc,
-             "Sono presenti tre filtri: ricerca per cognome (con "
-             "autocompletamento), filtro per giorno della settimana e filtro per "
-             "sezione. All'apertura, l'app preseleziona automaticamente il giorno "
-             "corrente, mostrando subito i giudici in udienza oggi.")
-
-    add_heading(doc, "Aule Penali Napoli", level=2)
-    add_para(doc,
-             "Apre il canale Telegram @AulePenaliNapoli, con segnalazioni in "
-             "tempo reale sulle aule penali. Richiede l'app Telegram installata.")
-
-    add_heading(doc, "Calendario GdP Napoli 2026", level=2)
-    add_para(doc,
-             "Calendario delle udienze del Giudice di Pace di Napoli per "
-             "l'anno corrente, completamente offline.")
-
-    doc.add_page_break()
-
-    # === 12. PCT ===
-    add_heading(doc, "12. Processo Telematico", level=1)
-    add_para(doc,
-             "Aggregatore di notizie istituzionali e strumenti operativi sui "
-             "processi telematici (civile, penale, amministrativo, tributario).")
-    add_image(doc, images["pct"], width_cm=8,
-              caption="Processo Telematico — fonti e strumenti")
-
-    add_heading(doc, "Fonti di news ufficiali", level=2)
-    for s in [
-        "PST — Min. Giustizia: avvisi su PCT, PPT, malfunzionamenti dei sistemi.",
-        "Giustizia Amministrativa: news del Consiglio di Stato e dei TAR (in WebView).",
-        "Giustizia Tributaria (DGT MEF): feed RSS ufficiale con avvisi e rassegne.",
+    h2("12.1 Tribunale di Napoli")
+    p("Pagina dedicata con quattro tab interne (segments) e ricerca:")
+    for x in [
+        "**Magistrati** — circa 287 magistrati raggruppati per sezione, con "
+        "filtro per area giurisdizione (Civile / Lavoro / Penale) e ricerca "
+        "testuale per cognome, nome o sezione. Ogni magistrato indica nome, "
+        "cognome, ruolo (Presidente di Sezione, Giudice, Giudice Onorario, "
+        "GIP/GUP, ecc.) e tipo (Togato/Onorario).",
+        "**Uffici** — 11 uffici amministrativi (Presidenza, Dirigenza, "
+        "Personale, Recupero Crediti, Spese pagate dall'Erario, Economato, "
+        "Archivio, Corpi di Reato, Centralino) con dislocazione su torre/piano, "
+        "responsabile, telefono cliccabile, email cliccabile, PEC.",
+        "**Dislocazione** — mappa logica dei settori del Tribunale per "
+        "torre (A/B/C) e range di piani (es. Settore Civile su torre A "
+        "piani 6-22, Settore Penale GIP/GUP su torre B piani 12-16, "
+        "Sezioni Riesame torre C piano 5).",
+        "**Info** — dati identificativi (sede, telefono, PEC, email).",
     ]:
-        add_bullet(doc, s)
+        b(x)
 
-    add_heading(doc, "Strumenti operativi", level=2)
-    for s in [
-        "Depositi CCII — selettore atto-ruolo per il Codice della Crisi.",
-        "Mappa XSD Depositi PCT — schemi SICID/SIECIC + CCII.",
-        "SIGP — Consultazione Giudice di Pace (apre nel browser di sistema).",
+    h2("12.2 Corte d'Appello di Napoli")
+    p("Pagina dedicata con cinque tab interne e ricerca:")
+    for x in [
+        "**Magistrati** — circa 113 magistrati delle sezioni civili, lavoro "
+        "(5 unità), penali (6 sezioni) e Sezione Minorenni-Persona-Famiglia, "
+        "con filtro per area e ricerca.",
+        "**Uffici** — 46 uffici e cancellerie con responsabile, telefono, "
+        "email, PEC. Raggruppati per torre.",
+        "**Vertici** — Presidente, Vicario, Coordinatori dei settori "
+        "(Civile, Penale, Lavoro, Sezioni Assise Appello, Innovazione).",
+        "**Info** — dati identificativi della Corte d'Appello.",
     ]:
-        add_bullet(doc, s)
+        b(x)
 
-    doc.add_page_break()
+    h2("12.3 Sezione Lavoro, Aule Penali, Calendario GdP")
+    for x in [
+        "**Aule Sezione Lavoro Napoli** — calendario delle udienze dei 45 "
+        "giudici della Sezione Lavoro del Tribunale, in formato a card "
+        "responsive con sezione, piano e giorni di udienza in evidenza. "
+        "Filtri per giorno della settimana (auto-seleziona il giorno corrente) "
+        "e per sezione (I, II, III). Ricerca per cognome con autocompletamento.",
+        "**Aule Penali Napoli** — apertura del canale Telegram "
+        "@AulePenaliNapoli con segnalazioni in tempo reale. Richiede l'app "
+        "Telegram installata.",
+        "**Calendario GdP Napoli 2026** — calendario delle udienze del "
+        "Giudice di Pace di Napoli per l'anno corrente, completamente offline.",
+    ]:
+        b(x)
+    pb()
 
-    # === 13. AREA RISERVATA ===
-    add_heading(doc, "13. Area Riservata", level=1)
-    add_para(doc,
-             "Accesso all'area riservata del sito istituzionale, riservata ai "
-             "consiglieri e ai professionisti che vi sono abilitati.")
-    add_image(doc, images["area_riservata"], width_cm=8,
-              caption="Area Riservata — accesso al sito istituzionale")
-    add_para(doc,
-             "Toccando il pulsante Apri area riservata nel browser, l'app lancia "
-             "il browser di sistema (Chrome Custom Tabs su Android) sulla pagina di "
-             "login del sito istituzionale del Consiglio. L'utente compila il modulo "
-             "di login con le proprie credenziali ed entra in area riservata "
-             "esattamente come da browser.")
-    add_para(doc,
-             "Vantaggi di questo approccio:")
-    add_bullet(doc, "Sessione persistente tra aperture diverse (la sessione resta "
-               "salvata nel browser di sistema).")
-    add_bullet(doc, "Compatibilità con i password manager del telefono "
-               "(autocompletamento delle credenziali).")
-    add_bullet(doc, "Massima compatibilità con tutte le funzionalità del sito "
-               "(redirect, banner, allegati).")
-    add_para(doc,
-             "L'app non vede e non memorizza username e password: il login è gestito "
-             "interamente dal sito istituzionale dentro il browser di sistema.",
-             bold=True)
+    # ===================================================================
+    # 13. PROCESSO TELEMATICO
+    # ===================================================================
+    h1("13. Processo Telematico")
+    p("Aggregatore di notizie istituzionali e strumenti operativi sui processi "
+      "telematici (civile, penale, amministrativo, tributario), con un sistema "
+      "di notifiche per i nuovi avvisi del PST.")
+    img("processo_telematico", "Processo Telematico — notifiche, fonti e strumenti")
 
-    # === 14. RICONOSCO ===
-    add_heading(doc, "14. Riconosco", level=1)
-    add_para(doc,
-             "Apre il portale Riconosco (riconosco.dcssrl.it), il sistema di "
-             "identità digitale degli iscritti agli ordini forensi italiani, in "
-             "Chrome Custom Tabs di sistema (per garantire il corretto "
-             "funzionamento del banner privacy e della sessione).")
+    h2("13.1 Notifiche di nuovi avvisi PST")
+    p("In cima alla pagina è presente un toggle per attivare le notifiche "
+      "automatiche di nuovi avvisi pubblicati sul Portale Servizi Telematici "
+      "del Ministero della Giustizia. All'attivazione l'app richiede il "
+      "permesso del sistema operativo per inviare notifiche.")
+    p("Una volta attive, l'app verifica periodicamente in background "
+      "(circa una volta all'ora; il sistema Android decide il timing preciso "
+      "in base alle policy di risparmio batteria) e ad ogni apertura dell'app "
+      "se ci sono nuovi avvisi rispetto a quelli già letti. In caso "
+      "affermativo, schedula una notifica locale con il titolo della novità.")
+    note("Su alcuni dispositivi con ottimizzazione batteria aggressiva "
+         "(Xiaomi/MIUI, Huawei/EMUI) può essere necessario escludere l'app "
+         "dalle impostazioni di risparmio energetico per ricevere le notifiche "
+         "con regolarità in background.")
 
-    # === 15. COMMISSIONE ===
-    add_heading(doc, "15. Commissione Informatica", level=1)
-    add_para(doc,
-             "Pagina dedicata ai componenti della Commissione Informatica del "
-             "Consiglio dell'Ordine degli Avvocati di Napoli, ideatrice e "
-             "collaboratrice del progetto. Sono indicati:")
-    add_bullet(doc, "Delegato all'informatica e all'innovazione")
-    add_bullet(doc, "Coordinatore della Commissione")
-    add_bullet(doc, "Componenti in ordine alfabetico per cognome")
+    h2("13.2 Fonti di news ufficiali")
+    for x in [
+        "**PST — Min. Giustizia**: avvisi su PCT, PPT, malfunzionamenti dei "
+        "sistemi telematici (ordinari e penali). Scraping HTML.",
+        "**Giustizia Amministrativa**: news del Consiglio di Stato e dei TAR "
+        "(WebView interna per problemi SSL del sito).",
+        "**Giustizia Tributaria (DGT MEF)**: feed RSS ufficiale con avvisi "
+        "e rassegne sentenze.",
+    ]:
+        b(x)
 
-    # === 16. INFO ===
-    add_heading(doc, "16. Info & Crediti", level=1)
-    add_para(doc,
-             "Pagina informativa con i dati di contatto del Consiglio dell'Ordine "
-             "(disponibili anche offline) e i crediti dell'app:")
-    add_heading(doc, "Contatti del Consiglio (offline)", level=2)
-    for s in [
-        "Sede: Centro Direzionale, Piazza Coperta — 80143 Napoli "
+    h2("13.3 Strumenti operativi PCT")
+    for x in [
+        "**Depositi CCII** — selettore atto-ruolo per i depositi nel Codice "
+        "della Crisi d'Impresa.",
+        "**Mappa XSD Depositi PCT** — schemi SICID/SIECIC + CCII.",
+        "**SIGP — Consultazione Giudice di Pace** — sito legacy del Min. "
+        "Giustizia, apre nel browser di sistema per maggiore usabilità.",
+    ]:
+        b(x)
+    pb()
+
+    # ===================================================================
+    # 14. RICONOSCO
+    # ===================================================================
+    h1("14. Riconosco")
+    p("Apre il portale Riconosco (riconosco.dcssrl.it), sistema di identità "
+      "digitale degli iscritti agli ordini forensi italiani, in Chrome Custom "
+      "Tabs di sistema. Questa scelta garantisce il corretto funzionamento "
+      "del banner privacy del sito Riconosco, della sessione utente e di "
+      "tutte le funzionalità avanzate.")
+
+    # ===================================================================
+    # 15. AREA RISERVATA
+    # ===================================================================
+    h1("15. Area Riservata Consiglieri")
+    p("Accesso all'area riservata del sito istituzionale, riservata ai "
+      "consiglieri e ai professionisti che vi sono abilitati.")
+    p("La pagina propone un workflow esplicito a 2 step (in alto un avviso "
+      "giallo che lo segnala), perché il sito ufficiale, per come è "
+      "attualmente strutturato, non redirige automaticamente all'area "
+      "Consiglieri dopo il login.")
+    h2("Step 1 — Login")
+    p("Tocca **Apri pagina di login** per aprire la pagina di login del sito "
+      "istituzionale del Consiglio nel browser di sistema. Compila il modulo "
+      "con le tue credenziali.")
+    h2("Step 2 — Area Riservata Consiglieri")
+    p("Una volta effettuato il login, torna in app e tocca il bottone "
+      "evidenziato in blu **Vai all'Area Riservata Consiglieri**, che apre "
+      "direttamente l'URL specifico della sezione (anch'esso visibile in "
+      "chiaro nella card dell'app per maggiore trasparenza).")
+    note("Le credenziali vengono inserite direttamente sul sito ufficiale "
+         "del COA dentro il browser di sistema: l'app non le vede e non le "
+         "memorizza. La sessione resta attiva nel browser di sistema anche "
+         "tra aperture successive dell'app, e supporta nativamente i password "
+         "manager del telefono.")
+    pb()
+
+    # ===================================================================
+    # 16. COMMISSIONE
+    # ===================================================================
+    h1("16. Commissione Informatica")
+    p("Pagina dedicata ai componenti della Commissione Informatica del "
+      "Consiglio dell'Ordine degli Avvocati di Napoli, ideatrice e "
+      "collaboratrice del progetto.")
+    img("commissione", "Composizione della Commissione Informatica")
+    p("L'elenco riporta:")
+    for x in [
+        "Il **Delegato all'informatica e all'innovazione** (Cons. Avv. "
+        "Roberto Arcella).",
+        "Il **Coordinatore** della Commissione (Avv. Leonardo Scinto).",
+        "I **Componenti** in ordine alfabetico per cognome.",
+    ]:
+        b(x)
+
+    # ===================================================================
+    # 17. INFO
+    # ===================================================================
+    h1("17. Info & Crediti")
+    p("Pagina informativa con i dati di contatto del Consiglio dell'Ordine "
+      "(disponibili anche offline) e i crediti dell'app.")
+    h2("Contatti del Consiglio (offline)")
+    for x in [
+        "**Sede**: Centro Direzionale, Piazza Coperta — 80143 Napoli "
         "(tap → apre Google Maps)",
-        "Telefono: +39 081 734 3737 (tap → avvia chiamata)",
-        "Fax: +39 081 734 3010",
-        "E-mail: segreteria@ordineavvocati.napoli.it (tap → client mail)",
-        "PEC: segreteria@avvocatinapoli.legalmail.it",
-        "Orari segreteria: Lunedì–Venerdì, 9.00–12.30",
-        "Codice Fiscale: 80013690633",
-        "Codice Univoco fatturazione: UF9L1M",
+        "**Telefono**: +39 081 734 3737 (tap → avvia chiamata)",
+        "**Fax**: +39 081 734 3010",
+        "**Email**: segreteria@ordineavvocati.napoli.it (tap → client mail)",
+        "**PEC**: segreteria@avvocatinapoli.legalmail.it",
+        "**Orari segreteria**: Lunedì–Venerdì, 9.00–12.30",
+        "**Codice Fiscale**: 80013690633",
+        "**Codice Univoco fatturazione**: UF9L1M",
     ]:
-        add_bullet(doc, s)
+        b(x)
+    h2("Crediti")
+    b("**Autore**: Avv. Roberto Arcella")
+    b("**Idea e collaborazione**: Commissione Informatica COA Napoli")
+    b("**Per conto di**: Consiglio dell'Ordine degli Avvocati di Napoli")
+    pb()
 
-    add_heading(doc, "Crediti", level=2)
-    add_bullet(doc, "Autore: Avv. Roberto Arcella")
-    add_bullet(doc, "Idea e collaborazione: Commissione Informatica COA Napoli")
-    add_bullet(doc, "Per conto di: Consiglio dell'Ordine degli Avvocati di Napoli")
+    # ===================================================================
+    # 18. FUNZIONALITÀ TRASVERSALI
+    # ===================================================================
+    h1("18. Funzionalità trasversali")
+    h2("Tema scuro")
+    p("L'app supporta automaticamente il tema scuro/chiaro in base alle "
+      "preferenze di sistema del telefono. Anche le mini-webapp incluse si "
+      "adattano al tema.")
+    h2("Funzionamento offline")
+    p("La maggior parte degli strumenti funziona senza connessione: 13 "
+      "calcolatori sono completamente autonomi (icona ☁), gli altri "
+      "richiedono la prima apertura con internet (icona 📶). I contatti "
+      "del Consiglio, la composizione del Consiglio e della Commissione "
+      "Informatica, l'elenco dei magistrati e cancellerie del Tribunale e "
+      "della Corte d'Appello sono sempre disponibili offline. Le ultime "
+      "news lette restano consultabili offline grazie alla cache.")
+    h2("Apertura siti esterni")
+    p("I siti istituzionali integrabili in iframe (PST, sito COA, sezioni) "
+      "si aprono nel browser interno dell'app per un'esperienza coerente. "
+      "I siti che richiedono comportamenti particolari (Riconosco, SIGP, "
+      "CNF Albo Nazionale, area riservata) vengono aperti in Chrome Custom "
+      "Tabs per garantire la corretta gestione di cookie, sessione e "
+      "rendering.")
+    h2("Pull-to-refresh")
+    p("Nelle pagine di news (sia del Consiglio che degli Uffici Giudiziari "
+      "che delle fonti del Processo Telematico), tirare verso il basso "
+      "aggiorna la lista dei contenuti.")
+    h2("Condivisione")
+    p("Il pulsante condividi presente nei dettagli delle news permette di "
+      "inviarle ad altre app del telefono (WhatsApp, e-mail, Telegram, "
+      "ecc.). Anche le mini-webapp che producono testi (calcoli, modelli) "
+      "possono inviare il risultato via WhatsApp grazie all'integrazione "
+      "automatica.")
+    pb()
 
-    doc.add_page_break()
-
-    # === 17. FUNZIONI TRASVERSALI ===
-    add_heading(doc, "17. Funzionalità trasversali", level=1)
-
-    add_heading(doc, "Tema scuro", level=2)
-    add_para(doc,
-             "L'app supporta automaticamente il tema scuro/chiaro in base alle "
-             "preferenze di sistema del telefono. Anche le mini-webapp incluse "
-             "si adattano al tema.")
-
-    add_heading(doc, "Funzionamento offline", level=2)
-    add_para(doc,
-             "La maggior parte degli strumenti funziona senza connessione: "
-             "circa 13 calcolatori sono completamente autonomi (icona ☁), gli "
-             "altri richiedono la prima apertura con internet (icona 📶). "
-             "I contatti del Consiglio sono sempre disponibili offline. Le "
-             "ultime news lette restano consultabili offline grazie alla cache.")
-
-    add_heading(doc, "Apertura siti esterni", level=2)
-    add_para(doc,
-             "I siti istituzionali integrati (PST, GA, Sito COA, ecc.) si "
-             "aprono nel browser interno dell'app per evitare uscite "
-             "dall'esperienza utente. I siti che richiedono comportamenti "
-             "particolari (Riconosco, SIGP) vengono aperti in Chrome Custom "
-             "Tabs per garantire la corretta gestione di cookie e sessione.")
-
-    add_heading(doc, "Pull-to-refresh", level=2)
-    add_para(doc,
-             "Nelle pagine di news (sia del COA che delle fonti del processo "
-             "telematico), tirare verso il basso aggiorna la lista dei contenuti.")
-
-    add_heading(doc, "Condivisione", level=2)
-    add_para(doc,
-             "Il pulsante condividi presente nei dettagli delle news permette di "
-             "inviarle ad altre app del telefono (WhatsApp, e-mail, Telegram, "
-             "ecc.). Anche le mini-webapp che producono testi (calcoli, modelli) "
-             "possono inviare il risultato via WhatsApp grazie all'integrazione "
-             "automatica.")
-
-    doc.add_page_break()
-
-    # === 18. PRIVACY & SICUREZZA ===
-    add_heading(doc, "18. Privacy e sicurezza", level=1)
-    add_para(doc,
-             "L'app è progettata con attenzione alla privacy degli utenti:",
-             bold=True)
+    # ===================================================================
+    # 19. PRIVACY
+    # ===================================================================
+    h1("19. Privacy e sicurezza")
+    p("L'app è progettata con attenzione alla privacy degli utenti:")
     for s in [
         "Le password dell'area riservata non vengono mai viste né memorizzate "
-        "dall'app: il login avviene direttamente sul sito ufficiale.",
+        "dall'app: il login avviene direttamente sul sito ufficiale dentro "
+        "il browser di sistema.",
         "I dati personali eventualmente inseriti nei calcolatori restano sul "
         "telefono e non vengono trasmessi a server esterni.",
         "I cookie di sessione del sito ufficiale sono memorizzati nel browser "
@@ -954,61 +634,289 @@ def build_manuale(images):
         "Non sono presenti tracker pubblicitari né strumenti di profilazione.",
         "Le news vengono recuperate dall'API REST ufficiale del sito del COA, "
         "che è pubblica e non richiede autenticazione.",
+        "Le notifiche PST sono opzionali e attivabili solo previa esplicita "
+        "autorizzazione dell'utente; l'app comunica al sistema operativo "
+        "soltanto le credenziali tecniche per la schedulazione del task "
+        "background.",
     ]:
-        add_bullet(doc, s)
+        b(s)
 
-    # === 19. RISOLUZIONE PROBLEMI ===
-    add_heading(doc, "19. Risoluzione problemi", level=1)
+    # ===================================================================
+    # 20. RISOLUZIONE PROBLEMI
+    # ===================================================================
+    h1("20. Risoluzione problemi")
+    h2("L'app non scarica le news")
+    p("Verificare la connessione a internet. Se persiste, tirare la lista "
+      "delle news verso il basso per forzare il refresh; in caso di errore "
+      "di rete viene mostrato un messaggio con la possibilità di riprovare "
+      "o di aprire il sito direttamente in browser.")
+    h2("Una mini-app non scorre")
+    p("Toccare brevemente lo schermo per attivare il gesture handler. "
+      "Se il problema persiste, chiudere e riaprire la mini-app dalla voce "
+      "Strumenti.")
+    h2("Un sito istituzionale non carica")
+    p("Alcuni siti del Ministero (es. SIGP) sono di vecchia generazione e "
+      "potrebbero apparire piccoli; usare la pinza con due dita per "
+      "ingrandire. In caso di lentezza, dopo 5 secondi compare un pulsante "
+      "\"Apri in browser\" per usare il browser di sistema.")
+    h2("Banner cookie ricorrente")
+    p("L'app conserva in memoria persistente i cookie del browser interno: "
+      "una volta accettato il banner privacy di un sito, non dovrebbe "
+      "ripresentarsi alle aperture successive (la persistenza viene salvata "
+      "quando si chiude l'app).")
+    h2("Le notifiche PST non arrivano")
+    p("Verificare che il toggle in Processo Telematico → Notifiche sia "
+      "attivo, che il sistema operativo abbia concesso i permessi notifiche "
+      "all'app, e che l'app sia esclusa dall'ottimizzazione batteria del "
+      "device (Impostazioni → Batteria → Ottimizzazione → Ordine Avvocati "
+      "Napoli → Non ottimizzare).")
+    h2("Login Area Riservata: non vedo l'area Consiglieri")
+    p("Dopo il login il sito non redirige automaticamente all'area "
+      "Consiglieri: torna in app e tocca il bottone blu \"Vai all'Area "
+      "Riservata Consiglieri\" (Step 2). Senza questo secondo tocco la "
+      "sessione resta attiva nel browser ma non si entra nell'area vera "
+      "e propria.")
 
-    add_heading(doc, "L'app non scarica le news", level=2)
-    add_para(doc,
-             "Verificare la connessione a internet. Se persiste, tirare la "
-             "lista delle news verso il basso per forzare il refresh; in caso "
-             "di errore di rete viene mostrato un messaggio con la possibilità "
-             "di riprovare o di aprire il sito direttamente in browser.")
+    # ===================================================================
+    # FOOTER
+    # ===================================================================
+    pb()
+    C.append(("FOOTER", "— Fine del Manuale —"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Documento generato automaticamente"))
 
-    add_heading(doc, "Una mini-app non scorre", level=2)
-    add_para(doc,
-             "Toccare brevemente lo schermo per attivare il gesture handler. "
-             "Se il problema persiste, chiudere e riaprire la mini-app dalla "
-             "voce Strumenti.")
+    return C
 
-    add_heading(doc, "Un sito istituzionale non carica", level=2)
-    add_para(doc,
-             "Alcuni siti del Ministero (es. SIGP) sono \"di vecchia generazione\" e "
-             "potrebbero apparire piccoli; usare la pinza con due dita per "
-             "ingrandire. In caso di lentezza, dopo 5 secondi compare un "
-             "pulsante \"Apri in browser\" per usare il browser di sistema.")
 
-    add_heading(doc, "Banner cookie ricorrente", level=2)
-    add_para(doc,
-             "L'app conserva in memoria persistente i cookie del browser "
-             "interno: una volta accettato il banner privacy di un sito, non "
-             "dovrebbe ripresentarsi alle aperture successive (la persistenza "
-             "viene salvata quando si chiude l'app).")
+# ============== Render DOCX ==============
+def render_docx(content):
+    doc = Document()
+    styles = doc.styles
+    normal = styles["Normal"]
+    normal.font.name = "Calibri"
+    normal.font.size = Pt(11)
 
-    # === FOOTER ===
-    doc.add_page_break()
-    foot = doc.add_paragraph()
-    foot.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = foot.add_run("— Fine del Manuale —")
-    r.italic = True
-    r.font.color.rgb = RGBColor(*MUTED)
+    def add_heading(text, level):
+        h = doc.add_heading(text, level=level)
+        for run in h.runs:
+            run.font.color.rgb = RGBColor(*PRIMARY_DARK)
+        return h
 
-    foot2 = doc.add_paragraph()
-    foot2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = foot2.add_run("App Ordine Avvocati Napoli — Documento generato automaticamente")
-    r.italic = True
-    r.font.size = Pt(9)
-    r.font.color.rgb = RGBColor(*MUTED)
+    def add_para(text, **kw):
+        p = doc.add_paragraph()
+        # Supporto markdown ** per bold
+        parts = text.split("**")
+        bold = False
+        for part in parts:
+            if part:
+                r = p.add_run(part)
+                r.bold = bold
+                if kw.get("italic"):
+                    r.italic = True
+                if kw.get("color"):
+                    r.font.color.rgb = RGBColor(*kw["color"])
+                if kw.get("size"):
+                    r.font.size = Pt(kw["size"])
+            bold = not bold
+        return p
 
-    doc.save(str(OUTPUT))
-    print(f"\nOK: {OUTPUT}")
-    print(f"Dimensione: {OUTPUT.stat().st_size / 1024:.1f} KB")
+    def add_image(path, caption=None, width_cm=8):
+        if not path or not Path(path).exists():
+            return
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run()
+        try:
+            r.add_picture(str(path), width=Cm(width_cm))
+        except Exception:
+            return
+        if caption:
+            cap = doc.add_paragraph()
+            cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            cr = cap.add_run(caption)
+            cr.italic = True
+            cr.font.size = Pt(9)
+            cr.font.color.rgb = RGBColor(*MUTED)
+
+    for kind, payload in content:
+        if kind == "TITLE":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(payload)
+            r.font.size = Pt(28)
+            r.bold = True
+            r.font.color.rgb = RGBColor(*PRIMARY_DARK)
+        elif kind == "SUBTITLE":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(payload)
+            r.font.size = Pt(20)
+            r.font.color.rgb = RGBColor(*PRIMARY)
+        elif kind == "SUB2":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(payload)
+            r.italic = True
+            r.font.size = Pt(13)
+            doc.add_paragraph()
+        elif kind == "CREDIT":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(payload)
+            r.bold = True
+            r.font.size = Pt(11)
+        elif kind == "CREDIT_SUB":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = p.add_run(payload)
+            r.font.size = Pt(10)
+            r.font.color.rgb = RGBColor(*MUTED)
+        elif kind == "H1":
+            add_heading(payload, level=1)
+        elif kind == "H2":
+            add_heading(payload, level=2)
+        elif kind == "H3":
+            add_heading(payload, level=3)
+        elif kind == "P":
+            add_para(payload)
+        elif kind == "BULLET":
+            # Estrai bold inline ** **
+            p = doc.add_paragraph(style="List Bullet")
+            parts = payload.split("**")
+            bold = False
+            for part in parts:
+                if part:
+                    r = p.add_run(part)
+                    r.bold = bold
+                bold = not bold
+        elif kind == "NUM":
+            doc.add_paragraph(payload, style="List Number")
+        elif kind == "IMG":
+            path, caption = payload
+            add_image(path, caption)
+        elif kind == "NOTE":
+            p = doc.add_paragraph()
+            r = p.add_run("ⓘ  " + payload)
+            r.italic = True
+            r.font.size = Pt(10)
+            r.font.color.rgb = RGBColor(*MUTED)
+        elif kind == "QUOTE":
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Cm(0.7)
+            r = p.add_run(payload)
+            r.italic = True
+        elif kind == "PAGEBREAK":
+            doc.add_page_break()
+        elif kind == "FOOTER":
+            f = doc.add_paragraph()
+            f.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = f.add_run(payload)
+            r.italic = True
+            r.font.color.rgb = RGBColor(*MUTED)
+        elif kind == "FOOTER_SUB":
+            f = doc.add_paragraph()
+            f.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            r = f.add_run(payload)
+            r.italic = True
+            r.font.size = Pt(9)
+            r.font.color.rgb = RGBColor(*MUTED)
+
+    doc.save(str(OUT_DOCX))
+    print(f"\n[DOCX] {OUT_DOCX} ({OUT_DOCX.stat().st_size / 1024:.1f} KB)")
+
+
+# ============== Render Markdown ==============
+def render_md(content):
+    lines = []
+    bullet_open = False
+    num_open = False
+
+    def close_lists():
+        nonlocal bullet_open, num_open
+        if bullet_open or num_open:
+            lines.append("")
+        bullet_open = False
+        num_open = False
+
+    for kind, payload in content:
+        if kind in ("H1", "H2", "H3", "P", "IMG", "NOTE", "QUOTE", "PAGEBREAK",
+                    "TITLE", "SUBTITLE", "SUB2", "CREDIT", "CREDIT_SUB",
+                    "FOOTER", "FOOTER_SUB"):
+            close_lists()
+
+        if kind == "TITLE":
+            lines.append(f"# {payload}")
+            lines.append("")
+        elif kind == "SUBTITLE":
+            lines.append(f"## {payload}")
+            lines.append("")
+        elif kind == "SUB2":
+            lines.append(f"*{payload}*")
+            lines.append("")
+        elif kind == "CREDIT":
+            lines.append(f"**{payload}**")
+            lines.append("")
+        elif kind == "CREDIT_SUB":
+            lines.append(f"*{payload}*")
+            lines.append("")
+        elif kind == "H1":
+            lines.append(f"## {payload}")
+            lines.append("")
+        elif kind == "H2":
+            lines.append(f"### {payload}")
+            lines.append("")
+        elif kind == "H3":
+            lines.append(f"#### {payload}")
+            lines.append("")
+        elif kind == "P":
+            lines.append(payload)
+            lines.append("")
+        elif kind == "BULLET":
+            if not bullet_open:
+                bullet_open = True
+            lines.append(f"- {payload}")
+        elif kind == "NUM":
+            if not num_open:
+                num_open = True
+            # Mantengo il testo del number che già contiene il prefisso "1." ecc.
+            lines.append(f"- {payload}")
+        elif kind == "IMG":
+            path, caption = payload
+            if path and Path(path).exists():
+                rel = "scripts/manual-images/" + Path(path).name
+                lines.append(f"![{caption or ''}]({rel})")
+                if caption:
+                    lines.append("")
+                    lines.append(f"*{caption}*")
+                lines.append("")
+        elif kind == "NOTE":
+            lines.append(f"> ℹ️  {payload}")
+            lines.append("")
+        elif kind == "QUOTE":
+            lines.append(f"> {payload}")
+            lines.append("")
+        elif kind == "PAGEBREAK":
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+        elif kind == "FOOTER":
+            lines.append(f"*{payload}*")
+            lines.append("")
+        elif kind == "FOOTER_SUB":
+            lines.append(f"*{payload}*")
+            lines.append("")
+
+    OUT_MD.write_text("\n".join(lines), encoding="utf-8")
+    print(f"[MD]   {OUT_MD} ({OUT_MD.stat().st_size / 1024:.1f} KB)")
 
 
 if __name__ == "__main__":
-    print("Genero le immagini wireframe…")
-    images = generate_images()
-    print("\nCompongo il manuale…")
-    build_manuale(images)
+    print("Copio screenshot...")
+    images = copy_photos()
+    print("\nCostruisco contenuto...")
+    content = build_content(images)
+    print(f"  {len(content)} elementi")
+    print("\nGenero DOCX...")
+    render_docx(content)
+    print("\nGenero MD...")
+    render_md(content)
+    print("\nFatto.")

@@ -1,10 +1,10 @@
 # Build iOS — Istruzioni per la versione iPhone
 
-> **Repo principale (Android)**: <https://github.com/robertoarcella-bot/app-ordine-avvocati-napoli>
+> **Repo principale (Android v1.0.0)**: <https://github.com/robertoarcella-bot/app-ordine-avvocati-napoli>
 >
-> **Repo fork iOS**: da creare come `app-ordine-avvocati-napoli-ios` (vedi sezione [Setup del fork iOS](#setup-del-fork-ios))
+> **Repo fork iOS** (da creare): `app-ordine-avvocati-napoli-ios`, branch `ios`
 
-Questo documento è destinato a chi ha un **Mac** e si occuperà di produrre la versione iPhone dell'app a partire dal codice sorgente comune.
+Questo documento è destinato a chi ha un **Mac** e si occuperà di produrre la versione iPhone dell'app a partire dal codice sorgente comune (TypeScript/React/Capacitor 8).
 
 L'app è basata su [Capacitor 8](https://capacitorjs.com/) + Ionic React: lo stesso codice JavaScript/TypeScript viene impacchettato dentro un guscio nativo Android (sulla repo principale) o iOS (sul fork). I plugin nativi che usiamo hanno tutti supporto iOS ufficiale, quindi non servono porting di codice.
 
@@ -17,7 +17,7 @@ L'app è basata su [Capacitor 8](https://capacitorjs.com/) + Ionic React: lo ste
 | **app-ordine-avvocati-napoli** (principale) | `main` | Sorgente comune + cartella `android/` | Avv. Roberto Arcella (PC Windows) |
 | **app-ordine-avvocati-napoli-ios** (fork) | `ios` | Stesso sorgente + cartella `ios/` | Amico con Mac |
 
-Il **fork iOS** contiene tutto il sorgente della repo principale + la cartella `ios/` generata da Xcode (project file, signing config, asset iOS, ecc.). Quando la repo principale rilascia nuove funzionalità, basta fare `git pull` dal fork per riallineare e ricompilare.
+Il fork iOS contiene tutto il sorgente della repo principale + la cartella `ios/` generata da Xcode (project file, signing config, asset iOS, ecc.). Quando la repo principale rilascia nuove funzionalità, basta fare `git pull upstream main` dal fork per riallineare e ricompilare.
 
 ---
 
@@ -34,11 +34,11 @@ Il **fork iOS** contiene tutto il sorgente della repo principale + la cartella `
 | **CocoaPods** | Gestore dipendenze iOS (richiesto da Capacitor) | `sudo gem install cocoapods` |
 | **Git** | preinstallato su macOS |  |
 
+> **Nota su Java**: a differenza di Android, la build iOS NON richiede JDK. Tutto Capacitor su iOS gira con il toolchain di Xcode.
+
 ---
 
-## Setup del fork iOS
-
-Da fare **una sola volta**, dall'amico Mac.
+## Setup del fork iOS (una sola volta)
 
 ### 1. Creazione del fork su GitHub
 
@@ -61,7 +61,7 @@ git fetch upstream
 # Crea il branch ios dedicato
 git checkout -b ios
 
-# Installa le dipendenze JavaScript
+# Installa le dipendenze JavaScript (~250 MB di node_modules)
 npm install
 
 # Installa CocoaPods (se non già fatto a livello globale)
@@ -74,7 +74,7 @@ sudo gem install cocoapods
 # Aggiunge la piattaforma iOS al progetto Capacitor
 npx cap add ios
 
-# Genera icone e splash screen iOS dall'immagine sorgente
+# Genera icone e splash screen iOS dall'immagine sorgente in resources/splash.png
 npx capacitor-assets generate --ios --splashBackgroundColor "#FDF9F5"
 
 # Build delle web assets + sync con il progetto iOS
@@ -96,8 +96,6 @@ git commit -m "Aggiunta piattaforma iOS — cartella ios/ generata da Capacitor"
 git push -u origin ios
 ```
 
-Da questo punto in poi, ogni volta che vuoi rilasciare una nuova versione iOS basta fare i passi della sezione [Aggiornamento da repo principale](#aggiornamento-da-repo-principale).
-
 ---
 
 ## Configurazione in Xcode
@@ -114,7 +112,14 @@ Xcode si apre con `App.xcworkspace`. Da fare **una sola volta** per ogni Mac:
 2. Tab **Signing & Capabilities**
 3. **Team**: scegli il proprio Apple ID (o l'organizzazione del Developer Program)
 4. **Bundle Identifier**: già impostato a `it.ordineavvocatinapoli.app`. Se Apple lo segnala come "Already used", cambialo aggiungendo un suffisso (es. `it.ordineavvocatinapoli.app.beta` o le proprie iniziali)
-5. Lascia Xcode risolvere automaticamente eventuali problemi di firma ("Automatically manage signing" attivo)
+5. **Version**: già impostata a **1.0.0** in `capacitor.config.ts`. Build: 100.
+6. Lascia Xcode risolvere automaticamente eventuali problemi di firma ("Automatically manage signing" attivo)
+
+### Capabilities richieste
+
+In **Signing & Capabilities → "+ Capability"** assicurarsi di avere:
+- **Background Modes** → spuntare "Background fetch" e "Background processing" (per il polling PST background)
+- **Push Notifications** (se in futuro si abiliterà FCM; per ora non strettamente necessario, le notifiche locali bastano)
 
 ### Build su iPhone fisico (test rapido)
 
@@ -154,6 +159,9 @@ git merge upstream/main
 # Re-installa eventuali nuovi pacchetti npm
 npm install
 
+# Aggiorna le pods iOS (se cambiano versioni dei plugin)
+cd ios/App && pod install && cd ../..
+
 # Rebuild web assets + sync
 npm run build:web
 npx cap sync ios
@@ -162,44 +170,53 @@ npx cap sync ios
 npx cap open ios
 ```
 
-Pubblica le nuove modifiche specifiche iOS:
+Pubblica le modifiche specifiche iOS:
 
 ```bash
 git push origin ios
 ```
 
+A ogni nuova release, prima di archiviare in Xcode, ricordarsi di **incrementare il "Build" number** (campo separato dalla Version, può rimanere `1.0.0`).
+
 ---
 
-## Note specifiche per questa app
+## Plugin Capacitor — supporto iOS
 
-### Plugin nativi (tutti supportati su iOS)
+Tutti i plugin usati in v1.0.0 hanno implementazione iOS ufficiale:
 
-- `@capacitor/app` — eventi app foreground/background ✅
-- `@capacitor/browser` — apre URL in **SafariViewController** (equivalente iOS dei Custom Tabs Android) ✅
-- `@capacitor/filesystem` — file storage ✅
-- `@capacitor/preferences` — chiavi/valore (UserDefaults) ✅
-- `@capacitor/share` — share sheet iOS ✅
-- `@capacitor/network` — stato rete ✅
-- `@capacitor/splash-screen` — launch screen ✅
-- `@capacitor/status-bar` — colore status bar ✅
-- `@capacitor/haptics` — vibrazione tattile ✅
-- `@capacitor/keyboard` — eventi tastiera ✅
-- `@capacitor/local-notifications` — notifiche locali ✅
-- `@capacitor/background-runner` — background fetch ⚠️ usa `BGTaskScheduler` di iOS che è **molto più restrittivo** di Android: tipicamente esegue 1-3 volte al giorno e solo se il sistema lo decide opportuno. È una limitazione Apple non aggirabile.
+| Plugin | iOS | Note iOS |
+|--------|-----|----------|
+| `@capacitor/app` | ✅ | UIApplicationDelegate hooks |
+| `@capacitor/browser` | ✅ | SafariViewController (equivalente Custom Tabs) |
+| `@capacitor/filesystem` | ✅ | Documents/Library directories |
+| `@capacitor/preferences` | ✅ | UserDefaults |
+| `@capacitor/share` | ✅ | UIActivityViewController nativo |
+| `@capacitor/network` | ✅ | NetworkMonitor |
+| `@capacitor/splash-screen` | ✅ | Storyboard `LaunchScreen.storyboard` |
+| `@capacitor/status-bar` | ✅ | UIApplication.statusBarStyle |
+| `@capacitor/haptics` | ✅ | UIImpactFeedbackGenerator |
+| `@capacitor/keyboard` | ✅ | UIKeyboard notifications |
+| `@capacitor/local-notifications` | ✅ | UNUserNotificationCenter |
+| `@capacitor/background-runner` | ⚠️ | Usa `BGTaskScheduler` (iOS 13+); molto più restrittivo di Android: tipicamente esegue 1-3 volte al giorno e solo se il sistema lo decide opportuno. È una limitazione Apple non aggirabile. La voce "Background fetch" in Capabilities va abilitata. |
 
-### File NON necessari su iOS
+---
 
-`MainActivity.java` (cookie WebView Android, splash native) è specifico Android — su iOS l'equivalente è `AppDelegate.swift` ma non serve modificarlo: i cookie nel `WKWebView` di iOS funzionano già come ci aspettiamo, e la maggior parte delle configurazioni Capacitor passa via `capacitor.config.ts` (file condiviso).
+## File NON necessari su iOS
 
-### File specifici iOS che il fork conterrà
+`MainActivity.java` (cookie WebView Android, splash native) è specifico Android — su iOS l'equivalente è `AppDelegate.swift` ma **non serve modificarlo**: i cookie nel `WKWebView` di iOS funzionano già come ci aspettiamo, e la maggior parte delle configurazioni Capacitor passa via `capacitor.config.ts` (file condiviso tra Android e iOS).
+
+---
+
+## File specifici iOS che il fork conterrà
 
 ```
 ios/
 ├── App/
 │   ├── App/
 │   │   ├── AppDelegate.swift
-│   │   ├── Info.plist           ← qui Bundle ID, permessi, capabilities
+│   │   ├── Info.plist           ← Bundle ID, permessi, capabilities
 │   │   ├── Assets.xcassets/     ← icone e splash generate
+│   │   ├── public/              ← copia delle web assets (auto-generata)
 │   │   └── ...
 │   ├── App.xcodeproj/
 │   ├── App.xcworkspace/         ← APRIRE QUESTO con Xcode (NON .xcodeproj)
@@ -207,7 +224,22 @@ ios/
 └── ...
 ```
 
-### Bundle ID e App ID Apple
+---
+
+## Permessi iOS da configurare in Info.plist
+
+Capacitor li aggiunge automaticamente ai sync, ma verifica che siano presenti:
+
+| Chiave | Valore | Plugin che lo richiede |
+|--------|--------|------------------------|
+| `NSUserNotificationsUsageDescription` | "L'app invia notifiche per i nuovi avvisi del Portale Servizi Telematici del Min. Giustizia, previa autorizzazione." | local-notifications |
+| `UIBackgroundModes` | `["fetch", "processing"]` | background-runner |
+| `BGTaskSchedulerPermittedIdentifiers` | `["it.ordineavvocatinapoli.app.pst-news-watcher"]` | background-runner |
+| `NSAppTransportSecurity` → `NSAllowsArbitraryLoads` | `true` (eventualmente, per siti istituzionali con SSL non standard come giustizia-amministrativa.it) | sources/giustizia-amministrativa.ts |
+
+---
+
+## Bundle ID e App ID Apple
 
 Il `Bundle Identifier` è `it.ordineavvocatinapoli.app`. Se l'amico vuole pubblicare con il proprio account, è probabile che debba creare l'App ID corrispondente sul portale developer Apple oppure cambiarlo. Per evitare conflitti, una convenzione è:
 
@@ -240,12 +272,15 @@ Va modificato in **Xcode → Signing & Capabilities → Bundle Identifier** e si
 - Settings di Xcode → Accounts → aggiungi Apple ID → "Manage Certificates" → crea un Developer Certificate
 
 ### Build OK ma app crash all'avvio sull'iPhone
-- Verifica in `Info.plist` che siano impostate le `usage descriptions` per i permessi che usiamo. Capacitor le aggiunge in automatico ma se uno è mancante l'app crasha. Quelle minime per la nostra app:
-  - `NSUserNotificationsUsageDescription` (notifiche locali)
-  - `NSAppTransportSecurity` (per https su domini self-signed eventualmente)
+- Verifica in `Info.plist` che siano impostate le `usage descriptions` per i permessi. Se ne manca una, l'app crasha al primo uso del relativo plugin.
+- In particolare: `NSUserNotificationsUsageDescription` per le notifiche locali.
 
 ### "App not for sale in this region" dopo upload TestFlight
 - App Store Connect → l'app → **Pricing and Availability** → seleziona Italia (e altri paesi)
+
+### Background fetch PST non scatta su iPhone
+- Apri Impostazioni → Generali → Aggiornamento app in background → assicurati che sia attivo per "Ordine Avvocati Napoli"
+- Su iOS i task background sono eseguiti dal sistema in modo opportunistico (1-3 volte al giorno). Non c'è modo di forzare un timing preciso, è un limite di iOS.
 
 ---
 
@@ -255,6 +290,7 @@ Va modificato in **Xcode → Signing & Capabilities → Bundle Identifier** e si
 - Apple Developer Program: <https://developer.apple.com/programs/>
 - TestFlight: <https://developer.apple.com/testflight/>
 - App Store Connect: <https://appstoreconnect.apple.com>
+- Background tasks iOS: <https://developer.apple.com/documentation/backgroundtasks>
 
 ---
 

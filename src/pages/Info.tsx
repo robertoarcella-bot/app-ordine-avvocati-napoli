@@ -12,7 +12,7 @@ import {
 import { useHistory } from 'react-router';
 import { openExternal } from '../services/download';
 
-const APP_VERSION = '0.1.0';
+const APP_VERSION = '1.0.0';
 
 const Info: React.FC = () => {
   const history = useHistory();
