@@ -37,6 +37,20 @@ const config: CapacitorConfig = {
     CapacitorHttp: {
       enabled: true,
     },
+    /**
+     * Background Runner: esegue il file JS specificato in background a
+     * intervalli (Android decide il timing in base alle policy di
+     * risparmio batteria, di solito ogni 15+ min). Il runner controlla
+     * se ci sono nuove news PST e schedula una LocalNotification.
+     */
+    BackgroundRunner: {
+      label: 'pst-news-watcher',
+      src: 'background-pst.js',
+      event: 'checkPstNews',
+      repeat: true,
+      interval: 60,            // ogni 60 minuti (in pratica >= 15 min)
+      autoStart: true,
+    },
   },
 };
 

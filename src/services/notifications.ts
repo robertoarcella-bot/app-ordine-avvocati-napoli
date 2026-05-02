@@ -15,8 +15,25 @@
 import { Capacitor } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Preferences } from '@capacitor/preferences';
+import { BackgroundRunner } from '@capacitor/background-runner';
 import { fetchPstNews } from './sources/pst';
 import type { SourceNewsItem } from '../config/sources';
+
+const RUNNER_LABEL = 'pst-news-watcher';
+
+/** Comunica al runner background lo stato "notifiche attive" via dispatchEvent */
+async function syncRunnerEnabled(enabled: boolean): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    await BackgroundRunner.dispatchEvent({
+      label: RUNNER_LABEL,
+      event: 'setNotifyEnabled',
+      details: { enabled },
+    });
+  } catch {
+    // background runner potrebbe non essere ancora avviato: ignora
+  }
+}
 
 const PREFS_LAST_SEEN = 'pst:last-seen-id';
 const PREFS_PERMISSION_ASKED = 'pst:perm-asked';
@@ -43,6 +60,8 @@ export async function setNotifyPref(pref: NotifyPref): Promise<void> {
   } else {
     await Preferences.set({ key: PREFS_NOTIFY_ENABLED, value: pref === 'enabled' ? '1' : '0' });
   }
+  // Sync stato col background runner (NB: il KV del runner è separato)
+  await syncRunnerEnabled(pref === 'enabled');
 }
 
 export async function hasAlreadyAskedPermission(): Promise<boolean> {
@@ -70,9 +89,11 @@ export async function requestNotificationPermission(): Promise<boolean> {
     const result = await LocalNotifications.requestPermissions();
     const granted = result.display === 'granted';
     await setNotifyPref(granted ? 'enabled' : 'denied');
+    await syncRunnerEnabled(granted);
     return granted;
   } catch {
     await setNotifyPref('denied');
+    await syncRunnerEnabled(false);
     return false;
   }
 }
