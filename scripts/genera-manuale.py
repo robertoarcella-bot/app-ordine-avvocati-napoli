@@ -91,7 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
-    C.append(("SUB3", "Versione 1.1.0 — maggio 2026"))
+    C.append(("SUB3", "Versione 1.1.1 — maggio 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -115,7 +115,7 @@ def build_content(images):
         "11. Documenti",
         "12. Strumenti",
         "13. Codici Italiani",
-        "14. Aule Udienze Napoli",
+        "14. Dislocazione Aule e Uffici",
         "    14.1 Tribunale di Napoli",
         "    14.2 Corte d'Appello di Napoli",
         "    14.3 Cerca per autorità e sezione",
@@ -222,7 +222,7 @@ def build_content(images):
     h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-1.1.0-debug.apk.")
+      "OrdineAvvocatiNapoli-1.1.1-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -257,7 +257,7 @@ def build_content(images):
         ("Sito", "Sezioni del sito istituzionale (in WebView interna)"),
         ("Documenti", "Modulistica, Albo, Trasparenza, Verbali"),
         ("Strumenti", "Oltre 20 calcolatori e strumenti professionali, codici italiani"),
-        ("Aule Udienze", "Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto"),
+        ("Dislocazione Aule e Uffici", "Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto"),
         ("Processo Telematico", "Notizie da PST, GA, Giustizia Tributaria"),
         ("Area Riservata", "Accesso area riservata Consiglieri (browser di sistema)"),
         ("Riconosco", "Sistema di identità digitale dei consigli forensi"),
@@ -286,7 +286,7 @@ def build_content(images):
         "**Albo Nazionale Avvocati** — Apre il portale ricerca avvocati del CNF in browser di sistema.",
         "**Documenti** — Modulistica e documenti pubblici di rilievo.",
         "**Strumenti** — Calcolatori, strumenti operativi e codici italiani.",
-        "**Aule Udienze Napoli** — Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto, calendari e canali.",
+        "**Dislocazione Aule e Uffici** — Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto, calendari e canali.",
         "**Processo Telematico** — Notizie e strumenti per i processi telematici, notifiche di nuovi avvisi.",
         "**Area Riservata** — Accesso area riservata Consiglieri (browser di sistema).",
         "**Commissione Informatica** — Componenti della Commissione che ha ideato l'app.",
@@ -521,7 +521,7 @@ def build_content(images):
     # ===================================================================
     # 14. AULE UDIENZE
     # ===================================================================
-    h1("14. Aule Udienze Napoli")
+    h1("14. Dislocazione Aule e Uffici")
     p("Sezione dedicata alla logistica delle udienze, alla dislocazione degli "
       "uffici giudiziari di Napoli e ai recapiti degli uffici dell'intero "
       "distretto della Corte d'Appello. La home della sezione presenta in alto "
@@ -873,7 +873,7 @@ def build_content(images):
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.0 — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.1 — Documento generato automaticamente"))
 
     return C
 
