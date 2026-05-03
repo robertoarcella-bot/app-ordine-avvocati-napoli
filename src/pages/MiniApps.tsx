@@ -11,7 +11,7 @@ import { groupByJurisdiction } from '../config/jurisdictions';
 
 const MiniAppsPage: React.FC = () => {
   const history = useHistory();
-  // "sedi" sono nella pagina "Aule Udienze Napoli"; "pct" sono dentro "Processo Telematico"
+  // "sedi" sono nella pagina "Dislocazione Aule e Uffici"; "pct" sono dentro "Processo Telematico"
   const apps = MINIAPPS.filter(a => a.jurisdiction !== 'sedi' && a.jurisdiction !== 'pct');
   const groups = groupByJurisdiction(apps);
 

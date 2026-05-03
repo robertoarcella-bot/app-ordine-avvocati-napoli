@@ -40,7 +40,7 @@ const ITEMS: MenuItem[] = [
   { title: 'Documenti', url: '/documenti', icon: documentsOutline },
   { title: 'Strumenti', url: '/miniapps', icon: appsOutline },
   { title: 'Note di Udienza (Diritto Pratico)', url: '/sito/view?u=' + encodeURIComponent('https://note.dirittopratico.it/') + '&t=' + encodeURIComponent('Note di Udienza'), icon: createOutline },
-  { title: 'Aule Udienze Napoli', url: '/aule-udienze', icon: businessOutline },
+  { title: 'Dislocazione Aule e Uffici', url: '/aule-udienze', icon: businessOutline },
   { title: 'Processo Telematico', url: '/processo-telematico', icon: shieldHalfOutline },
   { title: 'Area Riservata', url: '/area-riservata', icon: lockClosedOutline },
   { title: 'Commissione Informatica', url: '/commissione', icon: peopleOutline },

@@ -37,7 +37,7 @@ const AuleUdienze: React.FC = () => {
             <IonBackButton defaultHref="/home" />
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>Aule Udienze Napoli</IonTitle>
+          <IonTitle>Dislocazione Aule e Uffici</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

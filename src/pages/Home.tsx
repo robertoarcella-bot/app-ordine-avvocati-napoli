@@ -23,7 +23,7 @@ const QUICK_TILES = [
   { label: 'Sito', icon: globeOutline, route: '/sito', color: 'secondary' },
   { label: 'Documenti', icon: documentsOutline, route: '/documenti', color: 'tertiary' },
   { label: 'Strumenti', icon: appsOutline, route: '/miniapps', color: 'primary' },
-  { label: 'Aule Udienze', icon: businessOutline, route: '/aule-udienze', color: 'secondary' },
+  { label: 'Dislocazione Aule e Uffici', icon: businessOutline, route: '/aule-udienze', color: 'secondary' },
   { label: 'Processo Telematico', icon: shieldHalfOutline, route: '/processo-telematico', color: 'tertiary' },
   { label: 'Area riservata', icon: lockClosedOutline, route: '/area-riservata', color: 'primary' },
   { label: 'Riconosco', icon: fingerPrintOutline, route: 'EXTERNAL:https://riconosco.dcssrl.it/', color: 'secondary' },
