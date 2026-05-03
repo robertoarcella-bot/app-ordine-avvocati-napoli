@@ -6,6 +6,7 @@ import {
 import {
   chevronForwardOutline, openOutline,
   cloudOfflineOutline, wifiOutline, businessOutline,
+  callOutline, gridOutline,
 } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
@@ -70,6 +71,34 @@ const AuleUdienze: React.FC = () => {
               <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
             </IonItem>
           ))}
+          <IonItem
+            button
+            detail={false}
+            onClick={() => history.push('/aule-udienze/sezioni')}
+          >
+            <IonIcon slot="start" icon={gridOutline} color="primary" />
+            <IonLabel>
+              <h3>Cerca per autorità e sezione</h3>
+              <p style={{ whiteSpace: 'normal' }}>
+                Tribunale o Corte d'Appello → sezione → elenco completo dei magistrati con piano e Torre
+              </p>
+            </IonLabel>
+            <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
+          </IonItem>
+          <IonItem
+            button
+            detail={false}
+            onClick={() => history.push('/aule-udienze/recapiti')}
+          >
+            <IonIcon slot="start" icon={callOutline} color="primary" />
+            <IonLabel>
+              <h3>Recapiti uffici giudiziari del distretto</h3>
+              <p style={{ whiteSpace: 'normal' }}>
+                Indirizzi, PEC, telefoni e fax di tutti gli uffici del distretto della Corte d'Appello di Napoli — ricercabili
+              </p>
+            </IonLabel>
+            <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
+          </IonItem>
 
           <IonItemDivider color="light" sticky>
             <IonLabel><strong>Calendari e canali</strong></IonLabel>

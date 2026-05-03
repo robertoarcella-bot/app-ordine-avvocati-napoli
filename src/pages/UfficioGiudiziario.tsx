@@ -3,13 +3,14 @@ import {
   IonButtons, IonBackButton, IonText,
   IonSegment, IonSegmentButton, IonLabel, IonSearchbar,
   IonCard, IonCardContent, IonItemDivider, IonList, IonItem,
-  IonIcon, IonChip, IonNote,
+  IonIcon, IonChip, IonNote, IonModal, IonBadge, IonButton,
 } from '@ionic/react';
 import { useMemo, useState } from 'react';
 import { useParams, useHistory } from 'react-router';
 import {
   callOutline, mailOutline, locationOutline,
   ribbonOutline, businessOutline, shieldCheckmarkOutline,
+  closeOutline, layersOutline, calendarOutline,
 } from 'ionicons/icons';
 import { Browser } from '@capacitor/browser';
 import { UFFICI, type Magistrato, type UfficioInfo } from '../config/uffici-giudiziari-na';
@@ -38,6 +39,7 @@ const UfficioGiudiziario: React.FC = () => {
   const [view, setView] = useState<View>('magistrati');
   const [search, setSearch] = useState('');
   const [areaId, setAreaId] = useState<string>('all');
+  const [magSelected, setMagSelected] = useState<Magistrato | null>(null);
 
   const magistratiFiltered = useMemo(() => {
     if (!office) return [];
@@ -108,8 +110,8 @@ const UfficioGiudiziario: React.FC = () => {
           </IonButtons>
           <IonTitle style={{ fontSize: 16 }}>{office.shortLabel}</IonTitle>
         </IonToolbar>
-        <IonToolbar>
-          <IonSegment value={view} onIonChange={e => setView(e.detail.value as View)} scrollable>
+        <IonToolbar color="primary">
+          <IonSegment value={view} onIonChange={e => setView(e.detail.value as View)} scrollable color="light">
             <IonSegmentButton value="magistrati"><IonLabel>Magistrati</IonLabel></IonSegmentButton>
             <IonSegmentButton value="cancellerie"><IonLabel>Uffici</IonLabel></IonSegmentButton>
             {office.dislocazione && (
@@ -134,8 +136,8 @@ const UfficioGiudiziario: React.FC = () => {
           </IonToolbar>
         )}
         {view === 'magistrati' && (
-          <IonToolbar>
-            <IonSegment value={areaId} onIonChange={e => setAreaId(String(e.detail.value || 'all'))} scrollable>
+          <IonToolbar color="primary">
+            <IonSegment value={areaId} onIonChange={e => setAreaId(String(e.detail.value || 'all'))} scrollable color="light">
               <IonSegmentButton value="all"><IonLabel>Tutti</IonLabel></IonSegmentButton>
               {office.magistratiAree.map(a => (
                 <IonSegmentButton key={a.id} value={a.id}><IonLabel>{a.label}</IonLabel></IonSegmentButton>
@@ -157,7 +159,12 @@ const UfficioGiudiziario: React.FC = () => {
                     <IonLabel><strong>{sez}</strong></IonLabel>
                   </IonItemDivider>
                   {magBySez[sez].map((m, i) => (
-                    <IonItem key={`${sez}-${i}`}>
+                    <IonItem
+                      key={`${sez}-${i}`}
+                      button
+                      detail={false}
+                      onClick={() => setMagSelected(m)}
+                    >
                       <IonLabel>
                         <h3 style={{ fontWeight: 600 }}>
                           {m.nome} <strong>{m.cognome}</strong>
@@ -172,6 +179,16 @@ const UfficioGiudiziario: React.FC = () => {
                             <IonChip color="secondary" outline style={{ height: 18, fontSize: 10, marginInlineStart: 4 }}>Esperto</IonChip>
                           )}
                         </p>
+                        {(m.piano || m.torre) && (
+                          <p style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+                            <IonIcon icon={layersOutline} color="medium" style={{ fontSize: 13 }} />
+                            <span style={{ fontSize: 12 }}>
+                              {m.torre && <>Torre {m.torre}</>}
+                              {m.torre && m.piano && ' · '}
+                              {m.piano && <>Piano {m.piano}</>}
+                            </span>
+                          </p>
+                        )}
                         {m.note && <p style={{ fontSize: 11, color: 'var(--ion-color-medium)' }}><em>{m.note}</em></p>}
                       </IonLabel>
                     </IonItem>
@@ -293,6 +310,86 @@ const UfficioGiudiziario: React.FC = () => {
             ))}
           </IonList>
         )}
+
+        <IonModal isOpen={magSelected !== null} onDidDismiss={() => setMagSelected(null)}>
+          <IonHeader>
+            <IonToolbar color="primary">
+              <IonTitle>Scheda magistrato</IonTitle>
+              <IonButtons slot="end">
+                <IonButton onClick={() => setMagSelected(null)}>
+                  <IonIcon icon={closeOutline} slot="icon-only" />
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            {magSelected && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+                  <div style={{ fontSize: 14, color: 'var(--ion-color-medium)', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                    {magSelected.tipo === 'Onorario' ? 'Magistrato onorario'
+                      : magSelected.tipo === 'Esperto' ? 'Esperto'
+                      : 'Magistrato togato'}
+                  </div>
+                  <h1 style={{ margin: '8px 0 4px', fontSize: 26, fontWeight: 700, color: 'var(--ion-color-primary-shade)' }}>
+                    {magSelected.nome} <span style={{ fontWeight: 800 }}>{magSelected.cognome}</span>
+                  </h1>
+                  {/Presidente/i.test(magSelected.ruolo) && (
+                    <IonBadge color="secondary" style={{ fontSize: 12, padding: '6px 10px', marginTop: 4 }}>
+                      {magSelected.ruolo}
+                    </IonBadge>
+                  )}
+                </div>
+                <IonList lines="full" style={{ background: 'transparent' }}>
+                  <IonItem>
+                    <IonIcon slot="start" icon={ribbonOutline} color="primary" />
+                    <IonLabel>
+                      <h3>Ruolo</h3>
+                      <p style={{ whiteSpace: 'normal' }}>{magSelected.ruolo}</p>
+                    </IonLabel>
+                  </IonItem>
+                  <IonItem>
+                    <IonIcon slot="start" icon={businessOutline} color="primary" />
+                    <IonLabel>
+                      <h3>Sezione</h3>
+                      <p style={{ whiteSpace: 'normal' }}>{magSelected.sezione}</p>
+                    </IonLabel>
+                  </IonItem>
+                  {(magSelected.torre || magSelected.piano) && (
+                    <IonItem>
+                      <IonIcon slot="start" icon={layersOutline} color="primary" />
+                      <IonLabel>
+                        <h3>Aula d'udienza</h3>
+                        <p style={{ whiteSpace: 'normal' }}>
+                          {magSelected.torre && <>Torre {magSelected.torre}</>}
+                          {magSelected.torre && magSelected.piano && ' · '}
+                          {magSelected.piano && <>Piano {magSelected.piano}</>}
+                        </p>
+                      </IonLabel>
+                    </IonItem>
+                  )}
+                  {magSelected.giorniUdienza && (
+                    <IonItem>
+                      <IonIcon slot="start" icon={calendarOutline} color="primary" />
+                      <IonLabel>
+                        <h3>Giorni di udienza</h3>
+                        <p style={{ whiteSpace: 'normal' }}>{magSelected.giorniUdienza}</p>
+                      </IonLabel>
+                    </IonItem>
+                  )}
+                  {magSelected.note && (
+                    <IonItem>
+                      <IonLabel>
+                        <h3>Note</h3>
+                        <p style={{ whiteSpace: 'normal' }}><em>{magSelected.note}</em></p>
+                      </IonLabel>
+                    </IonItem>
+                  )}
+                </IonList>
+              </div>
+            )}
+          </IonContent>
+        </IonModal>
 
         {view === 'info' && (
           <div style={{ padding: 16 }}>

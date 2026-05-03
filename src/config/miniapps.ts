@@ -162,6 +162,17 @@ export const MINIAPPS: MiniApp[] = [
     jurisdiction: 'comuni',
     offlineReady: false,
   },
+  {
+    id: 'codici-italiani',
+    title: 'Codici Italiani',
+    subtitle: 'Costituzione, codici civile/penale e relative disposizioni di attuazione, CAD e Cod. Proc. Amministrativo — con copia/condivisione articoli su WhatsApp',
+    file: 'miniapps/codici/home.html',
+    icon: 'library-outline',
+    jurisdiction: 'comuni',
+    offlineReady: true,
+    author: AT_AUTHOR,
+    origin: AT_ORIGIN,
+  },
   // ============ CIVILE ============
   {
     id: 'termini-cpc-cartabia',

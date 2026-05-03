@@ -11,19 +11,50 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 
 ## Sommario
 
-1. [Stack e dipendenze](#stack-e-dipendenze)
-2. [Struttura del progetto](#struttura-del-progetto)
-3. [Funzionalità ed elenco schermate](#funzionalità-ed-elenco-schermate)
-4. [Origine dei dati: in-app vs fonti esterne](#origine-dei-dati-in-app-vs-fonti-esterne)
-5. [Configurazioni e file da revisionare periodicamente](#configurazioni-e-file-da-revisionare-periodicamente)
-6. [Build e ambiente di sviluppo](#build-e-ambiente-di-sviluppo)
-7. [Plugin Capacitor utilizzati](#plugin-capacitor-utilizzati)
-8. [Architettura cookie / autenticazione](#architettura-cookie--autenticazione)
-9. [Background fetch e notifiche](#background-fetch-e-notifiche)
-10. [Branding e palette](#branding-e-palette)
-11. [Add new content — guide rapide](#add-new-content--guide-rapide)
-12. [Roadmap nota](#roadmap-nota)
-13. [Risoluzione problemi noti](#risoluzione-problemi-noti)
+1. [Changelog](#changelog)
+2. [Stack e dipendenze](#stack-e-dipendenze)
+3. [Struttura del progetto](#struttura-del-progetto)
+4. [Funzionalità ed elenco schermate](#funzionalità-ed-elenco-schermate)
+5. [Origine dei dati: in-app vs fonti esterne](#origine-dei-dati-in-app-vs-fonti-esterne)
+6. [Configurazioni e file da revisionare periodicamente](#configurazioni-e-file-da-revisionare-periodicamente)
+7. [Build e ambiente di sviluppo](#build-e-ambiente-di-sviluppo)
+8. [Plugin Capacitor utilizzati](#plugin-capacitor-utilizzati)
+9. [Architettura cookie / autenticazione](#architettura-cookie--autenticazione)
+10. [Background fetch e notifiche](#background-fetch-e-notifiche)
+11. [Branding e palette](#branding-e-palette)
+12. [Add new content — guide rapide](#add-new-content--guide-rapide)
+13. [Roadmap nota](#roadmap-nota)
+14. [Risoluzione problemi noti](#risoluzione-problemi-noti)
+
+---
+
+## Changelog
+
+### v1.1.0 (maggio 2026)
+
+**Sedi e dislocazione uffici**
+- Header dell'ufficio giudiziario: testo bianco su blu istituzionale (era blu scuro su blu, scarsa leggibilità)
+- **Modal scheda magistrato**: tap su qualsiasi giudice apre un riquadro a tutto schermo con nome grande, badge "Presidente di Sezione" se applicabile, ruolo, sezione, **Torre + Piano** dell'aula d'udienza e (per la sezione lavoro) **giorni d'udienza**
+- **Dislocazione aule giudici Tribunale Napoli (Torre A)**: chip Torre/Piano direttamente nella card di ogni magistrato. Sezioni civili 1-14 mappate per sezione (es. Sez. 8 → piano 21); sezione lavoro I/II/III per singolo magistrato (es. Coppola → piano 11; Ghionni Crivelli Visconti → piano 11; Cardellicchio → piano 7). Lookup robusto per cognomi composti
+- **Nuova pagina "Cerca per autorità e sezione"** (`/aule-udienze/sezioni`): segment Tribunale / Corte d'Appello → searchbar sezioni → tap espande l'elenco completo dei magistrati con piano/torre e giorni
+- **Nuova pagina "Recapiti uffici giudiziari del distretto"** (`/aule-udienze/recapiti`): 80+ uffici (Corte d'Appello, Procura Generale, Tribunali di tutti i circondari — Ariano Irpino, Avellino, Benevento, Giugliano, Napoli, Nola, Sant'Angelo dei Lombardi, S. Maria Capua Vetere, Torre Annunziata —, Procure, Giudici di Pace, Sezioni distaccate, Tribunale per i Minorenni, Sorveglianza, Tribunale delle Acque). Searchbar per nome/comune/circondario/tipo, link tap-to-call/maps/email
+
+**Codici Italiani — nuova mini-webapp offline** (`Servizi di interesse generale → Codici Italiani`)
+- **11 codici** integrati e ricercabili offline: Costituzione, Codice civile, Disp. att. c.c., c.p.c., Disp. att. c.p.c., Codice penale, Codice di procedura penale, Norme att. c.p.p., Reg. esec. c.p.p., **CAD** (Codice dell'amministrazione digitale), **CPA** (Codice del processo amministrativo)
+- CAD e CPA generati dagli XML AkomaNtoso di Normattiva via parser dedicato (`scripts/genera_codici_aggiuntivi.mjs`); CPA include Allegato 1 (Codice) + Allegato 2 (Norme di attuazione) + Allegato 3 (Norme transitorie) + Allegato 4 (Disposizioni abrogative)
+- **Tema istituzionale COA** (blu `#0066CC` + bianco) sostituendo il dark theme della webapp originale (`scripts/restyle_codici_coa.mjs`)
+- **Copia + condivisione WhatsApp** dell'articolo (preservato dal template), search globale che include CAD/CPA
+- Origine: `avvocatotelematico.studiolegalearcella.it/codici/` (Avv. Roberto Arcella) integrata localmente in `public/miniapps/codici/`
+
+**Build**
+- versionName `1.1.0`, versionCode `110`
+- APK: `OrdineAvvocatiNapoli-1.1.0-debug.apk` (~22 MB)
+
+### v1.0.1 (maggio 2026)
+- Back button strumenti, branding "App ufficiale", nuova icona/splash quadrata.
+
+### v1.0.0 (maggio 2026)
+- Prima release pubblica: rimossi 3 strumenti non-mobile, manuale aggiornato.
 
 ---
 
@@ -57,8 +88,13 @@ app-coa/
 │       │   ├── Calcolatore_parcelle_avvocati.html
 │       │   ├── Calcolo_fattura_Avvocati.html
 │       │   └── ...                        # ~21 file html
-│       └── sedi/
-│           └── Aule_sezione_lavoro.html
+│       ├── sedi/
+│       │   └── Aule_sezione_lavoro.html
+│       └── codici/                        # ★ v1.1 — Codici italiani offline
+│           ├── home.html                  # Indice + global search (include CAD/CPA)
+│           ├── costituzione.html, codice-civile.html, codice-penale.html, ...
+│           ├── cad.html                   # CAD generato da AkomaNtoso (script)
+│           └── codice-processo-amministrativo.html
 ├── resources/
 │   └── splash.png                         # Splash sorgente 2732x2732 (sorgente generato da Apertura_app)
 ├── src/
@@ -69,7 +105,8 @@ app-coa/
 │   │   ├── miniapps.ts                    # Registry mini-webapp (con jurisdiction, offlineReady)
 │   │   ├── jurisdictions.ts               # Tassonomia: sedi/pct/comuni/civile/penale/amm/trib
 │   │   ├── sources.ts                     # Fonti news Processo Telematico
-│   │   └── uffici-giudiziari-na.ts        # ⚠️ Magistrati e cancellerie Tribunale + CA Napoli
+│   │   ├── uffici-giudiziari-na.ts        # ⚠️ Magistrati Tribunale + CA Napoli + dislocazione aule (Torre A)
+│   │   └── recapiti-uffici-na.ts          # ★ v1.1 — Recapiti uffici del distretto (80+)
 │   ├── pages/
 │   │   ├── Home.tsx                       # Tile rapidi
 │   │   ├── News.tsx, NewsDetail.tsx       # News COA via WP REST
@@ -79,6 +116,8 @@ app-coa/
 │   │   ├── MiniApps.tsx, MiniAppView.tsx  # Strumenti
 │   │   ├── ProcessoTelematico.tsx, SourceNews.tsx
 │   │   ├── AuleUdienze.tsx, UfficioGiudiziario.tsx
+│   │   ├── RecapitiUffici.tsx             # ★ v1.1 — Recapiti uffici del distretto (searchbar)
+│   │   ├── RicercaSezione.tsx             # ★ v1.1 — Cerca per autorità → sezione → magistrati
 │   │   ├── AreaRiservata.tsx              # Login → browser di sistema
 │   │   ├── Consiglio.tsx                  # ⚠️ Composizione Consiglio (in-app)
 │   │   ├── Commissione.tsx                # ⚠️ Componenti Commissione Informatica (in-app)
@@ -107,6 +146,9 @@ app-coa/
 │   ├── test-pst.mjs                       # Test isolato scraper PST
 │   ├── test-ga.mjs                        # Test isolato scraper GA
 │   ├── genera-manuale.py                  # Genera Manuale_App.docx + wireframe
+│   ├── genera_codici_aggiuntivi.mjs       # ★ v1.1 — Parser AkomaNtoso → CAD/CPA HTML
+│   ├── restyle_codici_coa.mjs             # ★ v1.1 — Tema COA blu/bianco sui codici
+│   ├── aggiorna_search_index.mjs          # ★ v1.1 — Aggiorna search globale codici
 │   └── manual-images/                     # Wireframe PNG generati
 └── README.md                              # Questo file
 ```
@@ -131,6 +173,8 @@ I file marcati ⚠️ contengono **dati hardcoded** che vanno aggiornati periodi
 | Aule Udienze Napoli | `/aule-udienze` | **In-app** (lista) | — |
 | → Tribunale di Napoli | `/aule-udienze/tribunale-napoli` | **In-app** (`config/uffici-giudiziari-na.ts`) | — |
 | → Corte d'Appello | `/aule-udienze/corte-appello-napoli` | **In-app** | — |
+| → Cerca per autorità e sezione | `/aule-udienze/sezioni` | **In-app** — autorità → sezione → magistrati con piano/torre | — |
+| → Recapiti uffici del distretto | `/aule-udienze/recapiti` | **In-app** (`config/recapiti-uffici-na.ts`) — 80+ uffici ricercabili | — |
 | Processo Telematico | `/processo-telematico`, `/.../:sourceId` | Scraping/RSS 3 fonti istituzionali | 30 min |
 | Riconosco | Home tile → Browser.open | Custom Tabs (sito DCS) | — |
 | Area Riservata | `/area-riservata` | Solo bottone → browser di sistema | — |
@@ -154,6 +198,9 @@ Questi dati sono **hardcoded** nel codice TypeScript dell'app e finiscono nel bu
 | Sezioni del sito COA mostrate in "Sito Ordine Avvocati" | `src/config/site.ts` (`SITE.sections`) | A ogni ristrutturazione del sito | URL + label |
 | **Magistrati e cancellerie Tribunale di Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `TRIBUNALE_NAPOLI`) | **Annuale** (variazioni tabellari, pensionamenti) | ~287 magistrati, 11 uffici amministrativi, dislocazione settori |
 | **Magistrati e cancellerie Corte d'Appello Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `CORTE_APPELLO_NAPOLI`) | **Annuale** | ~113 magistrati, 46 uffici/cancellerie, vertici |
+| **Dislocazione aule giudici Tribunale Napoli (Torre A)** | `src/config/uffici-giudiziari-na.ts` (`T_SEZ_PIANO_CIV`, `T_LAVORO_BY_COGNOME`) | A ogni variazione tabellare | Mappa sezione→piano per le 14 sezioni civili; mappa cognome→piano+giorni d'udienza per i magistrati delle 3 sezioni lavoro |
+| **Recapiti uffici giudiziari del distretto** | `src/config/recapiti-uffici-na.ts` | A ogni variazione strutturale (chiusura/apertura sedi, riassetto Procure) | 80+ uffici: Tribunali, Procure, GdP, Sezioni distaccate, Sorveglianza, Minorenni, Tribunale Acque |
+| **Codici Italiani offline** | `public/miniapps/codici/*.html` | A ogni aggiornamento normativo significativo | 11 codici autoportati con search globale; CAD/CPA generati via script da AkomaNtoso |
 | Aule Sezione Lavoro Napoli | `public/miniapps/sedi/Aule_sezione_lavoro.html` (45 giudici hardcoded) | A ogni variazione tabellare (≥1/anno) | File HTML separato (mini-webapp) |
 | Calendario GdP Napoli | `public/miniapps/at/Calendario_gdp_napoli_2026.html` | **Annuale** (anno calendario nel nome) | Va sostituito a fine anno |
 | Mini-webapp di Avv. Arcella | `public/miniapps/at/*.html` | Quando il sito di origine cambia il file | Origine: `avvocatotelematico.studiolegalearcella.it` |
@@ -403,7 +450,26 @@ Per WebView interna su sito esterno: usa `webviewUrl`.
 1. Apri `src/config/uffici-giudiziari-na.ts`
 2. Aggiungi/modifica magistrati con `tAdd(sezione, "Nome Cognome", "Ruolo")` per il Tribunale o `cAdd(...)` per la CA
 3. Modifica gli array `T_UFF`/`CA_UFF` per le cancellerie
-4. Build e test sull'app
+4. Per la **dislocazione aule** (Torre A): aggiorna `T_SEZ_PIANO_CIV` (sezioni civili) o `T_LAVORO_BY_COGNOME` (giudici sezione lavoro, key = cognome, anche composto)
+5. Build e test sull'app
+
+### Aggiornare i recapiti uffici del distretto
+
+`src/config/recapiti-uffici-na.ts` — array piatto `RECAPITI_UFFICI`. Ogni voce ha `tipo`, `tipoLabel`, `denominazione`, `circondario`, `comune`, `provincia`, `indirizzo`, `cap`, `telefono`, `email`, `fax`, `note`. La pagina `RecapitiUffici.tsx` raggruppa automaticamente per circondario (gli uffici distrettuali in cima).
+
+### Rigenerare CAD/CPA da nuovi XML AkomaNtoso
+
+Quando esce una nuova versione consolidata su Normattiva:
+
+```bash
+# Sostituire gli XML in C:/Users/rober/kDrive/__CODING_PROVVISORIA/CODICI XML/
+node scripts/genera_codici_aggiuntivi.mjs    # CAD + CPA
+node scripts/restyle_codici_coa.mjs           # Tema COA blu/bianco
+node scripts/aggiorna_search_index.mjs        # Search globale home.html
+npm run cap:sync && cd android && ./gradlew.bat assembleDebug
+```
+
+Il parser preserva lo stile della webapp originale: ogni comma in un proprio `<p>`, note di aggiornamento separate in `notesHtml`, `<ref>` flatten a testo, copia/condivisione WhatsApp via template.
 
 ### Aggiungere voce hamburger menu
 
@@ -447,4 +513,4 @@ Per contributi tecnici, segnalazioni, pull request: <https://github.com/robertoa
 
 ---
 
-*Ultimo aggiornamento di questo README: maggio 2026.*
+*Ultimo aggiornamento di questo README: maggio 2026 (v1.1.0).*

@@ -17,6 +17,12 @@ export interface Magistrato {
   ruolo: string;
   tipo: 'Togato' | 'Onorario' | 'Esperto';
   note?: string;
+  /** Piano dell'aula (Torre A del Tribunale, se applicabile) */
+  piano?: string;
+  /** Torre dell'edificio (es. "A", "B", "C") */
+  torre?: string;
+  /** Giorni di udienza tipici (per la sezione lavoro Tribunale Napoli) */
+  giorniUdienza?: string;
 }
 
 export interface UfficioInfo {
@@ -214,6 +220,119 @@ tAdd(s, "Laura De Stefano", "Giudice Supplente");
 s = "Ufficio GIP/GUP";
 tAdd(s, "Giulia Romanazzi", "Presidente Sezione GIP");
 ["Sabato Abagnale","Gabriella Ambrosino","Rosaria Maria Aufieri","Antonio Baldassarre","Chiara Bardi","Donatella Bove","Nicoletta Campanaro","Ambra Cerabona","Alessandra Cesare","Maria Laura Ciollaro","Federica Colucci","Linda Comella","Enrico Contieri","Raffaele Coppola","Giovanni De Angelis","Federica De Bellis","Lucia De Micco","Daniela De Nicola","Luca Della Ragione","Rosaria Dello Stritto","Marco Discepolo","Fabrizia Fiore","Marco Giordano","Valentina Giovanniello","Federica Girardi","Alessandra Grammatica","Francesco Guerra","Maria Gabriella Iagulli","Isabella Iaselli","Gabriella Logozzo","Emilio Minio","Fabio Provvisier","Leda Rossetti","Luca Rossetti","Ivana Salvatore","Antonino Santoro","Carla Sarno","Mariano Sorrentino","Alessia Stadio","Anna Tirone","Federica Villano","Giovanni Vinciguerra","Alessandra Zingales"].forEach(n => tAdd(s, n, "Giudice GIP/GUP"));
+
+// =============================================================
+// DISLOCAZIONE AULE GIUDICI - TRIBUNALE DI NAPOLI (Torre A)
+// =============================================================
+// Fonte: file "Aule giudici tribunale.xlsx" e "Aule sezione lavoro Napoli.html"
+// fornite dall'utente. Tutte le sezioni civili e lavoro qui mappate sono
+// ubicate nella Torre A.
+
+/** Mappa sezione civile → piano in Torre A (per le sezioni civili tutti i giudici stanno sullo stesso piano) */
+const T_SEZ_PIANO_CIV: Record<string, string> = {
+  "Sez. 01 - Famiglia": "17",
+  "Sez. 02 - Civile": "19",
+  "Sez. 03 - Civile / Tribunale Imprese": "14",
+  "Sez. 04 - Civile": "20",
+  "Sez. 05 - Esecuzioni Immobiliari": "13",
+  "Sez. 06 - Civile": "20",
+  "Sez. 07 - Fallimentare": "15",
+  "Sez. 08 - Civile": "21",
+  "Sez. 09 - Civile": "18",
+  "Sez. 10 - Civile": "21",
+  "Sez. 11 - Civile": "22",
+  "Sez. 12 - Civile": "22",
+  "Sez. 13 - Civile / Immigrazione": "16",
+  "Sez. 14 - Esecuzioni Mobiliari": "12 e 13",
+};
+
+/**
+ * Per la sezione lavoro la dislocazione è per singolo magistrato (cognome),
+ * desunta dal calendario delle aule udienze lavoro. Sezioni I/II/III lavoro
+ * occupano i piani 7-11 della Torre A.
+ */
+interface LavoroInfo { piano: string; giorniUdienza?: string }
+const T_LAVORO_BY_COGNOME: Record<string, LavoroInfo> = {
+  // I sezione lavoro
+  "Cardellicchio": { piano: "7", giorniUdienza: "Mar, Gio" },
+  "Gambardella":   { piano: "7", giorniUdienza: "Mar, Mer" },
+  "Mazzocca":      { piano: "7", giorniUdienza: "Mar, Gio" },
+  "Borrelli":      { piano: "8", giorniUdienza: "Mar, Gio" },
+  "Majorano":      { piano: "7", giorniUdienza: "Lun, Gio" },
+  "Ruoppolo":      { piano: "7", giorniUdienza: "Mar, Mer" },
+  "Palmieri":      { piano: "8", giorniUdienza: "Lun, Mar" },
+  "Brizzi":        { piano: "7", giorniUdienza: "Mar, Mer" },
+  "Scognamiglio":  { piano: "7", giorniUdienza: "Mar, Mer" },
+  "De Matteis":    { piano: "7", giorniUdienza: "Mar, Gio" },
+  "D'Auria":       { piano: "7", giorniUdienza: "Mer, Gio" },
+  "Beneduce":      { piano: "8", giorniUdienza: "Mar, Mer" },
+  "Finamore":      { piano: "8", giorniUdienza: "Mer, Gio" },
+  "Peluso":        { piano: "9", giorniUdienza: "Mar, Mer" },
+  // II sezione lavoro
+  "Gallo":         { piano: "9", giorniUdienza: "Mer, Gio" },
+  "Lombardi":      { piano: "10", giorniUdienza: "Mer, Gio" },
+  "Ciaramella":    { piano: "9", giorniUdienza: "Lun, Gio" },
+  "Elmino":        { piano: "10", giorniUdienza: "Mar, Gio" },
+  "Armato":        { piano: "9", giorniUdienza: "Mar, Gio" },
+  "Picciotti":     { piano: "9", giorniUdienza: "Mer, Gio" },
+  "Bile":          { piano: "8", giorniUdienza: "Mar, Gio" },
+  "Lucantonio":    { piano: "9", giorniUdienza: "Mer, Ven" },
+  "Palumbo":       { piano: "9", giorniUdienza: "Mar, Gio" },
+  "Fontana":       { piano: "9", giorniUdienza: "Mar, Gio" },
+  "Montuori":      { piano: "9", giorniUdienza: "Mer, Gio" },
+  "Correggia":     { piano: "10", giorniUdienza: "Mar, Gio" },
+  "Dell'Erario":   { piano: "8", giorniUdienza: "Mar, Mer" },
+  "Di Lorenzo":    { piano: "9", giorniUdienza: "Lun, Mer" },
+  // III sezione lavoro
+  "Coppola":       { piano: "11", giorniUdienza: "Mar, Mer" },
+  "Manzon":        { piano: "11", giorniUdienza: "Mar, Mer" },
+  "Tomassi":       { piano: "11", giorniUdienza: "Mar, Gio" },
+  "Urzini":        { piano: "11", giorniUdienza: "Mar, Mer" },
+  "Santulli":      { piano: "10", giorniUdienza: "Mer, Gio" },
+  "Alfano":        { piano: "10", giorniUdienza: "Mar, Gio" },
+  "Ruggiero":      { piano: "11", giorniUdienza: "Mar, Ven" },
+  "Gagliardi":     { piano: "10", giorniUdienza: "Mar, Mer" },
+  "Galante":       { piano: "11", giorniUdienza: "Mer, Gio" },
+  "Liguori":       { piano: "10", giorniUdienza: "Mar, Gio" },
+  "Lazzara":       { piano: "11", giorniUdienza: "Mer, Gio" },
+  "Ghionni Crivelli Visconti": { piano: "11", giorniUdienza: "Mer, Gio" },
+  "Ammendola":     { piano: "11", giorniUdienza: "Mar, Mer" },
+  "Mozzillo":      { piano: "10", giorniUdienza: "Lun, Mer" },
+};
+
+// Applica la dislocazione (Torre A) ai magistrati del Tribunale di Napoli.
+// Le sezioni civili usano la mappa per sezione; la sezione lavoro è per cognome.
+//
+// Lookup robusto per la sezione lavoro: i cognomi composti (es. "Ghionni
+// Crivelli Visconti") nel dataset sono memorizzati come stringa intera, ma
+// nel modello Magistrato lo split su spazi mette solo l'ultima parola in
+// cognome. Quindi confrontiamo case-insensitive sia il cognome esatto sia
+// la presenza della chiave nel full-name (nome + cognome).
+const _lavoroKeys = Object.keys(T_LAVORO_BY_COGNOME).map(k => ({ k, kl: k.toLowerCase() }));
+T_MAG.forEach(m => {
+  if (m.sezione.startsWith("Sez. Lavoro")) {
+    const full = `${m.nome} ${m.cognome}`.toLowerCase();
+    let info = T_LAVORO_BY_COGNOME[m.cognome];
+    if (!info) {
+      const hit = _lavoroKeys.find(({ kl }) =>
+        full === kl || full.includes(' ' + kl) || full.startsWith(kl) || full.endsWith(' ' + kl) ||
+        kl.endsWith(' ' + m.cognome.toLowerCase())
+      );
+      if (hit) info = T_LAVORO_BY_COGNOME[hit.k];
+    }
+    if (info) {
+      m.torre = "A";
+      m.piano = info.piano;
+      m.giorniUdienza = info.giorniUdienza;
+    }
+    return;
+  }
+  const piano = T_SEZ_PIANO_CIV[m.sezione];
+  if (piano) {
+    m.torre = "A";
+    m.piano = piano;
+  }
+});
 
 const T_UFF: UfficioInfo[] = [
   { nome: "Presidenza", torre: "A", piano: "23", responsabile: "Domenico Cardullo (Direttore)", email: "presidenza.tribunale.napoli@giustizia.it", pec: "presidente.tribunale.napoli@giustiziacert.it" },

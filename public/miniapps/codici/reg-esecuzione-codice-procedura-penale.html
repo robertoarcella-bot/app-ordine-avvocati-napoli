@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reg. Esec. c.p.p. – Codici Italiani</title>
+<meta name="description" content="Regolamento per l'esecuzione del codice di procedura penale.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0066CC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root { --code-color: #e67e22; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sidebar-w: 300px;
+  --header-h: 58px;
+  --sidebar-bg: #003F7F;
+  --sidebar-hover: rgba(255,255,255,.12);
+  --sidebar-active-bg: rgba(255,255,255,.20);
+  --sidebar-text: #ffffff;
+  --sidebar-muted: #d6e2f4;
+  --sidebar-border: rgba(255,255,255,.18);
+  --main-bg: #f7f8fc;
+  --article-bg: #ffffff;
+  --text: #1a1d2e;
+  --muted: #6b7280;
+  --border: #e4e7f0;
+  --accent: var(--code-color, #2471a3);
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "SF Mono", Consolas, "Courier New", monospace;
+  --radius: 8px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--main-bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: var(--sidebar-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  z-index: 100;
+}
+.site-logo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.site-logo:hover { color: #dce8ff; }
+.header-sep { width: 1px; height: 28px; background: var(--sidebar-border); }
+.header-title {
+  font-size: .875rem;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.header-vigenza {
+  font-size: .75rem;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  background: rgba(255,255,255,.06);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 6px;
+  background: none;
+  border: none;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--sidebar-text);
+  border-radius: 2px;
+  transition: all .2s;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform .25s ease;
+}
+.sidebar-search {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+.sidebar-search input {
+  width: 100%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: .82rem;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+.sidebar-search input::placeholder { color: var(--sidebar-muted); }
+.sidebar-search input:focus { border-color: rgba(255,255,255,.3); }
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.15) transparent;
+}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+
+.group-label {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--sidebar-muted);
+  padding: 14px 16px 6px;
+}
+.art-link {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background .12s, border-color .12s;
+}
+.art-link:hover { background: var(--sidebar-hover); }
+.art-link.active {
+  background: var(--sidebar-active-bg);
+  border-left-color: var(--accent);
+}
+.art-link.hidden { display: none; }
+.art-num {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 56px;
+  flex-shrink: 0;
+}
+.art-heading-mini {
+  font-size: .78rem;
+  color: var(--sidebar-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: .85;
+}
+.art-link.active .art-heading-mini { opacity: 1; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+  padding: 32px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── ARTICLE CARD ── */
+.article-card {
+  background: var(--article-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 820px;
+  width: 100%;
+  padding: 44px 52px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.article-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+.article-num {
+  font-family: var(--sans);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.article-heading {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.article-body {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+.article-body p {
+  margin-bottom: 1.1em;
+  text-align: justify;
+  hyphens: auto;
+}
+.article-body p:last-child { margin-bottom: 0; }
+.para-num {
+  font-family: var(--sans);
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+mark.ins {
+  background: color-mix(in srgb, #2980b9 12%, white);
+  color: #1a5276;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-style: italic;
+}
+
+/* Notes / Aggiornamento */
+.article-notes {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--border);
+}
+.notes-toggle {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.notes-toggle::before { content: '▶'; font-size: .6em; transition: transform .2s; }
+.notes-toggle.open::before { transform: rotate(90deg); }
+.notes-body {
+  font-family: var(--sans);
+  font-size: .8rem;
+  color: var(--muted);
+  line-height: 1.6;
+  display: none;
+}
+.notes-body.visible { display: block; }
+.notes-body p { margin-bottom: .7em; }
+
+/* ── NAV FOOTER ── */
+.nav-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 820px;
+  width: 100%;
+  margin-top: 20px;
+}
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  background: var(--article-bg);
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+.article-counter {
+  font-size: .8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+  max-width: 820px;
+  width: 100%;
+}
+.empty-state h2 { font-size: 1.2rem; margin-bottom: 8px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 280px; }
+  .hamburger { display: flex; }
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 20px rgba(0,0,0,.4);
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 20px 12px 60px;
+  }
+  .article-card { padding: 28px 22px; }
+  .article-num { font-size: 1.5rem; }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 49;
+    display: none;
+  }
+  .overlay.visible { display: block; }
+}
+
+/* ── ACTION BUTTONS (WA + COPY) ── */
+.article-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: var(--article-bg);
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.action-btn:hover {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.action-btn.wa-btn:hover {
+  background: #25D366;
+  border-color: #25D366;
+}
+.action-btn .action-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1e293b;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  opacity: 0;
+  transition: all .3s ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+.copy-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── SCROLLBAR ── */
+* { scrollbar-width: thin; scrollbar-color: #d1d5db transparent; }
+
+</style>
+</head>
+<body>
+
+<!-- OVERLAY MOBILE -->
+<div id="overlay" class="overlay"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <button id="hamburger" class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="home.html" class="site-logo">🏛️ Codici Italiani</a>
+  <div class="header-sep"></div>
+  <div class="header-title" id="header-article">Reg. Esec. c.p.p.</div>
+  <div class="header-vigenza">agg. 01/07/2002</div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <input type="search" id="search" placeholder="Cerca per articolo, titolo o testo…" autocomplete="off">
+  </div>
+  <nav class="sidebar-nav" id="toc"></nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content" id="main">
+  <div id="article-view"></div>
+  <div class="nav-footer">
+    <button class="nav-btn" id="prev-btn">← Precedente</button>
+    <span class="article-counter" id="article-counter"></span>
+    <button class="nav-btn" id="next-btn">Successivo →</button>
+  </div>
+</main>
+
+<div id="copy-toast" class="copy-toast"></div>
+
+<script>const CODE = {
+  title: "Regolamento di Esecuzione del Codice di Procedura Penale",
+  shortTitle: "Reg. Esec. c.p.p.",
+  slug: "reg-esecuzione-codice-procedura-penale",
+  vigenza: "01/07/2002",
+  color: "#e67e22",
+  articles: [{"id":"art_1","numText":"Art. 1","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> I compiti che il codice, le norme di attuazione e il presente regolamento attribuiscono all'ausiliario, al funzionario di cancelleria, al pubblico ufficiale, alla cancelleria o alla segreteria si intendono attribuiti al personale di cancelleria e di segreteria secondo le mansioni a ciascuno spettanti a norma delle disposizioni sullo stato giuridico.</p>\n<p><span class=\"para-num\">2.</span> Il dirigente dell'ufficio di cancelleria o di segreteria, con ordine di servizio, ripartisce i compiti fra il personale, in modo da assicurare la continuita' ed efficienza del servizio.</p>\n<p><span class=\"para-num\">2.</span> AVVERTENZA:\n Il testo delle note qui pubblicato e' stato redatto ai sensi dell'art. 10, comma 3, del testo unico approvato con decreto del Presidente della Repubblica 28 dicembre 1985, n. 1092, al solo fine di facilitare la lettura delle disposizioni di legge alle quali e' operato il rinvio.\n Restano invariati il valore e l'efficacia degli atti legislativi qui trascritti.\n Note alle premesse:\n - L'art. 206 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' cosi' formulato:\n &quot;Art. 206 (Regolamento ministeriale). - 1. Con decreto del Ministro di grazia e giustizia sono adottate le disposizioni regolamentari che concernono:\n a) la tenuta, anche in forma automatizzata, dei registri e degli altri strumenti di registrazione in materia penale;\n b) le modalita' di formazione e di tenuta dei fascicoli degli uffici giudiziari e penali;\n c) le altre attivita' necessarie per l'attuazione del codice non disciplinate dal presente decreto.\n 2. Il decreto previsto dal comma 1 e quello previsto dall'art. 199 sono emanati entro il 30 settembre 1989; all'uopo il Consiglio di Stato deve pronunziarsi entro quindici giorni dalla richiesta del parere&quot;.\n - Il comma 3 dell'art. 17 della legge n. 400/1988 (Disciplina dell'attivita' di Governo e ordinamento della Presidenza del Consiglio dei Ministri) prevede che con decreto ministeriale possano essere adottati regolamenti nelle materie di competenza del Ministro o di autorita' sottordinate al Ministro, quando la legge espressamente conferisca tale potere. Tali regolamenti, per materie di competenza di piu' Ministri, possono essere adottati con decreti interministeriali, ferma restando la necessita' di apposita autorizzazione da parte della legge. I regolamenti ministeriali ed interministeriali non possono dettare norme contrarie a quelle dei regolamenti emanati dal Governo.\n Essi debbono essere comunicati al Presidente del Consiglio dei Ministri prima della loro emanazione. Il comma 4 dello stesso articolo stabilisce che gli anzidetti regolamenti debbano recare la denominazione di &quot;regolamento&quot;, siano adottati previo parere del Consiglio di Stato, sottoposti al visto ed alla registrazione della Corte dei conti e pubblicati nella Gazzetta Ufficiale.</p>","notesHtml":""},{"id":"art_2","numText":"Art. 2","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Gli uffici giudiziari tengono, nella materia penale, i registri obbligatori conformi ai modelli approvati con decreto del Ministro di grazia e giustizia. Possono altresi' tenere i registri sussidiari, senza carattere ufficiale, che ritengono utili.</p>\n<p><span class=\"para-num\">2.</span> I registri non devono presentare alterazioni o abrasioni. Se occorre eseguire cancellature, le stesse sono fatte in modo da lasciar leggere le parole cancellate.</p>\n<p><span class=\"para-num\">3.</span> I registri sono tenuti in luogo non accessibile al pubblico e possono essere consultati solo dal personale autorizzato.</p>","notesHtml":""},{"id":"art_3","numText":"Art. 3","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Nella formazione dei fascicoli si osservano le disposizioni seguenti:</p>\n<p><span class=\"para-num\">1.</span> gli atti e le produzioni sono inseriti nel fascicolo in ordine cronologico a cura della cancelleria o segreteria, che provvede alla numerazione delle singole pagine;</p>\n<p><span class=\"para-num\">1.</span> la copertina del fascicolo deve contenere le generalita' della persona a cui e' attribuito il reato nonche' la data e il numero della iscrizione della notizia di reato nel registro previsto dall'art. 335 del codice.</p>\n<p><span class=\"para-num\">2.</span> Il fascicolo deve contenere:</p>\n<p><span class=\"para-num\">2.</span> l'indice degli atti e delle produzioni;</p>\n<p><span class=\"para-num\">2.</span> l'elenco delle cose sequestrate;</p>\n<p><span class=\"para-num\">2.</span> la distinta delle spese anticipate dall'erario, diverse da quelle per le quali e' stabilito il recupero in misura fissa;</p>\n<p><span class=\"para-num\">2.</span> la copia della sentenza o del decreto penale di condanna.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 3:\n Il testo dell'art. 335 del codice di procedura penale e' il seguente:\n &quot;Art. 335 (Registro delle notizie di reato). - 1. Il pubblico ministero iscrive immediatamente, nell'apposito registro custodito presso l'ufficio, ogni notizia di reato che gli perviene o che ha acquisito di propria iniziativa nonche', contestualmente o dal momento in cui risulta, il nome della persona alla quale il reato stesso e' attribuito.\n 2. Se nel corso delle indagini preliminari muta la qualificazione giuridica del fatto ovvero questo risulta diversamente circostanziato, il pubblico ministero cura l'aggiornamento delle iscrizioni previste dal comma 1 senza procedere a nuove iscrizioni.\n 3. E' vietata la comunicazione delle iscrizioni previste dai commi 1 e 2 fino quando la persona alla quale il reato e' attribuito non abbia assunto la qualita' di imputato&quot;.</p>","notesHtml":""},{"id":"art_4","numText":"Art. 4","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Le comunicazioni previste dall'art. 157 commi 3 e 8 del codice sono spedite in plico chiuso e contengono:</p>\n<p><span class=\"para-num\">1.</span> il nome del destinatario della notificazione;</p>\n<p><span class=\"para-num\">1.</span> la indicazione della natura dell'atto notificato e del luogo della notificazione;</p>\n<p><span class=\"para-num\">1.</span> la data e la firma dell'ufficiale giudiziario.</p>\n<p><span class=\"para-num\">2.</span> Ricorrendone le ipotesi, le comunicazioni contengono altresi' la indicazione del giudice o del pubblico ministero che ha emesso il provvedimento notificato nonche' del luogo e della data di comparizione.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 4:\n Il testo dei commi 3 e 8 dell'art. 157 del codice di procedura penale e' il seguente:\n &quot;3. Il portiere o chi ne fa le veci sottoscrive l'originale dell'atto notificato e l'ufficiale giudiziario da' notizia al destinatario dell'avvenuta notificazione dell'atto a mezzo di lettera raccomandata con avviso di ricevimento. Gli effetti della notificazione decorrono dal ricevimento della raccomandata&quot;.\n &quot;8. Se neppure in tal modo e' possibile eseguire la notificazione, l'atto e' depositato nella casa del comune dove l'imputato ha l'abitazione, o, in mancanza di questa, del comune dove egli esercita abitualmente la sua attivita' lavorativa. Avviso del deposito stesso e' affisso alla porta della casa di abitazione dell'imputato ovvero alla porta del luogo dove egli abitualmente esercita la sua attivita' lavorativa. L'ufficiale giudiziario da' inoltre comunicazione all'imputato dell'avvenuto deposito a mezzo di lettera raccomandata con avviso di ricevimento. Gli effetti della notificazione decorrono dal ricevimento della raccomandata&quot;.</p>","notesHtml":""},{"id":"art_5","numText":"Art. 5","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Le denunce e gli altri documenti anonimi che non possono essere utilizzati nel procedimento sono annotati in apposito registro suddiviso per anni, nel quale sono iscritti la data in cui il documento e' pervenuto e il relativo oggetto.</p>\n<p><span class=\"para-num\">2.</span> Il registro e i documenti sono custoditi presso la procura della Repubblica con modalita' tali da assicurarne la riservatezza.</p>\n<p><span class=\"para-num\">3.</span> Decorsi cinque anni da quando i documenti indicati nel comma 1 sono pervenuti alla procura della Repubblica, i documenti stessi e il registro sono distrutti con provvedimento adottato annualmente dal procuratore della Repubblica. Delle relative operazioni e' redatto verbale.</p>","notesHtml":""},{"id":"art_6","numText":"Art. 6","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria o la segreteria dell'autorita' giudiziaria che ha emesso un provvedimento relativo alla liberta' personale di persona detenuta o internata lo comunica all'autorita' preposta all'istituto penitenziario. A quest'ultima autorita' sono comunicati per estratto i provvedimenti che dispongono la rimessione per qualunque causa del procedimento ad altra autorita' giudiziaria e gli estratti delle sentenze.</p>","notesHtml":""},{"id":"art_7","numText":"Art. 7","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> L'autorita' preposta a un istituto penitenziario o un funzionario da essa delegato iscrive in un registro, in ordine cronologico, il cognome, il nome, il luogo e la data di nascita, la cittadinanza, la lingua, lo stato, il domicilio dichiarato o eletto, i contrassegni personali delle persone che riceve in custodia, il giorno della loro entrata nell'istituto, il tempo e il luogo del loro arresto con l'indicazione del provvedimento in forza del quale furono arrestate, dell'autorita' a disposizione della quale si trova il detenuto e del nome di chi ha proceduto alla consegna. Nello stesso registro sono iscritti la data dell'uscita dall'istituto, il provvedimento che la ordina e la dichiarazione o l'elezione di domicilio prevista dall'art. 161 comma 3 del codice.</p>\n<p><span class=\"para-num\">2.</span> Nel registro sono altresi' annotati i provvedimenti comunicati a norma dell'art. 6.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 7:\n Il comma 3 dell'art. 161 del codice di procedura penale prevede che:\n &quot;L'imputato detenuto che deve essere scarcerato per causa diversa dal proscioglimento definitivo, all'atto della scarcerazione ha l'obbligo di fare la dichiarazione o l'elezione di domicilio con atto ricevuto a verbale dal direttore dell'istituto. Questi lo avverte a norma del comma 2, iscrive la dichiarazione o elezione nell'apposito registro e trasmette immediatamente il verbale all'autorita' che ha disposto la scarcerazione.\n L'avvertimento e' tuttavia omesso quando la scarcerazione e' disposta dal pubblico ministero&quot;.</p>","notesHtml":""},{"id":"art_8","numText":"Art. 8","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La disposizione dell'art. 24 comma 2 del decreto del Presidente della Repubblica 29 aprile 1976, n. 431, relativa alla vidimazione da parte del magistrato di sorveglianza, si applica anche al registro previsto dall'art. 57 del decreto legislativo 28 luglio 1989, n. 271.</p>\n<p><span class=\"para-num\">1.</span> Note all'art. 8:\n - Il comma 2 dell'art. 24 del regolamento di esecuzione della legge 26 luglio 1975, n. 354, recante norme sull'ordinamento penitenziario e sulla esecuzione delle misure privative e limitative della liberta', approvato con D P.R. n. 431/1976, prevede che: &quot;Il registro, prima che sia posto in uso, e' presentato al magistrato di sorveglianza che ne fa numerare ciascuna pagina, vistandola e segnandola con sigillo del proprio ufficio. In fine del registro lo stesso magistrato di sorveglianza indica il numero complessivo delle pagine e vi appone la data e la sottoscrizione&quot;.\n - Si trascrive il testo dell'art. 57 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989:\n &quot;Art. 57 (Rifiuto di ricezione dell'atto notificato all'imputato detenuto). - 1. Gli atti che l'imputato detenuto si e' rifiutato di ricevere e che devono essere consegnati al direttore dell'istituto a norma dell'art. 156 comma 2 del codice sono inseriti nel fascicolo personale del detenuto. Se l'imputato richiede che gli atti depositati gli siano consegnati, della consegna e' fatta menzione in apposito registro&quot;.</p>","notesHtml":""},{"id":"art_9","numText":"Art. 9","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Nessun onere grava sull'amministrazione penitenziaria per il mantenimento, la cura e l'assistenza medica della persona sottoposta alla misura degli arresti domiciliari.</p>\n<p><span class=\"para-num\">2.</span> La disposizione del comma 1 non si applica se la misura degli arresti domiciliari e' eseguita presso le comunita' terapeutiche o di riabilitazione individuate con decreto del ministro di grazia e giustizia, sentite le regioni interessate, tra quelle che svolgono funzioni di recupero sociale senza finalita' di lucro.</p>","notesHtml":""},{"id":"art_10","numText":"Art. 10","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> L'elenco previsto dall'art. 81 comma 1 del decreto legislativo 28 luglio 1989, n. 271 e' formato assegnando un distinto numero a ciascuna cosa sequestrata. Piu' cose sequestrate possono essere raggruppate sotto un unico numero quando esse sono della stessa specie e non rilevano per la loro individualita'.</p>\n<p><span class=\"para-num\">2.</span> L'autorita' che ha proceduto al sequestro cura che ciascuna cosa o ciascun gruppo di cose siano contraddistinti, mediante le modalita' ritenute piu' idone, da un numero corrispondente a quello con il quale la cosa o il gruppo di cose sono indicati nell'elenco richiamato dal comma 1.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 10:\n L'art. 81, comma 1, delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, prevede che: &quot;Il verbale di sequestro contiene l'elenco delle cose sequestrate, la descrizione delle cautele adottate per assicurarle e l'indicazione della specie e del numero dei sigilli apposti&quot;.</p>","notesHtml":""},{"id":"art_11","numText":"Art. 11","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Se le cose sequestrate sono oggetti preziosi, monete, carte di pubblico credito indicate nell'art. 458 del codice penale o altri titoli al portatore, si provvede, appena pervengono nella cancelleria o nella segreteria, alla loro verificazione, osservate le disposizioni dell'art. 261 del codice. Allo stesso modo si procede per ogni altra cosa sequestrata quando i sigilli appaiono rotti o alterati. Delle operazioni e' compilato verbale che viene unito agli atti.</p>\n<p><span class=\"para-num\">2.</span>  COMMA ABROGATO DAL D.P.R. 30 MAGGIO 2002, N. 115 .</p>","notesHtml":""},{"id":"art_12","numText":"Art. 12","group":"","heading":"","contentHtml":"<p> ARTICOLO ABROGATO DAL D.P.R. 30 MAGGIO 2002, N. 115 </p>","notesHtml":""},{"id":"art_13","numText":"Art. 13","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La vendita delle cose confiscate puo' essere eseguita dalla cancelleria anche a mezzo degli istituti di vendite giudiziarie.</p>\n<p><span class=\"para-num\">1.</span> Nota all'art. 12:\n Il comma 2, dell'art. 84 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' cosi' formulato: &quot;2. La restituzione e' concessa a condizione che prima siano pagate le spese per la custodia e la conservazione delle cose sequestrate, salvo che siano stati pronunciati provvedimento di archiviazione, sentenza di non luogo a procedere o sentenza di proscioglimento ovvero che le cose sequestrate appartengano a persona diversa dall'imputato o che il decreto di sequestro sia stato revocato a norma dell'art. 324 del codice. Le spese di custodia e di conservazione sono in ogni caso dovute dall'avente diritto alla restituzione per il periodo successivo al trentesimo giorno decorrente dalla data in cui il medesimo ha ricevuto la comunicazione del provvedimento di restituzione&quot;.</p>","notesHtml":""},{"id":"art_14","numText":"Art. 14","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Nel corso delle indagini preliminari possono essere compiuti atti del procedimento anche nei giorni festivi.</p>","notesHtml":""},{"id":"art_15","numText":"Art. 15","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria del giudice che ha emesso un provvedimento che definisce una fase o un grado del processo ne comunica l'estratto alla segreteria del pubblico ministero per l'annotazione nel registro delle notizie di reato.</p>\n<p><span class=\"para-num\">2.</span> Alla stessa segreteria e' comunicata la trasmissione degli atti a norma dell'art. 590 del codice o la rimessione per qualunque causa del procedimento ad altra autorita' giudiziaria.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 15:\n Il testo dell'art. 590 del codice di procedura penale e' il seguente:\n &quot;Art. 590 (Trasmissione di atti in seguito all'impugnazione). - 1. Al giudice della impugnazione sono trasmessi senza ritardo il provvedimento impugnato, l'atto di impugnazione e gli atti del procedimento&quot;.</p>","notesHtml":""},{"id":"art_16","numText":"Art. 16","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Salvo quanto previsto dall'art. 17, la cancelleria del giudice per le indagini preliminari annota in apposito registro, sotto un unico numero d'ordine, tutti i provvedimenti relativi a un medesimo procedimento adottati nel corso delle indagini preliminari o a seguito della chiusura di queste.</p>\n<p><span class=\"para-num\">2.</span> Gli originali dei provvedimenti del giudice per le indagini preliminari sono custoditi nel fascicolo relativo agli atti di indagine presso la segreteria del pubblico ministero. Per le sentenze e per i decreti di condanna emessi dal giudice per le indagini preliminari si applica la disposizione dell'art. 23.</p>\n<p><span class=\"para-num\">3.</span> Il giudice per le indagini preliminari puo' disporre l'esibizione dei provvedimenti da lui emessi nel corso delle indagini.</p>","notesHtml":""},{"id":"art_17","numText":"Art. 17","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Puo' prescindersi dall'annotazione prevista dall'art. 16 comma 1 per i decreti di archiviazione emessi a norma dell'art. 415 del codice qualora, prima della richiesta di archiviazione, non sia stato emesso alcun provvedimento da parte del giudice per le indagini preliminari. In tal caso, la segreteria del pubblico ministero trasmette alla cancelleria del giudice per le indagini preliminari i fascicoli contenenti le richieste di archiviazione per essere ignoto l'autore del reato accompagnati da un elenco in duplice esemplare.\nUno degli esemplari e' restituito alla segreteria del pubblico ministero con attestazione di ricevuta da parte della cancelleria del giudice.</p>\n<p><span class=\"para-num\">2.</span> Quando, a seguito della procedura prevista dal comma 1, e' emesso decreto di archiviazione, la cancelleria del giudice allega agli atti da restituire alla segreteria del pubblico ministero un elenco in duplice esemplare, nel quale, con riferimento a ciascun procedimento, e' indicata la data del decreto di archiviazione. Un esemplare di tale elenco, con l'attestazione di ricevuta da parte della segreteria del pubblico ministero, e' conservato nella cancelleria del giudice in raccolta annuale.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 17:\n L'art. 415 del codice di procedura penale e' cosi' formulato:\n &quot;Art. 415 (Reato commesso da persone ignote). - 1.\n Quando e' ignoto l'autore del reato, il pubblico ministero, entro sei mesi dalla data della registrazione della notizia di reato, presenta al giudice richiesta di archiviazione ovvero di autorizzazione a proseguire le indagini.\n 2. Quando accoglie la richiesta di archiviazione ovvero di autorizzazione a proseguire le indagini, il giudice pronuncia decreto motivato e restituisce gli atti al pubblico ministero. Se ritiene che il reato sia da attribuire a persona gia' individuata, ordina che il nome di questa sia iscritto nel registro delle notizie di reato&quot;.</p>","notesHtml":""},{"id":"art_18","numText":"Art. 18","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La segreteria del pubblico ministero da' avviso senza ritardo ai difensori del deposito della documentazione relativa all'attivita' integrativa di indagine prevista dall'art. 430 del codice.</p>\n<p><span class=\"para-num\">1.</span> Nota all'art. 18:\n Si riporta il testo dell'art. 430 del codice di procedura penale:\n &quot;Art. 430 (Attivita' integrativa di indagine del pubblico ministero). - 1. Successivamente all'emissione del decreto che dispone il giudizio, il pubblico ministero, ai fini delle proprie richieste al giudice del dibattimento, puo' compiere attivita' integrativa di indagini, fatta eccezione degli atti per i quali e' prevista la partecipazione dell'imputato o del difensore di questo.\n 2. La documentazione relativa all'attivita' indicata nel comma 1 e' immediatamente depositata nella segreteria del pubblico ministero con facolta' dei difensori di prenderne visione ed estrarne copia&quot;.</p>","notesHtml":""},{"id":"art_19","numText":"Art. 19","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria del giudice per le indagini preliminari, nel trasmettere al pubblico ministero il fascicolo a norma dell'art. 433 del codice, annota nell'indice gli atti acquisiti successivamente al deposito della richiesta di rinvio a giudizio nonche' quelli che sono stati raccolti nel fascicolo per il dibattimento. In quest'ultimo fascicolo sono inseriti l'elenco delle cose sequestrate e la distinta delle spese non soggette a recupero in misura fissa.</p>\n<p><span class=\"para-num\">1.</span> Nota all'art. 19:\n Il testo dell'art. 433 del codice di procedura penale e' il seguente:\n &quot;Art. 433 (Fascicolo del pubblico ministero). - 1. Gli atti diversi da quelli previsti dall'art. 431 sono trasmessi al pubblico ministero con gli atti acquisiti all'udienza preliminare unitamente al verbale dell'udienza.\n 2. I difensori hanno facolta' di prendere visione ed estrarre copia, nella segreteria del pubblico ministero, degli atti raccolti nel fascicolo formato a norma del comma 1.\n 3. Nel fascicolo del pubblico ministero e' altresi' inserita la documentazione dell'attivita' prevista dall'art. 430 quando di essa le parti si sono servite per la formulazione di richieste al giudice del dibattimento e quest'ultimo le ha accolte&quot;.</p>","notesHtml":""},{"id":"art_20","numText":"Art. 20","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Il ruolo per i dibattimenti davanti al tribunale, alla corte di assise e al pretore e' formato a norma degli articoli 132 e 160 del decreto legislativo 28 luglio 1989, n. 271.</p>\n<p><span class=\"para-num\">2.</span> Il ruolo per i dibattimenti davanti alla corte di appello e alla corte di assise di appello e' formato ogni venti giorni dal presidente della corte di appello o da un consigliere da lui delegato.</p>\n<p><span class=\"para-num\">3.</span> Il ruolo e' affisso a cura della cancelleria all'ingresso dell'aula di udienza almeno un giorno prima di quello dell'udienza.</p>\n<p><span class=\"para-num\">4.</span> Ai dibattimenti si procede secondo l'ordine del ruolo e conformemente agli orari indicati sui decreti che dispongono il giudizio, salvo che, per ragioni di urgenza o per altro giustificato motivo, il presidente o il pretore ordini che sia tenuto in precedenza un determinato dibattimento iscritto nel ruolo.</p>\n<p><span class=\"para-num\">5.</span> E' in ogni caso data precedenza ai dibattimenti con imputati in custodia cautelare.</p>\n<p><span class=\"para-num\">5.</span> Nota all'art. 20:\n Si trascrive il testo degli articoli 132 e 160 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989:\n &quot;Art. 132 (Decreto che dispone il giudizio davanti alla corte di assise o al tribunale). - 1. Quando la corte di assise o il tribunale e' diviso in sezioni, il decreto che dispone il giudizio contiene anche l'indicazione della sezione davanti alla quale le parti devono comparire.\n 2. Per ogni processo il presidente del tribunale, in seguito alla richiesta del giudice per le indagini preliminari, comunica anche con mezzi telematici, sulla base dei criteri determinati dal Consiglio superiore della magistratura, il giorno e l'ora della comparizione e, quando occorre, anche la sezione da indicare nel decreto che dispone il giudizio&quot;.\n &quot;Art. 160 (Determinazione della data dell'udienza dibattimentale o del procedimento speciale). - 1. Ai fini dell'emissione del decreto di citazione a giudizio ovvero del decreto che dispone il giudizio a seguito di opposizione a decreto penale, la richiesta prevista dall'art. 132 comma 2 e' proposta al pretore dirigente rispettivamente dal pubblico ministero o dal giudice per le indagini preliminari.\n 2. Quando il pubblico ministero deve fissare l'udienza davanti al giudice per le indagini preliminari a norma degli articoli 556 comma 2, 557, 560 comma 2, 563 comma 2 del codice, l'individuazione della data dell'udienza e' effettuata, su richiesta del pubblico ministero, dal presidente della sezione dei giudici per le indagini preliminari ovvero, quando questa manchi, dal pretore dirigente&quot;.</p>","notesHtml":""},{"id":"art_21","numText":"Art. 21","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> L'ufficiale giudiziario o chi ne esercita le funzioni deve trovarsi nell'aula prima che cominci l'udienza. Quando il giudice entra nell'aula di udienza ne da' l'annuncio ad alta voce e quando il giudice si ritira in camera di consiglio resta nell'aula agli ordini del pubblico ministero.</p>\n<p><span class=\"para-num\">2.</span> Durante l'udienza l'ufficiale giudiziario o chi ne esercita le funzioni deve:</p>\n<p><span class=\"para-num\">2.</span> impedire qualunque comunicazione tra i testimoni esaminati e quelli da esaminare nonche' fra questi ultimi e gli estranei;</p>\n<p><span class=\"para-num\">2.</span> vigilare perche' i testimoni non assistano al dibattimento prima di essere esaminati;</p>\n<p><span class=\"para-num\">2.</span> curare che siano osservate le disposizioni dell'art. 471 del codice e impedire che sia turbato l'ordine dell'udienza;</p>\n<p><span class=\"para-num\">2.</span> eseguire gli ordini del presidente o, in sua assenza, del pubblico ministero.</p>","notesHtml":""},{"id":"art_22","numText":"Art. 22","group":"","heading":"","contentHtml":"<p> ARTICOLO ABROGATO DAL D.P.R. 30 MAGGIO 2002, N. 115 </p>","notesHtml":""},{"id":"art_23","numText":"Art. 23","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Gli originali delle sentenze e dei decreti penali di condanna sono raccolti in appositi volumi custoditi nella cancelleria del giudice che li ha emessi.</p>","notesHtml":""},{"id":"art_24","numText":"Art. 24","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> I nastri e i supporti previsti dall'art. 49 del decreto legislativo 28 luglio 1989, n. 271 dei quali e' stata eseguita la trascrizione sono trasmessi senza ritardo alla cancelleria del giudice della impugnazione se questi ne fa richiesta.</p>\n<p><span class=\"para-num\">1.</span> Nota all'art. 24:\n L'art. 49 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' cosi' formulato:\n &quot;Art. 49 (Conservazione dei nastri e dei supporti fonografici e audiovisivi). - 1. I nastri e i supporti contenenti le riproduzioni fonografiche o audiovisive sono racchiusi in apposite custodie numerate e sigillate.\n 2. Ciascuna custodia, a sua volta, e' racchiusa in un involucro, sul quale e' trascritto il numero della custodia e sono indicati gli estremi del procedimento e le generalita' delle persone alle quali si riferiscono le riproduzioni nonche' la data in cui le singole riproduzioni sono state effettuate.\n 3. Al fine di evitarne il deterioramento, i nastri e i supporti possono essere conservati anche in contenitori separati dagli atti processuali&quot;.</p>","notesHtml":""},{"id":"art_25","numText":"Art. 25","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Prima dell'udienza della corte di cassazione, la cancelleria trasmette al presidente e ai consiglieri copia del provvedimento impugnato, dell'atto di impugnazione e delle memorie.</p>","notesHtml":""},{"id":"art_26","numText":"Art. 26","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Con decreto del presidente della corte di cassazione sono stabiliti i criteri per la individuazione delle sentenze dalle quali devono essere tratte le massime e per la redazione delle stesse.</p>","notesHtml":""},{"id":"art_27","numText":"Art. 27","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Fermo quanto previsto dall'art. 625 comma 4 del codice, la cancelleria annota sull'originale della sentenza o del decreto di condanna l'irrevocabilita' del provvedimento, dandone comunicazione alla segreteria del pubblico ministero per le conseguenti annotazioni sul registro previsto dall'art. 335 del codice.</p>\n<p><span class=\"para-num\">1.</span> Note all'art. 27:\n - Il comma 4 dell'art. 625 del codice di procedura penale prevede che: &quot;In ogni caso la cancelleria del giudice che ha emesso la decisione impugnata esegue annotazione, in margine o in fine dell'originale, della decisione della corte&quot;.\n - Per il testo dell'art. 335 del medesimo codice si veda la nota all'art. 3.</p>","notesHtml":""},{"id":"art_28","numText":"Art. 28","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria, quando un provvedimento diviene esecutivo per non essere stata proposta impugnazione od opposizione, ne trasmette l'estratto senza ritardo, e comunque entro cinque giorni, al pubblico ministero presso il giudice indicato nell'art. 665 del codice. Fermo quanto previsto dall'art. 626 del codice, allo stesso modo provvede la cancelleria della Corte di cassazione quando l'esecuzione consegue alla decisione della stessa Corte.</p>\n<p><span class=\"para-num\">2.</span> L'estratto del provvedimento contiene le generalita' della persona nei confronti della quale deve essere eseguito, l'imputazione, il dispositivo e, quando ne e' il caso, l'attestazione che non e' stata proposta impugnazione od opposizione. All'estratto e' allegata copia dei dispositivi dei provvedimenti che hanno definito gli eventuali altri gradi del procedimento.</p>\n<p><span class=\"para-num\">3.</span> Allo stesso modo si procede quando la legge stabilisce che l'impugnazione non sospende l'esecuzione del provvedimento.</p>\n<p><span class=\"para-num\">4.</span> Il pubblico ministero promuove senza ritardo l'esecuzione del provvedimento.</p>\n<p><span class=\"para-num\">4.</span> Nota all'art. 28:\n Il testo degli articoli 665 e 626 del codice di procedura penale e' il seguente:\n &quot;Art. 665 (Giudice competente). - 1. Salvo diversa disposizione di legge, competente a conoscere dell'esecuzione di un provvedimento e' il giudice che lo ha deliberato.\n 2. Quando e' stato proposto appello, se il provvedimento e' stato confermato o riformato soltanto in relazione alla pena, alle misure di sicurezza o alle disposizioni civili, e' competente il giudice di primo grado; altrimenti e' competente il giudice di appello.\n 3. Quando vi e' stato ricorso per cassazione e questo e' stato dichiarato inammissibile o rigettato ovvero quando la corte ha annullato senza rinvio il provvedimento impugnato, e' competente il giudice di primo grado, se il ricorso fu proposto contro provvedimento inappellabile ovvero a norma dell'art. 569, e il giudice indicato nel comma 2 negli altri casi. Quando e' stato pronunciato l'annullamento con rinvio, e' competente il giudice di rinvio.\n 4. Se l'esecuzione concerne piu' provvedimenti emessi da giudici diversi, e' competente il giudice che ha emesso il provvedimento divenuto irrevocabile per ultimo. Tuttavia, se i provvedimenti sono stati emessi dal pretore e da altro giudice ordinario, e' competente in ogni caso quest'ultimo; se sono stati emessi da giudici ordinari e giudici speciali, e' competente il giudice ordinario&quot;.\n &quot;Art. 626 (Effetti della sentenza sui provvedimenti di natura personale o reale). - 1 Quando, in seguito alla sentenza della Corte di cassazione, deve cessare una misura cautelare ovvero una pena accessoria o una misura di sicurezza, la cancelleria ne comunica immediatamente il dispositivo al procuratore generale presso la corte medesima perche' dia i provvedimenti occorrenti&quot;.</p>","notesHtml":""},{"id":"art_29","numText":"Art. 29","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Per l'esecuzione delle sentenze e dei decreti di condanna la segreteria del pubblico ministero procede ai seguenti adempimenti:</p>\n<p><span class=\"para-num\">1.</span> eseguiti i necessari accertamenti, iscrive ciascuna sentenza di condanna a pene detentive nel registro delle esecuzioni; le sentenze di condanna a pene pecuniarie o a sanzioni sostitutive, i decreti di condanna nonche' le sentenze di condanna a pene detentive la cui esecuzione e' sospesa sono iscritti nel registro delle esecuzioni nel caso di conversione in pena detentiva o di revoca della sospensione. Con l'iscrizione e' annotato il provvedimento con il quale e' stata promossa l'esecuzione della sentenza o del decreto di condanna;</p>\n<p><span class=\"para-num\">1.</span> forma un fascicolo con un numero progressivo corrispondente a quello del registro, nel quale sono raccolti l'estratto indicato nell'art. 28, il certificato del casellario giudiziale riguardante il condannato, i dati acquisiti presso il servizio informatico previsto dall'art. 97 del decreto legislativo 28 luglio 1989, n. 271 nonche' copia degli atti del procedimento di grazia e dei provvedimenti emessi dall'autorita' giudiziaria in sede di esecuzione. Di tutti gli atti viene formato un indice;</p>\n<p><span class=\"para-num\">1.</span> sottopone al pubblico ministero il fascicolo, anche per l'adozione dei provvedimenti previsti dagli articoli 657 e 663 del codice;</p>\n<p><span class=\"para-num\">1.</span> trasmette al direttore dell'istituto penitenziario dove si trova il condannato un foglio, sottoscritto dal pubblico ministero, con l'indicazione della quantita' di pena da eseguire e della data in cui termina l'esecuzione;</p>\n<p><span class=\"para-num\">1.</span> comunica al direttore predetto ogni successivo provvedimento che incida sull'esecuzione della pena.</p>\n<p><span class=\"para-num\">1.</span> Note all'art. 29:\n - L'art. 97 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' cosi' formulato:\n &quot;Art. 97 (Comunicazioni al servizio informatico). - 1. I provvedimenti con i quali e' disposta una misura cautelare personale sono comunicati, a cura della cancelleria del giudice che li ha emessi, al servizio informatico istituito con decreto del Ministro di grazia e giustizia, quando la misura ha avuto esecuzione. La stessa comunicazione e' altresi' data quando e' dichiarato lo stato di latitanza.\n 2. Nel caso di fermo o di arresto in flagranza, alla comunicazione prevista dal comma 1 provvede la direzione dell'istituto di custodia al quale il fermato o l'arrestato e' consegnato.\n 3. Deve essere altresi' data immediata comunicazione al servizio previsto dal comma 1 del provvedimento con cui e' ordinata la immediata liberazione dell'arrestato o del fermato nonche' di ogni provvedimento estintivo o modificativo delle misure cautelari personali. Alla comunicazione provvede la cancelleria o la segreteria dell'autorita' giudiziaria che ha adottato il provvedimento&quot;.\n - Si trascrive il testo degli articoli 657 e 663 del codice di procedura penale:\n &quot;Art. 657 (Computo della custodia cautelare e delle pene espiate senza titolo). - 1. Il pubblico ministero, nel determinare la pena detentiva da eseguire, computa il periodo di custodia cautelare subita per lo stesso o per altro reato, anche se la custodia e' ancora in corso.\n Allo stesso modo procede in caso di applicazione provvisoria di una misura di sicurezza detentiva, se questa non e' stata applicata definitivamente.\n 2. Il pubblico ministero computa altresi' il periodo di pena detentiva espiata per un reato diverso, quando la relativa condanna e' stata revocata, quando per il reato e' stata concessa amnistia o quando e' stato concesso indulto, nei limiti dello stesso.\n 3. Nei casi previsti dai commi 1 e 2, il condannato puo' chiedere al pubblico ministero che i periodi di custodia cautelare e di pena detentiva espiata, operato il ragguaglio, siano computati per la determinazione della pena pecuniaria o della sanzione sostitutiva da eseguire; nei casi previsti dal comma 2, puo' altresi' chiedere che le sanzioni sostitutive espiate siano computate nelle sanzioni sostitutive da eseguire per altro reato.\n 4. In ogni caso sono computate soltanto la custodia cautelare subita o le pene espiate dopo la commissione del reato per il quale deve essere determinata la pena da eseguire.\n 5. Il pubblico ministero provvede con decreto, che deve essere notificato al condannato e al suo difensore&quot;.\n &quot;Art. 663 (Esecuzione di pene concorrenti). - 1. Quando la stessa persona e' stata condannata con piu' sentenze o decreti penali per reati diversi, il pubblico ministero determina la pena da eseguirsi, in osservanza delle norme sul concorso di pene.\n 2. Se le condanne sono state inflitte da giudici diversi, provvede il pubblico ministero presso il giudice indicato nell'art. 665, comma 4.\n 3. Il provvedimento del pubblico ministero e' notificato al condannato e al suo difensore&quot;.</p>","notesHtml":""},{"id":"art_30","numText":"Art. 30","group":"","heading":"","contentHtml":"<p> ARTICOLO ABROGATO DAL D.P.R. 30 MAGGIO 2002, N. 115 </p>","notesHtml":""},{"id":"art_31","numText":"Art. 31","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Per l'esecuzione delle sanzioni sostitutive, la cancelleria del magistrato di sorveglianza iscrive in apposito registro l'estratto del provvedimento che le ha disposte e forma un fascicolo nel quale sono raccolti l'estratto medesimo e tutti gli atti del procedimento.</p>\n<p><span class=\"para-num\">2.</span> Allo stesso modo si procede per l'esecuzione delle misure di sicurezza diverse dalla confisca.</p>","notesHtml":""},{"id":"art_32","numText":"Art. 32","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Il provvedimento con il quale viene respinta la richiesta di liberazione anticipata o di liberazione condizionale e' comunicato, a cura della cancelleria, al direttore dell'istituto di pena presso il quale il condannato e' ristretto perche' ne sia presa nota nella cartella biografica.</p>","notesHtml":""},{"id":"art_33","numText":"Art. 33","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria del giudice che emette i provvedimenti di riabilitazione o di revoca previsti dall'art. 193 del decreto legislativo 28 luglio 1989, n. 271 ne trasmette l'estratto per l'annotazione alla cancelleria del giudice che ha emesso la sentenza di condanna.</p>\n<p><span class=\"para-num\">1.</span> Nota all'art. 33:\n Il testo dell'art. 193 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' il seguente:\n &quot;Art. 193 (Annotazione del provvedimento di riabilitazione e di revoca delle sentenze di condanna). - 1. Il provvedimento che concede la riabilitazione, divenuto irrevocabile, e' annotato nella sentenza di condanna a cura della cancelleria del giudice che l'ha emessa. Allo stesso modo si procede per i provvedimenti di revoca adottati a norma degli articoli 669 e 673 del codice&quot;.</p>","notesHtml":""},{"id":"art_34","numText":"Art. 34","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> La cancelleria o la segreteria dell'autorita' giudiziaria che ha emesso un provvedimento del quale e' prevista l'iscrizione nel casellario giudiziale ne comunica senza ritardo, anche avvalendosi di mezzi tecnici idonei, l'estratto al casellario indicato nell'art. 685 del codice.</p>\n<p><span class=\"para-num\">2.</span> Allo stesso modo la segreteria del pubblico ministero indicato nell'art. 655 comunica gli eventi relativi alla espiazione della pena di cui e' prevista l'iscrizione.</p>\n<p><span class=\"para-num\">2.</span> Nota all'art. 34:\n Si trascrive il testo degli articoli 685 e 655 del codice di procedura penale:\n &quot;Art. 685 (Uffici del casellario giudiziale). - 1.\n Presso ciascun tribunale, sotto la vigilanza del procuratore della Repubblica, l'ufficio del casellario raccoglie e conserva l'estratto dei provvedimenti e le annotazioni di cui e' prescritta l'iscrizione, concernenti le persone nate nel circondario.\n 2. Gli estratti dei provvedimenti e le annotazioni concernenti persone nate all'estero o delle quali non si e' potuto accertare il luogo di nascita nel territorio dello Stato, si conservano nell'ufficio del casellario presso il tribunale di Roma&quot;.\n &quot;Art. 655 (Funzioni del pubblico ministero). - 1. Salvo che sia diversamente disposto, il pubblico ministero presso il giudice indicato nell'art. 665 cura di ufficio l'esecuzione dei provvedimenti.\n 2. Il pubblico ministero propone le sue richieste al giudice competente e interviene in tutti i procedimenti di esecuzione.\n 3. Quando occorre, il pubblico ministero puo' chiedere il compimento di singoli atti a un ufficio del pubblico ministero di altra sede.\n 4. Se per l'esecuzione di un provvedimento e' necessaria l'autorizzazione, il pubblico ministero ne fa richiesta all'autorita' competente; l'esecuzione e' sospesa fino a quando l'autorizzazione non e' concessa. Allo stesso modo si procede quando la necessita' dell'autorizzazione e' sorta nel corso dell'esecuzione.\n 5. I provvedimenti del pubblico ministero dei quali e' prescritta nel presente titolo la notificazione al difensore, sono notificati, a pena di nullita', entro trenta giorni dalla loro emissione, al difensore nominato dall'interessato o, in mancanza, a quello designato dal pubblico ministero a norma dell'art. 97, senza che cio' determini la sospensione o il ritardo dell'esecuzione&quot;.</p>","notesHtml":""},{"id":"art_35","numText":"Art. 35","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Il giudice istruttore e il pretore trasmettono senza ritardo al pubblico ministero gli atti dei procedimenti indicati nell'art. 258 del decreto legislativo 28 luglio 1989, n. 271. La segreteria del pubblico ministero provvede all'iscrizione dei procedimenti medesimi nel registro previsto dall'art. 335 del codice.</p>\n<p><span class=\"para-num\">1.</span> Note all'art. 35:\n - L'art. 258 delle norme di attuazione, di coordinamento e transitorie del codice di procedura penale, allegate al D.Lgs. n. 271/1989, e' cosi' formulato:\n &quot;Art. 258 (Procedimenti che proseguono secondo le disposizioni del codice). - 1. I procedimenti in corso diversi da quelli indicati negli articoli 241 e 242 proseguono con l'osservanza delle disposizioni del codice, ma i termini per le indagini preliminari sono computati dalla data di entrata in vigore del codice. Per gli atti di polizia giudiziaria e per gli atti istruttori si osservano le disposizioni previste dagli articoli 243 comma 2 e 244 comma 1&quot;.\n - Per il testo dell'art. 335 del codice di procedura penale si veda la nota all'art. 3.</p>","notesHtml":""},{"id":"art_36","numText":"Art. 36","group":"","heading":"","contentHtml":"<p><span class=\"para-num\">1.</span> Il presente regolamento entra in vigore lo stesso giorno dell'entrata in vigore del codice di procedura penale, approvato con decreto del Presidente della Repubblica 22 settembre 1988, n. 447.</p>","notesHtml":""}]
+};</script>
+<script>
+(function() {
+  'use strict';
+  // DATA is injected per page
+
+  var currentIdx = 0;
+  var filteredIndices = CODE.articles.map(function(_, i) { return i; });
+
+  function init() {
+    // Pre-compute plain text for full-text search
+    CODE.articles.forEach(function(art) {
+      art._searchText = (art.numText + ' ' + (art.heading || '') + ' ' +
+        (art.contentHtml || '').replace(/<[^>]+>/g, '')).toLowerCase();
+    });
+    renderToc();
+
+    // Navigate to hash article if present, otherwise show first article
+    var initHash = location.hash.replace('#', '');
+    var initIdx = 0;
+    if (initHash) {
+      var found = CODE.articles.findIndex(function(a) { return a.id === initHash || a.numText === decodeURIComponent(initHash); });
+      if (found >= 0) initIdx = found;
+    }
+    showArticle(initIdx);
+
+    document.getElementById('search').addEventListener('input', onSearch);
+    document.getElementById('prev-btn').addEventListener('click', function() { navigate(-1); });
+    document.getElementById('next-btn').addEventListener('click', function() { navigate(1); });
+    document.getElementById('hamburger').addEventListener('click', toggleSidebar);
+    document.getElementById('overlay').addEventListener('click', closeSidebar);
+    document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+    });
+    window.addEventListener('hashchange', onHashChange);
+  }
+
+  function onHashChange() {
+    var hash = location.hash.replace('#', '');
+    if (!hash) return;
+    var idx = CODE.articles.findIndex(function(a) { return a.id === hash || a.numText === decodeURIComponent(hash); });
+    if (idx >= 0) showArticle(idx);
+  }
+
+  function renderToc() {
+    var nav = document.getElementById('toc');
+    var html = '';
+    var lastGroup = null;
+    CODE.articles.forEach(function(art, i) {
+      if (art.group && art.group !== lastGroup) {
+        html += '<div class="group-label">' + esc(art.group) + '</div>';
+        lastGroup = art.group;
+      }
+      html += '<div class="art-link" data-idx="' + i + '" onclick="goTo(' + i + ')">' +
+        '<span class="art-num">' + esc(art.numText) + '</span>' +
+        '<span class="art-heading-mini">' + esc(art.heading || '') + '</span>' +
+        '</div>';
+    });
+    nav.innerHTML = html;
+  }
+
+  function showArticle(idx) {
+    if (idx < 0 || idx >= CODE.articles.length) return;
+    currentIdx = idx;
+    var art = CODE.articles[idx];
+
+    // Update URL hash
+    history.replaceState(null, '', '#' + encodeURIComponent(art.numText));
+
+    // Update header title
+    document.getElementById('header-article').textContent = art.numText + (art.heading ? ' – ' + art.heading : '');
+
+    // Render article
+    var notesSection = art.notesHtml
+      ? '<div class="article-notes">' +
+        '<button class="notes-toggle" onclick="toggleNotes(this)">Aggiornamenti e note</button>' +
+        '<div class="notes-body"><div class="article-body">' + art.notesHtml + '</div></div>' +
+        '</div>'
+      : '';
+
+    document.getElementById('article-view').innerHTML =
+      '<div class="article-card">' +
+        '<div class="article-badge">📖 ' + esc(CODE.shortTitle) + '</div>' +
+        '<h1 class="article-num">' + esc(art.numText) + '</h1>' +
+        (art.heading ? '<p class="article-heading">' + esc(art.heading) + '</p>' : '<div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)"></div>') +
+        '<div class="article-body">' + art.contentHtml + '</div>' +
+        notesSection +
+        '<div class="article-actions">' +
+          '<button class="action-btn wa-btn" onclick="shareWhatsApp()" title="Invia su WhatsApp">' +
+            '<span class="action-icon">📲</span> WhatsApp' +
+          '</button>' +
+          '<button class="action-btn" onclick="copyArticle()" title="Copia articolo">' +
+            '<span class="action-icon">📋</span> Copia' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+
+    // Update counter
+    document.getElementById('article-counter').textContent = (idx + 1) + ' / ' + CODE.articles.length;
+    document.getElementById('prev-btn').disabled = idx === 0;
+    document.getElementById('next-btn').disabled = idx === CODE.articles.length - 1;
+
+    // Highlight active in TOC
+    document.querySelectorAll('.art-link').forEach(function(el) { el.classList.remove('active'); });
+    var activeEl = document.querySelector('.art-link[data-idx="' + idx + '"]');
+    if (activeEl) {
+      activeEl.classList.add('active');
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    // Scroll main to top
+    document.getElementById('main').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  window.goTo = function(idx) { showArticle(idx); closeSidebar(); };
+
+  function navigate(dir) {
+    var pos = filteredIndices.indexOf(currentIdx);
+    if (pos === -1) pos = 0;
+    var newPos = pos + dir;
+    if (newPos >= 0 && newPos < filteredIndices.length) {
+      showArticle(filteredIndices[newPos]);
+    }
+  }
+
+  function onSearch(e) {
+    var q = e.target.value.toLowerCase().trim();
+    filteredIndices = [];
+    document.querySelectorAll('.art-link').forEach(function(el) {
+      var idx = parseInt(el.dataset.idx, 10);
+      var art = CODE.articles[idx];
+      var hidden = q && !art._searchText.includes(q);
+      el.classList.toggle('hidden', hidden);
+      if (!hidden) filteredIndices.push(idx);
+    });
+    if (!q) filteredIndices = CODE.articles.map(function(_, i) { return i; });
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('visible');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
+  }
+  window.toggleNotes = function(btn) {
+    btn.classList.toggle('open');
+    btn.nextElementSibling.classList.toggle('visible');
+  };
+
+  function getArticleText(art, bold) {
+    var body = (art.contentHtml || '').replace(/<\/p>\s*<p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').trim();
+    var heading = art.numText;
+    if (art.heading) heading += ' – ' + art.heading;
+    if (bold) heading = '*' + heading + '*';
+    return CODE.title + '\n' + heading + '\n' + body;
+  }
+
+  window.shareWhatsApp = function() {
+    var art = CODE.articles[currentIdx];
+    var text = getArticleText(art, true);
+    var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+  };
+
+  window.copyArticle = function() {
+    var art = CODE.articles[currentIdx];
+    var text = getArticleText(art, false);
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Articolo copiato negli appunti');
+    }, function() {
+      // fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Articolo copiato negli appunti');
+    });
+  };
+
+  function showToast(msg) {
+    var el = document.getElementById('copy-toast');
+    el.textContent = msg;
+    el.classList.add('visible');
+    setTimeout(function() { el.classList.remove('visible'); }, 2000);
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

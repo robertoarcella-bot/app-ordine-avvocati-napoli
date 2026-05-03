@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costituzione – Codici Italiani</title>
+<meta name="description" content="La legge fondamentale dello Stato italiano, in vigore dal 1° gennaio 1948.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0066CC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root { --code-color: #c0392b; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sidebar-w: 300px;
+  --header-h: 58px;
+  --sidebar-bg: #003F7F;
+  --sidebar-hover: rgba(255,255,255,.12);
+  --sidebar-active-bg: rgba(255,255,255,.20);
+  --sidebar-text: #ffffff;
+  --sidebar-muted: #d6e2f4;
+  --sidebar-border: rgba(255,255,255,.18);
+  --main-bg: #f7f8fc;
+  --article-bg: #ffffff;
+  --text: #1a1d2e;
+  --muted: #6b7280;
+  --border: #e4e7f0;
+  --accent: var(--code-color, #2471a3);
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "SF Mono", Consolas, "Courier New", monospace;
+  --radius: 8px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--main-bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: var(--sidebar-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  z-index: 100;
+}
+.site-logo {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.site-logo:hover { color: #dce8ff; }
+.header-sep { width: 1px; height: 28px; background: var(--sidebar-border); }
+.header-title {
+  font-size: .875rem;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.header-vigenza {
+  font-size: .75rem;
+  color: var(--sidebar-muted);
+  white-space: nowrap;
+  background: rgba(255,255,255,.06);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 6px;
+  background: none;
+  border: none;
+}
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--sidebar-text);
+  border-radius: 2px;
+  transition: all .2s;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform .25s ease;
+}
+.sidebar-search {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+.sidebar-search input {
+  width: 100%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: .82rem;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color .15s;
+}
+.sidebar-search input::placeholder { color: var(--sidebar-muted); }
+.sidebar-search input:focus { border-color: rgba(255,255,255,.3); }
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.15) transparent;
+}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+
+.group-label {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--sidebar-muted);
+  padding: 14px 16px 6px;
+}
+.art-link {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background .12s, border-color .12s;
+}
+.art-link:hover { background: var(--sidebar-hover); }
+.art-link.active {
+  background: var(--sidebar-active-bg);
+  border-left-color: var(--accent);
+}
+.art-link.hidden { display: none; }
+.art-num {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 56px;
+  flex-shrink: 0;
+}
+.art-heading-mini {
+  font-size: .78rem;
+  color: var(--sidebar-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: .85;
+}
+.art-link.active .art-heading-mini { opacity: 1; }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+  padding: 32px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── ARTICLE CARD ── */
+.article-card {
+  background: var(--article-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 820px;
+  width: 100%;
+  padding: 44px 52px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.article-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+.article-num {
+  font-family: var(--sans);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.article-heading {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.article-body {
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text);
+}
+.article-body p {
+  margin-bottom: 1.1em;
+  text-align: justify;
+  hyphens: auto;
+}
+.article-body p:last-child { margin-bottom: 0; }
+.para-num {
+  font-family: var(--sans);
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, white);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+mark.ins {
+  background: color-mix(in srgb, #2980b9 12%, white);
+  color: #1a5276;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-style: italic;
+}
+
+/* Notes / Aggiornamento */
+.article-notes {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--border);
+}
+.notes-toggle {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.notes-toggle::before { content: '▶'; font-size: .6em; transition: transform .2s; }
+.notes-toggle.open::before { transform: rotate(90deg); }
+.notes-body {
+  font-family: var(--sans);
+  font-size: .8rem;
+  color: var(--muted);
+  line-height: 1.6;
+  display: none;
+}
+.notes-body.visible { display: block; }
+.notes-body p { margin-bottom: .7em; }
+
+/* ── NAV FOOTER ── */
+.nav-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 820px;
+  width: 100%;
+  margin-top: 20px;
+}
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  background: var(--article-bg);
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.nav-btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+.article-counter {
+  font-size: .8rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+  max-width: 820px;
+  width: 100%;
+}
+.empty-state h2 { font-size: 1.2rem; margin-bottom: 8px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 280px; }
+  .hamburger { display: flex; }
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 20px rgba(0,0,0,.4);
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 20px 12px 60px;
+  }
+  .article-card { padding: 28px 22px; }
+  .article-num { font-size: 1.5rem; }
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 49;
+    display: none;
+  }
+  .overlay.visible { display: block; }
+}
+
+/* ── ACTION BUTTONS (WA + COPY) ── */
+.article-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: var(--article-bg);
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.action-btn:hover {
+  color: #fff;
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.action-btn.wa-btn:hover {
+  background: #25D366;
+  border-color: #25D366;
+}
+.action-btn .action-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1e293b;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  opacity: 0;
+  transition: all .3s ease;
+  z-index: 9999;
+  pointer-events: none;
+}
+.copy-toast.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── SCROLLBAR ── */
+* { scrollbar-width: thin; scrollbar-color: #d1d5db transparent; }
+
+</style>
+</head>
+<body>
+
+<!-- OVERLAY MOBILE -->
+<div id="overlay" class="overlay"></div>
+
+<!-- HEADER -->
+<header class="site-header">
+  <button id="hamburger" class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="home.html" class="site-logo">🏛️ Codici Italiani</a>
+  <div class="header-sep"></div>
+  <div class="header-title" id="header-article">Costituzione</div>
+  <div class="header-vigenza">agg. 22/10/2023</div>
+</header>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-search">
+    <input type="search" id="search" placeholder="Cerca per articolo, titolo o testo…" autocomplete="off">
+  </div>
+  <nav class="sidebar-nav" id="toc"></nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main-content" id="main">
+  <div id="article-view"></div>
+  <div class="nav-footer">
+    <button class="nav-btn" id="prev-btn">← Precedente</button>
+    <span class="article-counter" id="article-counter"></span>
+    <button class="nav-btn" id="next-btn">Successivo →</button>
+  </div>
+</main>
+
+<div id="copy-toast" class="copy-toast"></div>
+
+<script>const CODE = {
+  title: "Costituzione della Repubblica Italiana",
+  shortTitle: "Costituzione",
+  slug: "costituzione",
+  vigenza: "22/10/2023",
+  color: "#c0392b",
+  articles: [{"id":"art_1","numText":"Art. 1","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>L'Italia e' una Repubblica democratica, fondata sul lavoro.\n La sovranita' appartiene al popolo, che la esercita nelle forme e nei limiti della Costituzione.</p>","notesHtml":""},{"id":"art_2","numText":"Art. 2","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La Repubblica riconosce e garantisce i diritti inviolabili dell'uomo, sia come singolo sia nelle formazioni sociali ove si svolge la sua personalita', e richiede l'adempimento dei doveri inderogabili di solidarieta' politica, economica e sociale.</p>","notesHtml":""},{"id":"art_3","numText":"Art. 3","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>Tutti i cittadini hanno pari dignita' sociale e sono eguali davanti alla legge, senza distinzione di sesso, di razza, di lingua, di religione, di opinioni politiche, di condizioni personali e sociali.\n E' compito della Repubblica rimuovere gli ostacoli di ordine economico e sociale, che, limitando di fatto la liberta' e l'eguaglianza dei cittadini, impediscono il pieno sviluppo della persona umana e l'effettiva partecipazione di tutti i lavoratori all'organizzazione politica, economica e sociale del Paese.</p>","notesHtml":""},{"id":"art_4","numText":"Art. 4","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La Repubblica riconosce a tutti i cittadini il diritto al lavoro e promuove le condizioni che rendano effettivo questo diritto.\n Ogni cittadino ha il dovere di svolgere, secondo le proprie possibilita' e la propria scelta, un'attivita' o una funzione che concorra al progresso materiale o spirituale della societa'.</p>","notesHtml":""},{"id":"art_5","numText":"Art. 5","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La Repubblica, una e indivisibile, riconosce e promuove le autonomie locali; attua nei servizi che dipendono dallo Stato il piu' ampio decentramento amministrativo; adegua i principi ed i metodi della sua legislazione alle esigenze dell'autonomia e del decentramento.</p>","notesHtml":""},{"id":"art_6","numText":"Art. 6","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La Repubblica tutela con apposite norme le minoranze linguistiche.</p>","notesHtml":""},{"id":"art_7","numText":"Art. 7","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>Lo Stato e la Chiesa cattolica sono, ciascuno nel proprio ordine, indipendenti e sovrani.\n I loro rapporti sono regolati dai Patti Lateranensi. Le modificazioni dei Patti, accettate dalle due parti, non richiedono procedimento di revisione costituzionale.</p>","notesHtml":""},{"id":"art_8","numText":"Art. 8","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>Tutte le confessioni religiose sono egualmente libere davanti alla legge.\n Le confessioni religiose diverse dalla cattolica hanno diritto di organizzarsi secondo i propri statuti, in quanto non contrastino con l'ordinamento giuridico italiano.\n I loro rapporti con lo Stato sono regolati per legge sulla base di intese con le relative rappresentanze.</p>","notesHtml":""},{"id":"art_9","numText":"Art. 9","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La Repubblica promuove lo sviluppo della cultura e la ricerca scientifica e tecnica. \n Tutela il paesaggio e il patrimonio storico e artistico della Nazione. \n Tutela l'ambiente, la biodiversita' e gli ecosistemi, anche nell'interesse delle future generazioni. La legge dello Stato disciplina i modi e le forme di tutela degli animali.</p>","notesHtml":""},{"id":"art_10","numText":"Art. 10","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>L'ordinamento giuridico italiano si conforma alle norme del diritto internazionale generalmente riconosciute.\n La condizione giuridica dello straniero e' regolata dalla legge in conformita' delle norme e dei trattati internazionali.\n Lo straniero, al quale sia impedito nel suo paese l'effettivo esercizio delle liberta' democratiche garantite dalla Costituzione italiana, ha diritto d'asilo nel territorio della Repubblica, secondo le condizioni stabilite dalla legge.\n Non e' ammessa l'estradizione dello straniero per reati politici. <sup class=\"amd\">5</sup></p>","notesHtml":"<p>AGGIORNAMENTO (5)</p>\n<p>La L. costituzionale 21 giugno 1967, n. 1 ha disposto (con l'articolo unico) che l'ultimo comma del presente articolo non si applica ai delitti di genocidio.</p>"},{"id":"art_11","numText":"Art. 11","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>L'Italia ripudia la guerra come strumento di offesa alla liberta' degli altri popoli e come mezzo di risoluzione delle controversie internazionali; consente, in condizioni di parita' con gli altri Stati, alle limitazioni di sovranita' necessarie ad un ordinamento che assicuri la pace e la giustizia fra le Nazioni; promuove e favorisce le organizzazioni internazionali rivolte a tale scopo.</p>","notesHtml":""},{"id":"art_12","numText":"Art. 12","group":"COSTITUZIONE DELLA REPUBBLICA ITALIANA","heading":"","contentHtml":"<p>La bandiera della Repubblica e' il tricolore italiano: verde, bianco e rosso, a tre bande verticali di eguali dimensioni.</p>","notesHtml":""},{"id":"art_13","numText":"Art. 13","group":"-","heading":"","contentHtml":"<p>La liberta' personale e' inviolabile.\n Non e' ammessa forma alcuna di detenzione, di ispezione o perquisizione personale, ne' qualsiasi altra restrizione della liberta' personale, se non per atto motivato dall'autorita' giudiziaria e nei soli casi e modi previsti dalla legge.\n In casi eccezionali di necessita' ed urgenza, indicati tassativamente dalla legge, l'autorita' di pubblica sicurezza puo' adottare provvedimenti provvisori, che devono essere comunicati entro quarantotto ore all'autorita' giudiziaria e, se questa non li convalida nelle successive quarantotto ore, si intendono revocati e restano privi di ogni effetto.\n E' punita ogni violenza fisica e morale sulle persone comunque sottoposte a restrizioni di liberta'.\n La legge stabilisce i limiti massimi della carcerazione preventiva.</p>","notesHtml":""},{"id":"art_14","numText":"Art. 14","group":"-","heading":"","contentHtml":"<p>Il domicilio e' inviolabile.\n Non vi si possono eseguire ispezioni o perquisizioni o sequestri, se non nei casi e modi stabiliti dalla legge secondo le garanzie prescritte per la tutela della liberta' personale.\n Gli accertamenti e le ispezioni per motivi di sanita' e di incolumita' pubblica o a fini economici e fiscali sono regolati da leggi speciali.</p>","notesHtml":""},{"id":"art_15","numText":"Art. 15","group":"-","heading":"","contentHtml":"<p>La liberta' e la segretezza della corrispondenza e di ogni altra forma di comunicazione sono inviolabili.\n La loro limitazione puo' avvenire soltanto per atto motivato dell'autorita' giudiziaria con le garanzie stabilite dalla legge.</p>","notesHtml":""},{"id":"art_16","numText":"Art. 16","group":"-","heading":"","contentHtml":"<p>Ogni cittadino puo' circolare e soggiornare liberamente in qualsiasi parte del territorio nazionale, salvo le limitazioni che la legge stabilisce in via generale per motivi di sanita' o di sicurezza. Nessuna restrizione puo' essere determinata da ragioni politiche.\n Ogni cittadino e' libero di uscire dal territorio della Repubblica e di rientrarvi, salvo gli obblighi di legge.</p>","notesHtml":""},{"id":"art_17","numText":"Art. 17","group":"-","heading":"","contentHtml":"<p>I cittadini hanno diritto di riunirsi pacificamente e senz'armi.\n Per le riunioni, anche in luogo aperto al pubblico, non e' richiesto preavviso.\n Delle riunioni in luogo pubblico deve essere dato preavviso alle autorita', che possono vietarle soltanto per comprovati motivi di sicurezza o di incolumita' pubblica.</p>","notesHtml":""},{"id":"art_18","numText":"Art. 18","group":"-","heading":"","contentHtml":"<p>I cittadini hanno diritto di associarsi liberamente, senza autorizzazione, per fini che non sono vietati ai singoli dalla legge penale.\n Sono proibite le associazioni segrete e quelle che perseguono, anche indirettamente, scopi politici mediante organizzazioni di carattere militare.</p>","notesHtml":""},{"id":"art_19","numText":"Art. 19","group":"-","heading":"","contentHtml":"<p>Tutti hanno diritto di professare liberamente la propria fede religiosa in qualsiasi forma, individuale o associata, di farne propaganda e di esercitarne in privato o in pubblico il culto, purche' non si tratti di riti contrari al buon costume.</p>","notesHtml":""},{"id":"art_20","numText":"Art. 20","group":"-","heading":"","contentHtml":"<p>Il carattere ecclesiastico e il fine di religione o di culto d'una associazione od istituzione non possono essere causa di speciali limitazioni legislative, ne' di speciali gravami fiscali per la sua costituzione, capacita' giuridica e ogni forma di attivita'.</p>","notesHtml":""},{"id":"art_21","numText":"Art. 21","group":"-","heading":"","contentHtml":"<p>Tutti hanno diritto di manifestare liberamente il proprio pensiero con la parola, lo scritto e ogni altro mezzo di diffusione.\n La stampa non puo' essere soggetta ad autorizzazioni o censure.\n Si puo' procedere a sequestro soltanto per atto motivato dell'autorita' giudiziaria nel caso di delitti, per i quali la legge sulla stampa espressamente lo autorizzi, o nel caso di violazione delle norme che la legge stessa prescriva per l'indicazione dei responsabili.\n In tali casi, quando vi sia assoluta urgenza e non sia possibile il tempestivo intervento dell'autorita' giudiziaria, il sequestro della stampa periodica puo' essere eseguito da ufficiali di polizia giudiziaria, che devono immediatamente, e non mai oltre ventiquattro ore, fare denunzia all'autorita' giudiziaria. Se questa non lo convalida nelle ventiquattro ore successive, il sequestro s'intende revocato e privo d'ogni effetto.\n La legge puo' stabilire, con norme di carattere generale, che siano resi noti i mezzi di finanziamento della stampa periodica.\n Sono vietate le pubblicazioni a stampa, gli spettacoli e tutte le altre manifestazioni contrarie al buon costume. La legge stabilisce provvedimenti adeguati a prevenire e a reprimere le violazioni.</p>","notesHtml":""},{"id":"art_22","numText":"Art. 22","group":"-","heading":"","contentHtml":"<p>Nessuno puo' essere privato, per motivi politici, della capacita' giuridica, della cittadinanza, del nome.</p>","notesHtml":""},{"id":"art_23","numText":"Art. 23","group":"-","heading":"","contentHtml":"<p>Nessuna prestazione personale o patrimoniale puo' essere imposta se non in base alla legge.</p>","notesHtml":""},{"id":"art_24","numText":"Art. 24","group":"-","heading":"","contentHtml":"<p>Tutti possono agire in giudizio per la tutela dei propri diritti e interessi legittimi.\n La difesa e' diritto inviolabile in ogni stato e grado del procedimento.\n Sono assicurati ai non abbienti, con appositi istituti, i mezzi per agire e difendersi davanti ad ogni giurisdizione.\n La legge determina le condizioni e i modi per la riparazione degli errori giudiziari.</p>","notesHtml":""},{"id":"art_25","numText":"Art. 25","group":"-","heading":"","contentHtml":"<p>Nessuno puo' essere distolto dal giudice naturale precostituito per legge.\n Nessuno puo' essere punito se non in forza di una legge che sia entrata in vigore prima del fatto commesso.\n Nessuno puo' essere sottoposto a misure di sicurezza se non nei casi previsti dalla legge.</p>","notesHtml":""},{"id":"art_26","numText":"Art. 26","group":"-","heading":"","contentHtml":"<p>L'estradizione del cittadino puo' essere consentita soltanto ove sia espressamente prevista dalle convenzioni internazionali.\n Non puo' in alcun caso essere ammessa per reati politici. <sup class=\"amd\">5</sup></p>","notesHtml":"<p>AGGIORNAMENTO (5)</p>\n<p>La L. costituzionale 21 giugno 1967, n. 1 ha disposto (con l'articolo unico) che l'ultimo comma del presente articolo non si applica ai delitti di genocidio.</p>"},{"id":"art_27","numText":"Art. 27","group":"-","heading":"","contentHtml":"<p>La responsabilita' penale e' personale.\n L'imputato non e' considerato colpevole sino alla condanna definitiva.\n Le pene non possono consistere in trattamenti contrari al senso di umanita' e devono tendere alla rieducazione del condannato.\n Non e' ammessa la pena di morte  . . . .</p>","notesHtml":""},{"id":"art_28","numText":"Art. 28","group":"-","heading":"","contentHtml":"<p>I funzionari e i dipendenti dello Stato e degli enti pubblici sono direttamente responsabili, secondo le leggi penali, civili e amministrative, degli atti compiuti in violazione di diritti. In tali casi la responsabilita' civile si estende allo Stato e agli enti pubblici.</p>","notesHtml":""},{"id":"art_29","numText":"Art. 29","group":"-","heading":"","contentHtml":"<p>La Repubblica riconosce i diritti della famiglia come societa' naturale fondata sul matrimonio.\n Il matrimonio e' ordinato sull'eguaglianza morale e giuridica dei coniugi, con i limiti stabiliti dalla legge a garanzia dell'unita' familiare.</p>","notesHtml":""},{"id":"art_30","numText":"Art. 30","group":"-","heading":"","contentHtml":"<p>E' dovere e diritto dei genitori mantenere, istruire ed educare i figli, anche se nati fuori del matrimonio.\n Nei casi di incapacita' dei genitori, la legge provvede a che siano assolti i loro compiti.\n La legge assicura ai figli nati fuori del matrimonio ogni tutela giuridica e sociale, compatibile con i diritti dei membri della famiglia legittima.\n La legge detta le norme e i limiti per la ricerca della paternita'.</p>","notesHtml":""},{"id":"art_31","numText":"Art. 31","group":"-","heading":"","contentHtml":"<p>La Repubblica agevola con misure economiche e altre provvidenze la formazione della famiglia e l'adempimento dei compiti relativi, con particolare riguardo alle famiglie numerose.\n Protegge la maternita', l'infanzia e la gioventu', favorendo gli istituti necessari a tale scopo.</p>","notesHtml":""},{"id":"art_32","numText":"Art. 32","group":"-","heading":"","contentHtml":"<p>La Repubblica tutela la salute come fondamentale diritto dell'individuo e interesse della collettivita', e garantisce cure gratuite agli indigenti.\n Nessuno puo' essere obbligato a un determinato trattamento sanitario se non per disposizione di legge. La legge non puo' in nessun caso violare i limiti imposti dal rispetto della persona umana.</p>","notesHtml":""},{"id":"art_33","numText":"Art. 33","group":"-","heading":"","contentHtml":"<p>L'arte e la scienza sono libere e libero ne e' l'insegnamento. \n La Repubblica detta le norme generali sull'istruzione ed istituisce scuole statali per tutti gli ordini e gradi. \n Enti e privati hanno il diritto di istituire scuole ed istituti di educazione, senza oneri per lo Stato. \n La legge, nel fissare i diritti e gli obblighi delle scuole non statali che chiedono la parita', deve assicurare ad esse piena liberta' e ai loro alunni un trattamento scolastico equipollente a quello degli alunni di scuole statali. \n E' prescritto un esame di Stato per l'ammissione ai vari ordini e gradi di scuole o per la conclusione di essi e per l'abilitazione all'esercizio professionale. \n Le istituzioni di alta cultura, universita' ed accademie, hanno il diritto di darsi ordinamenti autonomi nei limiti stabiliti dalle leggi dello Stato. \n La Repubblica riconosce il valore educativo, sociale e di promozione del benessere psicofisico dell'attivita' sportiva in tutte le sue forme.</p>","notesHtml":""},{"id":"art_34","numText":"Art. 34","group":"-","heading":"","contentHtml":"<p>La scuola e' aperta a tutti.\n L'istruzione inferiore, impartita per almeno otto anni, e' obbligatoria e gratuita.\n I capaci e meritevoli, anche se privi di mezzi, hanno diritto di raggiungere i gradi piu' alti degli studi.\n La Repubblica rende effettivo questo diritto con borse di studio, assegni alle famiglie ed altre provvidenze, che devono essere attribuite per concorso.</p>","notesHtml":""},{"id":"art_35","numText":"Art. 35","group":"-","heading":"","contentHtml":"<p>La Repubblica tutela il lavoro in tutte le sue forme ed applicazioni.\n Cura la formazione e l'elevazione professionale dei lavoratori.\n Promuove e favorisce gli accordi e le organizzazioni internazionali intesi ad affermare e regolare i diritti del lavoro.\n Riconosce la liberta' di emigrazione, salvo gli obblighi stabiliti dalla legge nell'interesse generale, e tutela il lavoro italiano all'estero.</p>","notesHtml":""},{"id":"art_36","numText":"Art. 36","group":"-","heading":"","contentHtml":"<p>Il lavoratore ha diritto ad una retribuzione proporzionata alla quantita' e qualita' del suo lavoro e in ogni caso sufficiente ad assicurare a se' e alla famiglia un'esistenza libera e dignitosa.\n La durata massima della giornata lavorativa e' stabilita dalla legge.\n Il lavoratore ha diritto al riposo settimanale e a ferie annuali retribuite, e non puo' rinunziarvi.</p>","notesHtml":""},{"id":"art_37","numText":"Art. 37","group":"-","heading":"","contentHtml":"<p>La donna lavoratrice ha gli stessi diritti e, a parita' di lavoro, le stesse retribuzioni che spettano al lavoratore. Le condizioni di lavoro devono consentire l'adempimento della sua essenziale funzione familiare e assicurare alla madre e al bambino una speciale adeguata protezione.\n La legge stabilisce il limite minimo di eta' per il lavoro salariato.\n La Repubblica tutela il lavoro dei minori con speciali norme e garantisce ad essi, a parita' di lavoro, il diritto alla parita' di retribuzione.</p>","notesHtml":""},{"id":"art_38","numText":"Art. 38","group":"-","heading":"","contentHtml":"<p>Ogni cittadino inabile al lavoro e sprovvisto dei mezzi necessari per vivere ha diritto al mantenimento e all'assistenza sociale.\n I lavoratori hanno diritto che siano preveduti ed assicurati mezzi adeguati alle loro esigenze di vita in caso di infortunio, malattia, invalidita' e vecchiaia, disoccupazione involontaria.\n Gli inabili ed i minorati hanno diritto all'educazione e all'avviamento professionale.\n Ai compiti previsti in questo articolo provvedono organi ed istituti predisposti o integrati dallo Stato.\n L'assistenza privata e' libera.</p>","notesHtml":""},{"id":"art_39","numText":"Art. 39","group":"-","heading":"","contentHtml":"<p>L'organizzazione sindacale e' libera.\n Ai sindacati non puo' essere imposto altro obbligo se non la loro\nregistrazione presso uffici locali o centrali, secondo le norme di legge.\n E' condizione per la registrazione che gli statuti dei sindacati sanciscano un ordinamento interno a base democratica.\n I sindacati registrati hanno personalita' giuridica. Possono, rappresentati unitariamente in proporzione dei loro iscritti, stipulare contratti collettivi di lavoro con efficacia obbligatoria per tutti gli appartenenti alle categorie alle quali il contratto si riferisce.</p>","notesHtml":""},{"id":"art_40","numText":"Art. 40","group":"-","heading":"","contentHtml":"<p>Il diritto di sciopero si esercita nell'ambito delle leggi che lo regolano.</p>","notesHtml":""},{"id":"art_41","numText":"Art. 41","group":"-","heading":"","contentHtml":"<p>L'iniziativa economica privata e' libera. \n Non puo' svolgersi in contrasto con l'utilita' sociale o in modo da recare danno alla salute, all'ambiente, alla sicurezza, alla liberta', alla dignita' umana. \n La legge determina i programmi e i controlli opportuni perche' l'attivita' economica pubblica e privata possa essere indirizzata e coordinata a fini sociali e ambientali.</p>","notesHtml":""},{"id":"art_42","numText":"Art. 42","group":"-","heading":"","contentHtml":"<p>La proprieta' e' pubblica o privata. I beni economici appartengono allo Stato, ad enti o a privati.\n La proprieta' privata e' riconosciuta e garantita dalla legge, che ne determina i modi di acquisto, di godimento e i limiti allo scopo di assicurarne la funzione sociale e di renderla accessibile a tutti.\n La proprieta' privata puo' essere, nei casi preveduti dalla legge, e salvo indennizzo, espropriata per motivi d'interesse generale.\n La legge stabilisce le norme ed i limiti della successione legittima e testamentaria e i diritti dello Stato sulle eredita'.</p>","notesHtml":""},{"id":"art_43","numText":"Art. 43","group":"-","heading":"","contentHtml":"<p>A fini di utilita' generale la legge puo' riservare originariamente o trasferire, mediante espropriazione e salvo indennizzo, allo Stato, ad enti pubblici o a comunita' di lavoratori o di utenti determinate imprese o categorie di imprese, che si riferiscano a servizi pubblici essenziali o a fonti di energia o a situazioni di monopolio ed abbiano carattere di preminente interesse generale.</p>","notesHtml":""},{"id":"art_44","numText":"Art. 44","group":"-","heading":"","contentHtml":"<p>Al fine di conseguire il razionale sfruttamento del suolo e di stabilire equi rapporti sociali, la legge impone obblighi e vincoli alla proprieta' terriera privata, fissa limiti alla sua estensione secondo le regioni e le zone agrarie, promuove ed impone la bonifica delle terre, la trasformazione del latifondo e la ricostituzione delle unita' produttive; aiuta la piccola e la media proprieta'.\n La legge dispone provvedimenti a favore delle zone montane.</p>","notesHtml":""},{"id":"art_45","numText":"Art. 45","group":"-","heading":"","contentHtml":"<p>La Repubblica riconosce la funzione sociale della cooperazione a carattere di mutualita' e senza fini di speculazione privata. La legge ne promuove e favorisce l'incremento con i mezzi piu' idonei e ne assicura, con gli opportuni controlli, il carattere e le finalita'.\n La legge provvede alla tutela e allo sviluppo dell'artigianato.</p>","notesHtml":""},{"id":"art_46","numText":"Art. 46","group":"-","heading":"","contentHtml":"<p>Ai fini della elevazione economica e sociale del lavoro e in armonia con le esigenze della produzione, la Repubblica riconosce il diritto dei lavoratori a collaborare, nei modi e nei limiti stabiliti dalle leggi, alla gestione delle aziende.</p>","notesHtml":""},{"id":"art_47","numText":"Art. 47","group":"-","heading":"","contentHtml":"<p>La Repubblica incoraggia e tutela il risparmio in tutte le sue forme; disciplina, coordina e controlla l'esercizio del credito.\n Favorisce l'accesso del risparmio popolare alla proprieta' dell'abitazione, alla proprieta' diretta coltivatrice e al diretto e indiretto investimento azionario nei grandi complessi produttivi del Paese.</p>","notesHtml":""},{"id":"art_48","numText":"Art. 48","group":"-","heading":"","contentHtml":"<p>Sono elettori tutti i cittadini, uomini e donne, che hanno raggiunto la maggiore eta'.\n Il voto e' personale ed eguale, libero e segreto. Il suo esercizio e' dovere civico.\nLa legge stabilisce requisiti e modalita' per l'esercizio del diritto di voto dei cittadini residenti all'estero e ne assicura l'effettivita'. A tale fine e' istituita una circoscrizione Estero per l'elezione delle Camere, alla quale sono assegnati seggi nel numero stabilito da norma costituzionale e secondo criteri determinati dalla legge.\n Il diritto di voto non puo' essere limitato se non per incapacita' civile o per effetto di sentenza penale irrevocabile o nei casi di indegnita' morale indicati dalla legge.</p>","notesHtml":""},{"id":"art_49","numText":"Art. 49","group":"-","heading":"","contentHtml":"<p>Tutti i cittadini hanno diritto di associarsi liberamente in partiti per concorrere con metodo democratico a determinare la politica nazionale.</p>","notesHtml":""},{"id":"art_50","numText":"Art. 50","group":"-","heading":"","contentHtml":"<p>Tutti i cittadini possono rivolgere petizioni alle Camere per chiedere provvedimenti legislativi o esporre comuni necessita'.</p>","notesHtml":""},{"id":"art_51","numText":"Art. 51","group":"-","heading":"","contentHtml":"<p>Tutti i cittadini dell'uno o dell'altro sesso possono accedere agli uffici pubblici e alle cariche elettive in condizioni di eguaglianza, secondo i requisiti stabiliti dalla legge. A tale fine la Repubblica promuove con appositi provvedimenti le pari opportunita' tra donne e uomini.\n La legge puo', per l'ammissione ai pubblici uffici e alle cariche elettive, parificare ai cittadini gli italiani non appartenenti alla Repubblica.\n Chi e' chiamato a funzioni pubbliche elettive ha diritto di disporre del tempo necessario al loro adempimento e di conservare il suo posto di lavoro.</p>","notesHtml":""},{"id":"art_52","numText":"Art. 52","group":"-","heading":"","contentHtml":"<p>La difesa della Patria e' sacro dovere del cittadino.\n Il servizio militare e' obbligatorio nei limiti e modi stabiliti dalla legge. Il suo adempimento non pregiudica la posizione di lavoro del cittadino, ne' l'esercizio dei diritti politici.\n L'ordinamento delle Forze armate si informa allo spirito democratico della Repubblica.</p>","notesHtml":""},{"id":"art_53","numText":"Art. 53","group":"-","heading":"","contentHtml":"<p>Tutti sono tenuti a concorrere alle spese pubbliche in ragione della loro capacita' contributiva.\n Il sistema tributario e' informato a criteri di progressivita'.</p>","notesHtml":""},{"id":"art_54","numText":"Art. 54","group":"-","heading":"","contentHtml":"<p>Tutti i cittadini hanno il dovere di essere fedeli alla Repubblica e di osservarne la Costituzione e le leggi.\n I cittadini cui sono affidate funzioni pubbliche hanno il dovere di adempierle con disciplina ed onore, prestando giuramento nei casi stabiliti dalla legge.</p>","notesHtml":""},{"id":"art_55","numText":"Art. 55","group":"-","heading":"","contentHtml":"<p>Il Parlamento si compone della Camera dei deputati e del Senato della Repubblica.\n Il Parlamento si riunisce in seduta comune dei membri delle due Camere nei soli casi stabiliti dalla Costituzione.</p>","notesHtml":""},{"id":"art_56","numText":"Art. 56","group":"-","heading":"","contentHtml":"<p>La Camera dei deputati e' eletta a suffragio universale e diretto. \nIl numero dei deputati e' di quattrocento, otto dei quali eletti nella circoscrizione Estero. <sup class=\"amd\">20</sup> \n Sono eleggibili a deputati tutti gli elettori che nel giorno delle elezioni hanno compiuto i venticinque anni di eta'. \n La ripartizione dei seggi tra le circoscrizioni, fatto salvo il numero dei seggi assegnati alla circoscrizione Estero, si effettua dividendo il numero degli abitanti della Repubblica, quale risulta dall'ultimo censimento generale della popolazione, per trecentonovantadue e distribuendo i seggi in proporzione alla popolazione di ogni circoscrizione, sulla base dei quozienti interi e dei piu' alti resti. (3) <sup class=\"amd\">20</sup></p>","notesHtml":"<p>AGGIORNAMENTO (3)</p>\n<p>La L. costituzionale 9 febbraio 1963, n. 2, ha disposto (con l'art.\n5) che la suddetta modifica entra in vigore con la prima convocazione dei comizi elettorali successiva alla sua pubblicazione nella Gazzetta Ufficiale della Repubblica.</p>\n<p>AGGIORNAMENTO (20)</p>\n<p>La L. costituzionale 19 ottobre 2020, n. 1 ha disposto (con l'art. 4, comma 1) che le presenti modifiche si applicano a decorrere dalla data del primo scioglimento o della prima cessazione delle Camere successiva alla data di entrata in vigore della suddetta legge costituzionale e comunque non prima che siano decorsi sessanta giorni dalla predetta data di entrata in vigore.</p>"},{"id":"art_57","numText":"Art. 57","group":"-","heading":"","contentHtml":"<p>Il Senato della Repubblica e' eletto a base regionale, salvi i seggi assegnati alla circoscrizione Estero. \n Il numero dei senatori elettivi e' di duecento, quattro dei quali eletti nella circoscrizione Estero. <sup class=\"amd\">20</sup> \n Nessuna Regione o Provincia autonoma puo' avere un numero di senatori inferiore a tre; il Molise ne ha due, la Valle d'Aosta uno. <sup class=\"amd\">20</sup>. \n La ripartizione dei seggi tra le Regioni o le Province autonome, previa applicazione delle disposizioni del precedente comma, si effettua in proporzione alla loro popolazione, quale risulta dall'ultimo censimento generale, sulla base dei quozienti interi e dei piu' alti resti. <sup class=\"amd\">20</sup></p>","notesHtml":"<p>AGGIORNAMENTO (3)</p>\n<p>La L. costituzionale 9 febbraio 1963, n. 2, ha disposto (con l'art.\n5) che la suddetta modifica entra in vigore con la prima convocazione dei comizi elettorali successiva alla sua pubblicazione nella Gazzetta Ufficiale della Repubblica.</p>\n<p>AGGIORNAMENTO (20)</p>\n<p>La L. costituzionale 19 ottobre 2020, n. 1 ha disposto (con l'art. 4, comma 1) che le presenti modifiche si applicano a decorrere dalla data del primo scioglimento o della prima cessazione delle Camere successiva alla data di entrata in vigore della suddetta legge costituzionale e comunque non prima che siano decorsi sessanta giorni dalla predetta data di entrata in vigore.</p>"},{"id":"art_58","numText":"Art. 58","group":"-","heading":"","contentHtml":"<p>I senatori sono eletti a suffragio universale e diretto . \n Sono eleggibili a senatori gli elettori che hanno compiuto il quarantesimo anno.</p>","notesHtml":""},{"id":"art_59","numText":"Art. 59","group":"-","heading":"","contentHtml":"<p>E' senatore di diritto e a vita, salvo rinunzia, chi e' stato Presidente della Repubblica. \n Il Presidente della Repubblica puo' nominare senatori a vita cittadini che hanno illustrato la Patria per altissimi meriti nel campo sociale, scientifico, artistico e letterario. Il numero complessivo dei senatori in carica nominati dal Presidente della Repubblica non puo' in alcun caso essere superiore a cinque.</p>","notesHtml":""},{"id":"art_60","numText":"Art. 60","group":"-","heading":"","contentHtml":"<p>La Camera dei deputati e il Senato della Repubblica sono eletti per cinque anni.\n La durata di ciascuna Camera non puo' essere prorogata se non per legge e soltanto in caso di guerra. <sup class=\"amd\">3</sup></p>","notesHtml":"<p>AGGIORNAMENTO (3)</p>\n<p>La L. costituzionale 9 febbraio 1963, n. 2, ha disposto (con l'art.\n5) che la suddetta modifica entra in vigore con la prima convocazione dei comizi elettorali successiva alla sua pubblicazione nella Gazzetta Ufficiale della Repubblica.</p>"},{"id":"art_61","numText":"Art. 61","group":"-","heading":"","contentHtml":"<p>Le elezioni delle nuove Camere hanno luogo entro settanta giorni dalla fine delle precedenti. La prima riunione ha luogo non oltre il ventesimo giorno dalle elezioni.\n Finche' non siano riunite le nuove Camere sono prorogati i poteri delle precedenti.</p>","notesHtml":""},{"id":"art_62","numText":"Art. 62","group":"-","heading":"","contentHtml":"<p>Le Camere si riuniscono di diritto il primo giorno non festivo di febbraio e di ottobre.\n Ciascuna Camera puo' essere convocata in via straordinaria per iniziativa del suo Presidente o del Presidente della Repubblica o di un terzo dei suoi componenti.\n Quando si riunisce in via straordinaria una Camera, e' convocata di diritto anche l'altra.</p>","notesHtml":""},{"id":"art_63","numText":"Art. 63","group":"-","heading":"","contentHtml":"<p>Ciascuna Camera elegge fra i suoi componenti il Presidente e l'Ufficio di presidenza.\n Quando il Parlamento si riunisce in seduta comune, il Presidente e l'Ufficio di presidenza sono quelli della Camera dei deputati.</p>","notesHtml":""},{"id":"art_64","numText":"Art. 64","group":"-","heading":"","contentHtml":"<p>Ciascuna Camera adotta il proprio regolamento a maggioranza assoluta dei suoi componenti.\n Le sedute sono pubbliche; tuttavia ciascuna delle due Camere e il Parlamento a Camere riunite possono deliberare di adunarsi in seduta segreta.\n Le deliberazioni di ciascuna Camera e del Parlamento non sono valide se non e' presente la maggioranza dei loro componenti, e se non sono adottate a maggioranza dei presenti, salvo che la Costituzione prescriva una maggioranza speciale.\n I membri del Governo, anche se non fanno parte delle Camere, hanno diritto, e se richiesti obbligo, di assistere alle sedute. Devono essere sentiti ogni volta che lo richiedono.</p>","notesHtml":""},{"id":"art_65","numText":"Art. 65","group":"-","heading":"","contentHtml":"<p>La legge determina i casi di ineleggibilita' e di incompatibilita' con l'ufficio di deputato o di senatore.\n Nessuno puo' appartenere contemporaneamente alle due Camere.</p>","notesHtml":""},{"id":"art_66","numText":"Art. 66","group":"-","heading":"","contentHtml":"<p>Ciascuna Camera giudica dei titoli di ammissione dei suoi componenti e delle cause sopraggiunte di ineleggibilita' e di incompatibilita'.</p>","notesHtml":""},{"id":"art_67","numText":"Art. 67","group":"-","heading":"","contentHtml":"<p>Ogni membro del Parlamento rappresenta la Nazione ed esercita le sue funzioni senza vincolo di mandato.</p>","notesHtml":""},{"id":"art_68","numText":"Art. 68","group":"-","heading":"","contentHtml":"<p>I membri del Parlamento non possono essere chiamati a rispondere delle opinioni espresse e dei voti dati nell'esercizio delle loro funzioni.\n Senza autorizzazione della Camera alla quale appartiene, nessun membro del Parlamento puo' essere sottoposto a perquisizione personale o domiciliare, ne' puo' essere arrestato o altrimenti privato della liberta' personale, o mantenuto in detenzione, salvo che in esecuzione di una sentenza irrevocabile di condanna, ovvero se sia colto nell'atto di commettere un delitto per il quale e' previsto l'arresto obbligatorio in flagranza.\n Analoga autorizzazione e' richiesta per sottoporre i membri del Parlamento ad intercettazioni, in qualsiasi forma, di conversazioni o comunicazioni e a sequestro di corrispondenza.</p>","notesHtml":""},{"id":"art_69","numText":"Art. 69","group":"-","heading":"","contentHtml":"<p>I membri del Parlamento ricevono una indennita' stabilita dalla legge.</p>","notesHtml":""},{"id":"art_70","numText":"Art. 70","group":"-","heading":"","contentHtml":"<p>La funzione legislativa e' esercitata collettivamente dalle due Camere.</p>","notesHtml":""},{"id":"art_71","numText":"Art. 71","group":"-","heading":"","contentHtml":"<p>L'iniziativa delle leggi appartiene al Governo, a ciascun membro delle Camere ed agli organi ed enti ai quali sia conferita da legge costituzionale.\n Il popolo esercita l'iniziativa delle leggi, mediante la proposta, da parte di almeno cinquantamila elettori, di un progetto redatto in articoli.</p>","notesHtml":""},{"id":"art_72","numText":"Art. 72","group":"-","heading":"","contentHtml":"<p>Ogni disegno di legge, presentato ad una Camera e', secondo le norme del suo regolamento, esaminato da una commissione e poi dalla Camera stessa, che l'approva articolo per articolo e con votazione finale.\n Il regolamento stabilisce procedimenti abbreviati per i disegni di legge dei quali e' dichiarata l'urgenza.\n Puo' altresi' stabilire in quali casi e forme l'esame e l'approvazione dei disegni di legge sono deferiti a commissioni, anche permanenti, composte in modo da rispecchiare la proporzione dei gruppi parlamentari. Anche in tali casi, fino al momento della sua approvazione definitiva, il disegno di legge e' rimesso alla Camera, se il Governo o un decimo dei componenti della Camera o un quinto della commissione richiedono che sia discusso o votato dalla Camera stessa oppure che sia sottoposto alla sua approvazione finale con sole dichiarazioni di voto. Il regolamento determina le forme di pubblicita' dei lavori delle commissioni.\n La procedura normale di esame e di approvazione diretta da parte della Camera e' sempre adottata per i disegni di legge in materia costituzionale ed elettorale e per quelli di delegazione legislativa, di autorizzazione a ratificare trattati internazionali, di approvazione di bilanci e consuntivi.</p>","notesHtml":""},{"id":"art_73","numText":"Art. 73","group":"-","heading":"","contentHtml":"<p>Le leggi sono promulgate dal Presidente della Repubblica entro un mese dall'approvazione.\n Se le Camere, ciascuna a maggioranza assoluta dei propri componenti, ne dichiarano l'urgenza, la legge e' promulgata nel termine da essa stabilito.\n Le leggi sono pubblicate subito dopo la promulgazione ed entrano in vigore il quindicesimo giorno successivo alla loro pubblicazione, salvo che le leggi stesse stabiliscano un termine diverso.</p>","notesHtml":""},{"id":"art_74","numText":"Art. 74","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica, prima di promulgare la legge, puo' con messaggio motivato alle Camere chiedere una nuova deliberazione.\n Se le Camere approvano nuovamente la legge, questa deve essere promulgata.</p>","notesHtml":""},{"id":"art_75","numText":"Art. 75","group":"-","heading":"","contentHtml":"<p>E' indetto referendum popolare per deliberare la abrogazione, totale o parziale, di una legge o di un atto avente valore di legge, quando lo richiedono cinquecentomila elettori o cinque Consigli regionali.\n Non e' ammesso il referendum per le leggi tributarie e di bilancio, di amnistia e di indulto, di autorizzazione a ratificare trattati internazionali.\n Hanno diritto di partecipare al referendum tutti i cittadini chiamati ad eleggere la Camera dei deputati.\n La proposta soggetta a referendum e' approvata se ha partecipato alla votazione la maggioranza degli aventi diritto, e se e' raggiunta la maggioranza dei voti validamente espressi.\n La legge determina le modalita' di attuazione del referendum.</p>","notesHtml":""},{"id":"art_76","numText":"Art. 76","group":"-","heading":"","contentHtml":"<p>L'esercizio della funzione legislativa non puo essere delegato al Governo se non con determinazione di principi e criteri direttivi e soltanto per tempo limitato e per oggetti definiti.</p>","notesHtml":""},{"id":"art_77","numText":"Art. 77","group":"-","heading":"","contentHtml":"<p>Il Governo non puo', senza delegazione delle Camere, emanare decreti che abbiano valore di legge ordinaria.\n Quando, in casi straordinari di necessita' e d'urgenza, il Governo adotta, sotto la sua responsabilita', provvedimenti provvisori con forza di legge, deve il giorno stesso presentarli per la conversione alle Camere che, anche se sciolte, sono appositamente convocate e si riuniscono entro cinque giorni.\n I decreti perdono efficacia sin dall'inizio, se non sono convertiti in legge entro sessanta giorni dalla loro pubblicazione. Le Camere possono tuttavia regolare con legge i rapporti giuridici sorti sulla base dei decreti non convertiti.</p>","notesHtml":""},{"id":"art_78","numText":"Art. 78","group":"-","heading":"","contentHtml":"<p>Le Camere deliberano lo stato di guerra e conferiscono al Governo i poteri necessari.</p>","notesHtml":""},{"id":"art_79","numText":"Art. 79","group":"-","heading":"","contentHtml":"<p>L'amnistia e l'indulto sono concessi con legge deliberata a maggioranza dei due terzi dei componenti di ciascuna Camera, in ogni suo articolo e nella votazione finale.\n La legge che concede l'amnistia o l'indulto stabilisce il termine per la loro applicazione.\n In ogni caso l'amnistia e l'indulto non possono applicarsi ai reati commessi successivamente alla presentazione del disegno di legge.</p>","notesHtml":""},{"id":"art_80","numText":"Art. 80","group":"-","heading":"","contentHtml":"<p>Le Camere autorizzano con legge la ratifica dei trattati internazionali che sono di natura politica, o prevedono arbitrati o regolamenti giudiziari, o importano variazioni del territorio od oneri alle finanze o modificazioni di leggi.</p>","notesHtml":""},{"id":"art_81","numText":"Art. 81","group":"-","heading":"","contentHtml":"<p>Lo Stato assicura l'equilibrio tra le entrate e le spese del proprio bilancio, tenendo conto delle fasi avverse e delle fasi favorevoli del ciclo economico. \n Il ricorso all'indebitamento e' consentito solo al fine di considerare gli effetti del ciclo economico e, previa autorizzazione delle Camere adottata a maggioranza assoluta dei rispettivi componenti, al verificarsi di eventi eccezionali. \n Ogni legge che importi nuovi o maggiori oneri provvede ai mezzi per farvi fronte. \n Le Camere ogni anno approvano con legge il bilancio e il rendiconto consuntivo presentati dal Governo. \n L'esercizio provvisorio del bilancio non puo' essere concesso se non per legge e per periodi non superiori complessivamente a quattro mesi. \n Il contenuto della legge di bilancio, le norme fondamentali e i criteri volti ad assicurare l'equilibrio tra le entrate e le spese dei bilanci e la sostenibilita' del debito del complesso delle pubbliche amministrazioni sono stabiliti con legge approvata a maggioranza assoluta dei componenti di ciascuna Camera, nel rispetto dei principi definiti con legge costituzionale. <sup class=\"amd\">19</sup></p>","notesHtml":"<p>AGGIORNAMENTO (19)</p>\n<p>La L. costituzionale 20 aprile 2012, n. 1 ha disposto (con l'art. 6, comma 1) che le suddette modifiche si applicano a decorrere dall'esercizio finanziario relativo all'anno 2014.</p>"},{"id":"art_82","numText":"Art. 82","group":"-","heading":"","contentHtml":"<p>Ciascuna Camera puo' disporre inchieste su materie di pubblico interesse.\n A tale scopo nomina fra i propri componenti una commissione formata in modo da rispecchiare la proporzione dei vari gruppi. La commissione d'inchiesta procede alle indagini e agli esami con gli stessi poteri e le stesse limitazioni dell'autorita' giudiziaria.</p>","notesHtml":""},{"id":"art_83","numText":"Art. 83","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica e' eletto dal Parlamento in seduta comune dei suoi membri.\n All'elezione partecipano tre delegati per ogni Regione eletti dal Consiglio regionale in modo che sia assicurata la rappresentanza delle minoranze. La Valle d'Aosta ha un solo delegato.\n L'elezione del Presidente della Repubblica ha luogo per scrutinio segreto a maggioranza di due terzi della assemblea. Dopo il terzo scrutinio e' sufficiente la maggioranza assoluta.</p>","notesHtml":""},{"id":"art_84","numText":"Art. 84","group":"-","heading":"","contentHtml":"<p>Puo' essere eletto Presidente della Repubblica ogni cittadino che abbia compiuto cinquanta anni d'eta' e goda dei diritti civili e politici.\n L'ufficio di Presidente della Repubblica e' incompatibile con qualsiasi altra carica.\n L'assegno e la dotazione del Presidente sono determinati per legge.</p>","notesHtml":""},{"id":"art_85","numText":"Art. 85","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica e' eletto per sette anni.\n Trenta giorni prima che scada il termine, il Presidente della Camera dei deputati convoca in seduta comune il Parlamento e i delegati regionali, per eleggere il nuovo Presidente della Repubblica.\n Se le Camere sono sciolte, o manca meno di tre mesi alla loro cessazione, la elezione ha luogo entro quindici giorni dalla riunione delle Camere nuove. Nel frattempo sono prorogati i poteri del Presidente in carica.</p>","notesHtml":""},{"id":"art_86","numText":"Art. 86","group":"-","heading":"","contentHtml":"<p>Le funzioni del Presidente della Repubblica, in ogni caso che egli non possa adempierle, sono esercitate dal Presidente del Senato.\n In caso di impedimento permanente o di morte o di dimissioni del Presidente della Repubblica, il Presidente della Camera dei deputati indice la elezione del nuovo Presidente della Repubblica entro quindici giorni, salvo il maggior termine previsto se le Camere sono sciolte o manca meno di tre mesi alla loro cessazione.</p>","notesHtml":""},{"id":"art_87","numText":"Art. 87","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica e' il capo dello Stato e rappresenta l'unita' nazionale.\n Puo' inviare messaggi alle Camere.\n Indice le elezioni delle nuove Camere e ne fissa la prima riunione.\n Autorizza la presentazione alle Camere dei disegni di legge di\niniziativa del Governo.\n Promulga le leggi ed emana i decreti aventi valore di legge e i regolamenti.\n Indice il referendum popolare nei casi previsti dalla Costituzione.\n Nomina, nei casi indicati dalla legge, i funzionari dello Stato.\n Accredita e riceve i rappresentanti diplomatici, ratifica i trattati internazionali, previa, quando occorra, l'autorizzazione delle Camere.\n Ha il comando delle Forze armate, presiede il Consiglio supremo di difesa costituito secondo la legge, dichiara lo stato di guerra deliberato dalle Camere.\n Presiede il Consiglio superiore della magistratura.\n Puo' concedere grazia e commutare le pene.\n Conferisce le onorificenze della Repubblica.</p>","notesHtml":""},{"id":"art_88","numText":"Art. 88","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica puo', sentiti i loro Presidenti, sciogliere le Camere o anche una sola di esse.\nNon puo' esercitare tale facolta' negli ultimi sei mesi del suo mandato, salvo che essi coincidano in tutto o in parte con gli ultimi sei mesi della legislatura.</p>","notesHtml":""},{"id":"art_89","numText":"Art. 89","group":"-","heading":"","contentHtml":"<p>Nessun atto del Presidente della Repubblica e' valido se non e' controfirmato dai ministri proponenti, che ne assumono la responsabilita'.\n Gli atti che hanno valore legislativo e gli altri indicati dalla legge sono controfirmati anche dal Presidente del Consiglio dei ministri.</p>","notesHtml":""},{"id":"art_90","numText":"Art. 90","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica non e' responsabile degli atti compiuti nell'esercizio delle sue funzioni, tranne che per alto tradimento o per attentato alla Costituzione.\n In tali casi e' messo in stato di accusa dal Parlamento in seduta comune, a maggioranza assoluta dei suoi membri.</p>","notesHtml":""},{"id":"art_91","numText":"Art. 91","group":"-","heading":"","contentHtml":"<p>Il Presidente della Repubblica, prima di assumere le sue funzioni, presta giuramento di fedelta' alla Repubblica e di osservanza della Costituzione dinanzi al Parlamento in seduta comune.</p>","notesHtml":""},{"id":"art_92","numText":"Art. 92","group":"-","heading":"","contentHtml":"<p>Il Governo della Repubblica e' composto del Presidente del Consiglio e dei ministri, che costituiscono insieme il Consiglio dei ministri.\n Il Presidente della Repubblica nomina il Presidente del Consiglio dei ministri e, su proposta di questo, i ministri.</p>","notesHtml":""},{"id":"art_93","numText":"Art. 93","group":"-","heading":"","contentHtml":"<p>Il Presidente del Consiglio dei ministri e i ministri, prima di assumere le funzioni, prestano giuramento nelle mani del Presidente della Repubblica.</p>","notesHtml":""},{"id":"art_94","numText":"Art. 94","group":"-","heading":"","contentHtml":"<p>Il Governo deve avere la fiducia delle due Camere.\n Ciascuna Camera accorda o revoca la fiducia mediante mozione motivata e votata per appello nominale.\n Entro dieci giorni dalla sua formazione il Governo si presenta alle Camere per ottenerne la fiducia.\n Il voto contrario di una o d'entrambe le Camere su una proposta del Governo non importa obbligo di dimissioni.\n La mozione di sfiducia deve essere firmata da almeno un decimo dei componenti della Camera e non puo' essere messa in discussione prima di tre giorni dalla sua presentazione.</p>","notesHtml":""},{"id":"art_95","numText":"Art. 95","group":"-","heading":"","contentHtml":"<p>Il Presidente del Consiglio dei ministri dirige la politica generale del Governo e ne e' responsabile. Mantiene l'unita' di indirizzo politico ed amministrativo, promuovendo e coordinando l'attivita' dei ministri.\n I ministri sono responsabili collegialmente degli atti del Consiglio dei ministri, e individualmente degli atti dei loro dicasteri.\n La legge provvede all'ordinamento della Presidenza del Consiglio e determina il numero, le attribuzioni e l'organizzazione dei ministeri.</p>","notesHtml":""},{"id":"art_96","numText":"Art. 96","group":"-","heading":"","contentHtml":"<p>Il Presidente del Consiglio dei Ministri ed i Ministri, anche se cessati dalla carica, sono sottoposti, per i reati commessi nell'esercizio delle loro funzioni, alla giurisdizione ordinaria, previa autorizzazione del Senato della Repubblica o della Camera dei deputati, secondo le norme stabilite con legge costituzionale.</p>","notesHtml":""},{"id":"art_97","numText":"Art. 97","group":"-","heading":"","contentHtml":"<p>Le pubbliche amministrazioni, in coerenza con l'ordinamento dell'Unione europea, assicurano l'equilibrio dei bilanci e la sostenibilita' del debito pubblico. <sup class=\"amd\">19</sup> \n I pubblici uffici sono organizzati secondo disposizioni di legge, in modo che siano assicurati il buon andamento e l'imparzialita' dell'amministrazione. \n Nell'ordinamento degli uffici sono determinate le sfere di competenza, le attribuzioni e le responsabilita' proprie dei funzionari. \n Agli impieghi nelle pubbliche amministrazioni si accede mediante concorso, salvo i casi stabiliti dalla legge.</p>","notesHtml":"<p>AGGIORNAMENTO (19)</p>\n<p>La L. costituzionale 20 aprile 2012, n. 1 ha disposto (con l'art. 6, comma 1) che la suddetta modifica si applica a decorrere dall'esercizio finanziario relativo all'anno 2014.</p>"},{"id":"art_98","numText":"Art. 98","group":"-","heading":"","contentHtml":"<p>I pubblici impiegati sono al servizio esclusivo della Nazione.\n Se sono membri del Parlamento, non possono conseguire promozioni se non per anzianita'.\n Si possono con legge stabilire limitazioni al diritto d'iscriversi ai partiti politici per i magistrati, i militari di carriera in servizio attivo, i funzionari ed agenti di polizia, i rappresentanti diplomatici e consolari all'estero.</p>","notesHtml":""},{"id":"art_99","numText":"Art. 99","group":"-","heading":"","contentHtml":"<p>Il Consiglio nazionale dell'economia e del lavoro e' composto, nei modi stabiliti dalla legge, di esperti e di rappresentanti delle categorie produttive, in misura che tenga conto della loro importanza numerica e qualitativa.\n E' organo di consulenza delle Camere e del Governo per le materie e secondo le funzioni che gli sono attribuite dalla legge.\n Ha l'iniziativa legislativa e puo' contribuire alla elaborazione della legislazione economica e sociale secondo i principi ed entro i limiti stabiliti dalla legge.</p>","notesHtml":""},{"id":"art_100","numText":"Art. 100","group":"-","heading":"","contentHtml":"<p>Il Consiglio di Stato e' organo di consulenza giuridico-amministrativa e di tutela della giustizia nell'amministrazione.\n La Corte dei conti esercita il controllo preventivo di legittimita' sugli atti del Governo, e anche quello successivo sulla gestione del bilancio dello Stato. Partecipa, nei casi e nelle forme stabiliti dalla legge, al controllo sulla gestione finanziaria degli enti a cui lo Stato contribuisce in via ordinaria. Riferisce direttamente alle Camere sul risultato del riscontro eseguito.\n La legge assicura l'indipendenza dei due Istituti e dei loro componenti di fronte al Governo.</p>","notesHtml":""},{"id":"art_101","numText":"Art. 101","group":"-","heading":"","contentHtml":"<p>La giustizia e' amministrata in nome del popolo.\n I giudici sono soggetti soltanto alla legge.</p>","notesHtml":""},{"id":"art_102","numText":"Art. 102","group":"-","heading":"","contentHtml":"<p>La funzione giurisdizionale e' esercitata da magistrati ordinari istituiti e regolati dalle norme sull'ordinamento giudiziario.\n Non possono essere istituiti giudici straordinari o giudici speciali. Possono soltanto istituirsi presso gli organi giudiziari ordinari sezioni specializzate per determinate materie, anche con la partecipazione di cittadini idonei estranei alla magistratura.\n La legge regola i casi e le forme della partecipazione diretta del popolo all'amministrazione della giustizia.</p>","notesHtml":""},{"id":"art_103","numText":"Art. 103","group":"-","heading":"","contentHtml":"<p>Il Consiglio di Stato e gli altri organi di giustizia amministrativa hanno giurisdizione per la tutela nei confronti della pubblica amministrazione degli interessi legittimi e, in particolari materie indicate dalla legge, anche dei diritti soggettivi.\n La Corte dei conti ha giurisdizione nelle materie di contabilita' pubblica e nelle altre specificate dalla legge.\n I tribunali militari in tempo di guerra hanno la giurisdizione stabilita dalla legge. In tempo di pace hanno giurisdizione soltanto per i reati militari commessi da appartenenti alle Forze armate.</p>","notesHtml":""},{"id":"art_104","numText":"Art. 104","group":"-","heading":"","contentHtml":"<p>La magistratura costituisce un ordine autonomo e indipendente da ogni altro potere.\n Il Consiglio superiore della magistratura e' presieduto dal Presidente della Repubblica.\n Ne fanno parte di diritto il primo presidente e il procuratore generale della Corte di cassazione.\n Gli altri componenti sono eletti per due terzi da tutti i magistrati ordinari tra gli appartenenti alle varie categorie, e per un terzo dal Parlamento in seduta comune tra professori ordinari di universita' in materie giuridiche ed avvocati dopo quindici anni di esercizio.\n Il Consiglio elegge un vicepresidente fra i componenti designati dal Parlamento.\n I membri elettivi del Consiglio durano in carica quattro anni e non sono immediatamente rieleggibili.\n Non possono, finche' sono in carica, essere iscritti negli albi professionali, ne' far parte del Parlamento o di un Consiglio regionale.</p>","notesHtml":""},{"id":"art_105","numText":"Art. 105","group":"-","heading":"","contentHtml":"<p>Spettano al Consiglio superiore della magistratura, secondo le norme dell'ordinamento giudiziario, le assunzioni, le assegnazioni ed i trasferimenti, le promozioni e i provvedimenti disciplinari nei riguardi dei magistrati.</p>","notesHtml":""},{"id":"art_106","numText":"Art. 106","group":"-","heading":"","contentHtml":"<p>Le nomine dei magistrati hanno luogo per concorso.\n La legge sull'ordinamento giudiziario puo' ammettere la nomina, anche elettiva, di magistrati onorari per tutte le funzioni attribuite a giudici singoli.\n Su designazione del Consiglio superiore della magistratura possono essere chiamati all'ufficio di consiglieri di cassazione, per meriti insigni, professori ordinari di universita' in materie giuridiche e avvocati che abbiano quindici anni d'esercizio e siano iscritti negli albi speciali per le giurisdizioni superiori.</p>","notesHtml":""},{"id":"art_107","numText":"Art. 107","group":"-","heading":"","contentHtml":"<p>I magistrati sono inamovibili. Non possono essere dispensati o sospesi dal servizio ne' destinati ad altre sedi o funzioni se non in seguito a decisione del Consiglio superiore della magistratura, adottata o per i motivi e con le garanzie di difesa stabilite dall'ordinamento giudiziario o con il loro consenso.\n Il Ministro della giustizia ha facolta' di promuovere l'azione disciplinare.\n I magistrati si distinguono fra loro soltanto per diversita' di funzioni.\n Il pubblico ministero gode delle garanzie stabilite nei suoi riguardi dalle norme sull'ordinamento giudiziario.</p>","notesHtml":""},{"id":"art_108","numText":"Art. 108","group":"-","heading":"","contentHtml":"<p>Le norme sull'ordinamento giudiziario e su ogni magistratura sono stabilite con legge.\n La legge assicura l'indipendenza dei giudici delle giurisdizioni speciali, del pubblico ministero presso di esse, e degli estranei che partecipano all'amministrazione della giustizia.</p>","notesHtml":""},{"id":"art_109","numText":"Art. 109","group":"-","heading":"","contentHtml":"<p>L'autorita' giudiziaria dispone direttamente della polizia giudiziaria.</p>","notesHtml":""},{"id":"art_110","numText":"Art. 110","group":"-","heading":"","contentHtml":"<p>Ferme le competenze del Consiglio superiore della magistratura, spettano al Ministro della giustizia l'organizzazione e il funzionamento dei servizi relativi alla giustizia.</p>","notesHtml":""},{"id":"art_111","numText":"Art. 111","group":"-","heading":"","contentHtml":"<p>La giurisdizione si attua mediante il giusto processo regolato dalla legge.\n Ogni processo si svolge nel contraddittorio tra le parti, in condizioni di parita', davanti a giudice terzo e imparziale. La legge ne assicura la ragionevole durata.\n Nel processo penale, la legge assicura che la persona accusata di un reato sia, nel piu' breve tempo possibile, informata riservatamente della natura e dei motivi dell'accusa elevata a suo carico; disponga del tempo e delle condizioni necessari per preparare la sua difesa; abbia la facolta', davanti al giudice, di interrogare o di far interrogare le persone che rendono dichiarazioni a suo carico, di ottenere la convocazione e l'interrogatorio di persone a sua difesa nelle stesse condizioni dell'accusa e l'acquisizione di ogni altro mezzo di prova a suo favore; sia assistita da un interprete se non comprende o non parla la lingua impiegata nel processo.\n Il processo penale e' regolato dal principio del contraddittorio nella formazione della prova. La colpevolezza dell'imputato non puo' essere provata sulla base di dichiarazioni rese da chi, per libera scelta, si e' sempre volontariamente sottratto all'interrogatorio da parte dell'imputato o del suo difensore.\n La legge regola i casi in cui la formazione della prova non ha luogo in contraddittorio per consenso dell'imputato o per accertata impossibilita' di natura oggettiva o per effetto di provata condotta illecita.\n Tutti i provvedimenti giurisdizionali devono essere motivati.\n Contro le sentenze e contro i provvedimenti sulla liberta' personale, pronunciati dagli organi giurisdizionali ordinari o speciali, e' sempre ammesso ricorso in Cassazione per violazione di legge. Si puo' derogare a tale norma soltanto per le sentenze dei tribunali militari in tempo di guerra.\n Contro le decisioni del Consiglio di Stato e della Corte dei conti il ricorso in Cassazione e' ammesso per i soli motivi inerenti alla giurisdizione.</p>","notesHtml":""},{"id":"art_112","numText":"Art. 112","group":"-","heading":"","contentHtml":"<p>Il pubblico ministero ha l'obbligo di esercitare l'azione penale.</p>","notesHtml":""},{"id":"art_113","numText":"Art. 113","group":"-","heading":"","contentHtml":"<p>Contro gli atti della pubblica amministrazione e' sempre ammessa la tutela giurisdizionale dei diritti e degli interessi legittimi dinanzi agli organi di giurisdizione ordinaria o amministrativa.\n Tale tutela giurisdizionale non puo' essere esclusa o limitata a particolari mezzi di impugnazione o per determinate categorie di atti.\n La legge determina quali organi di giurisdizione possono annullare gli atti della pubblica amministrazione nei casi e con gli effetti previsti dalla legge stessa.</p>","notesHtml":""},{"id":"art_114","numText":"Art. 114","group":"-","heading":"","contentHtml":"<p>La Repubblica e' costituita dai Comuni, dalle Province, dalle Citta' metropolitane, dalle Regioni e dallo Stato.\n I Comuni, le Province, le Citta' metropolitane e le Regioni sono enti autonomi con propri statuti, poteri e funzioni secondo i principi fissati dalla Costituzione.\n Roma e' la capitale della Repubblica. La legge dello Stato disciplina il suo ordinamento.</p>","notesHtml":""},{"id":"art_115","numText":"Art. 115","group":"-","heading":"","contentHtml":"<p>ARTICOLO ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3</p>","notesHtml":""},{"id":"art_116","numText":"Art. 116","group":"-","heading":"","contentHtml":"<p>Il Friuli Venezia Giulia, la Sardegna, la Sicilia, il Trentino-Alto Adige/Südtirol e la Valle d'Aosta/Vallee d'Aoste dispongono di forme e condizioni particolari di autonomia, secondo i rispettivi statuti speciali adottati con legge costituzionale.\n La Regione Trentino-Alto Adige/Südtirol e' costituita dalle Province autonome di Trento e di Bolzano.\n Ulteriori forme e condizioni particolari di autonomia, concernenti le materie di cui al terzo comma dell'articolo 117 e le materie indicate dal secondo comma del medesimo articolo alle lettere l), limitatamente all'organizzazione della giustizia di pace, n) e s), possono essere attribuite ad altre Regioni, con legge dello Stato, su iniziativa della Regione interessata, sentiti gli enti locali, nel rispetto dei principi di cui all'articolo 119. La legge e' approvata dalle Camere a maggioranza assoluta dei componenti, sulla base di intesa fra lo Stato e la Regione interessata.</p>","notesHtml":""},{"id":"art_117","numText":"Art. 117","group":"-","heading":"","contentHtml":"<p>La potesta' legislativa e' esercitata dallo Stato e dalle Regioni nel rispetto della Costituzione, nonche' dei vincoli derivanti dall'ordinamento comunitario e dagli obblighi internazionali. \n Lo Stato ha legislazione esclusiva nelle seguenti materie: \n a) politica estera e rapporti internazionali dello Stato; rapporti dello Stato con l'Unione europea; diritto di asilo e condizione giuridica dei cittadini di Stati non appartenenti all'Unione europea; \n b) immigrazione; \n c) rapporti tra la Repubblica e le confessioni religiose; \n d) difesa e Forze armate; sicurezza dello Stato; armi, munizioni ed esplosivi; \n e) moneta, tutela del risparmio e mercati finanziari; tutela della concorrenza; sistema valutario; sistema tributario e contabile dello Stato; armonizzazione dei bilanci pubblici; perequazione delle risorse finanziarie; <sup class=\"amd\">19</sup> \n f) organi dello Stato e relative leggi elettorali; referendum statali; elezione del Parlamento europeo; \n g) ordinamento e organizzazione amministrativa dello Stato e degli enti pubblici nazionali; \n h) ordine pubblico e sicurezza, ad esclusione della polizia amministrativa locale; \n i) cittadinanza, stato civile e anagrafi; \n l) giurisdizione e norme processuali; ordinamento civile e penale; giustizia amministrativa; \n m) determinazione dei livelli essenziali delle prestazioni concernenti i diritti civili e sociali che devono essere garantiti su tutto il territorio nazionale; \n n) norme generali sull'istruzione; \n o) previdenza sociale; \n p) legislazione elettorale, organi di governo e funzioni fondamentali di Comuni, Province e Citta' metropolitane; \n q) dogane, protezione dei confini nazionali e profilassi internazionale; \n r) pesi, misure e determinazione del tempo; coordinamento informativo statistico e informatico dei dati dell'amministrazione statale, regionale e locale; opere dell'ingegno; \n s) tutela dell'ambiente, dell'ecosistema e dei beni culturali. \n Sono materie di legislazione concorrente quelle relative a: rapporti internazionali e con l'Unione europea delle Regioni; commercio con l'estero; tutela e sicurezza del lavoro; istruzione, salva l'autonomia delle istituzioni scolastiche e con esclusione della istruzione e della formazione professionale; professioni; ricerca scientifica e tecnologica e sostegno all'innovazione per i settori produttivi; tutela della salute; alimentazione; ordinamento sportivo; protezione civile; governo del territorio; porti e aeroporti civili; grandi reti di trasporto e di navigazione; ordinamento della comunicazione; produzione, trasporto e distribuzione nazionale dell'energia; previdenza complementare e integrativa; . . . coordinamento della finanza pubblica e del sistema tributario; valorizzazione dei beni culturali e ambientali e promozione e organizzazione di attivita' culturali; casse di risparmio, casse rurali, aziende di credito a carattere regionale; enti di credito fondiario e agrario a carattere regionale. Nelle materie di legislazione concorrente spetta alle Regioni la potesta' legislativa, salvo che per la determinazione dei principi fondamentali, riservata alla legislazione dello Stato. <sup class=\"amd\">19</sup> \n Spetta alle Regioni la potesta' legislativa in riferimento ad ogni materia non espressamente riservata alla legislazione dello Stato. \n Le Regioni e le Province autonome di Trento e di Bolzano, nelle materie di loro competenza, partecipano alle decisioni dirette alla formazione degli atti normativi comunitari e provvedono all'attuazione e all'esecuzione degli accordi internazionali e degli atti dell'Unione europea, nel rispetto delle norme di procedura stabilite da legge dello Stato, che disciplina le modalita' di esercizio del potere sostitutivo in caso di inadempienza. \n La potesta' regolamentare spetta allo Stato nelle materie di legislazione esclusiva, salva delega alle Regioni. La potesta' regolamentare spetta alle Regioni in ogni altra materia. I Comuni, le Province e le Citta' metropolitane hanno potesta' regolamentare in ordine alla disciplina dell'organizzazione e dello svolgimento delle funzioni loro attribuite. \n Le leggi regionali rimuovono ogni ostacolo che impedisce la piena parita' degli uomini e delle donne nella vita sociale, culturale ed economica e promuovono la parita' di accesso tra donne e uomini alle cariche elettive. \n La legge regionale ratifica le intese della Regione con altre Regioni per il migliore esercizio delle proprie funzioni, anche con individuazione di organi comuni. \n Nelle materie di sua competenza la Regione puo' concludere accordi con Stati e intese con enti territoriali interni ad altro Stato, nei casi e con le forme disciplinati da leggi dello Stato.</p>","notesHtml":"<p>AGGIORNAMENTO (19)</p>\n<p>La L. costituzionale 20 aprile 2012, n. 1 ha disposto (con l'art. 6, comma 1) che le suddette modifiche si applicano a decorrere dall'esercizio finanziario relativo all'anno 2014.</p>"},{"id":"art_118","numText":"Art. 118","group":"-","heading":"","contentHtml":"<p>Le funzioni amministrative sono attribuite ai Comuni salvo che, per assicurarne l'esercizio unitario, siano conferite a Province, Citta' metropolitane, Regioni e Stato, sulla base dei principi di sussidiarieta', differenziazione ed adeguatezza.\n I Comuni, le Province e le Citta' metropolitane sono titolari di funzioni amministrative proprie e di quelle conferite con legge statale o regionale, secondo le rispettive competenze.\n La legge statale disciplina forme di coordinamento fra Stato e Regioni nelle materie di cui alle lettere b) e h) del secondo comma dell'articolo 117, e disciplina inoltre forme di intesa e coordinamento nella materia della tutela dei beni culturali.\n Stato, Regioni, Citta' metropolitane, Province e Comuni favoriscono l'autonoma iniziativa dei cittadini, singoli e associati, per lo svolgimento di attivita' di interesse generale, sulla base del principio di sussidiarieta'.</p>","notesHtml":""},{"id":"art_119","numText":"Art. 119","group":"-","heading":"","contentHtml":"<p>I Comuni, le Province, le Citta' metropolitane e le Regioni hanno autonomia finanziaria di entrata e di spesa, nel rispetto dell'equilibrio dei relativi bilanci, e concorrono ad assicurare l'osservanza dei vincoli economici e finanziari derivanti dall'ordinamento dell'Unione europea. (19) \n I Comuni, le Province, le Citta' metropolitane e le Regioni hanno risorse autonome. Stabiliscono e applicano tributi ed entrate propri, in armonia con la Costituzione e secondo i principi di coordinamento della finanza pubblica e del sistema tributario. Dispongono di compartecipazioni al gettito di tributi erariali riferibile al loro territorio. \n La legge dello Stato istituisce un fondo perequativo, senza vincoli di destinazione, per i territori con minore capacita' fiscale per abitante. \n Le risorse derivanti dalle fonti di cui ai commi precedenti consentono ai Comuni, alle Province, alle Citta' metropolitane e alle Regioni di finanziare integralmente le funzioni pubbliche loro attribuite. \n Per promuovere lo sviluppo economico, la coesione e la solidarieta' sociale, per rimuovere gli squilibri economici e sociali, per favorire l'effettivo esercizio dei diritti della persona, o per provvedere a scopi diversi dal normale esercizio delle loro funzioni, lo Stato destina risorse aggiuntive ed effettua interventi speciali in favore di determinati Comuni, Province, Citta' metropolitane e Regioni. \n La Repubblica riconosce le peculiarita' delle Isole e promuove le misure necessarie a rimuovere gli svantaggi derivanti dall'insularita'. \n I Comuni, le Province, le Citta' metropolitane e le Regioni hanno un proprio patrimonio, attribuito secondo i principi generali determinati dalla legge dello Stato. Possono ricorrere all'indebitamento solo per finanziare spese di investimento, con la contestuale definizione di piani di ammortamento e a condizione che per il complesso degli enti di ciascuna Regione sia rispettato l'equilibrio di bilancio. E' esclusa ogni garanzia dello Stato sui prestiti dagli stessi contratti. (19)</p>","notesHtml":"<p>AGGIORNAMENTO (19)</p>\n<p>La L. costituzionale 20 aprile 2012, n. 1 ha disposto (con l'art. 6, comma 1) che le suddette modifiche si applicano a decorrere dall'esercizio finanziario relativo all'anno 2014.</p>"},{"id":"art_120","numText":"Art. 120","group":"-","heading":"","contentHtml":"<p>La Regione non puo' istituire dazi di importazione o esportazione o transito tra le Regioni, ne' adottare provvedimenti che ostacolino in qualsiasi modo la libera circolazione delle persone e delle cose tra le Regioni, ne' limitare l'esercizio del diritto al lavoro in qualunque parte del territorio nazionale.\n Il Governo puo' sostituirsi a organi delle Regioni, delle Citta' metropolitane, delle Province e dei Comuni nel caso di mancato rispetto di norme e trattati internazionali o della normativa comunitaria oppure di pericolo grave per l'incolumita' e la sicurezza pubblica, ovvero quando lo richiedono la tutela dell'unita' giuridica o dell'unita' economica e in particolare la tutela dei livelli essenziali delle prestazioni concernenti i diritti civili e sociali, prescindendo dai confini territoriali dei governi locali. La legge definisce le procedure atte a garantire che i poteri sostitutivi siano esercitati nel rispetto del principio di sussidiarieta' e del principio di leale collaborazione.</p>","notesHtml":""},{"id":"art_121","numText":"Art. 121","group":"-","heading":"","contentHtml":"<p>Sono organi della Regione: il Consiglio regionale, la Giunta e il suo presidente.\n Il Consiglio regionale esercita le potesta' legislative  . . .  attribuite alla Regione e le altre funzioni conferitegli dalla Costituzione e dalle leggi. Puo' fare proposte di legge alle Camere.\n La Giunta regionale e' l'organo esecutivo delle Regioni.\nIl Presidente della Giunta rappresenta la Regione; dirige la politica della Giunta e ne e' responsabile; promulga le leggi ed emana i regolamenti regionali; dirige le funzioni amministrative delegate dallo Stato alla Regione, conformandosi alle istruzioni del Governo della Repubblica.</p>","notesHtml":""},{"id":"art_122","numText":"Art. 122","group":"-","heading":"","contentHtml":"<p>Il sistema di elezione e i casi di ineleggibilita' e di incompatibilita' del Presidente e degli altri componenti della Giunta regionale nonche' dei consiglieri regionali sono disciplinati con legge della Regione nei limiti dei principi fondamentali stabiliti con legge della Repubblica, che stabilisce anche la durata degli organi elettivi.\n Nessuno puo' appartenere contemporaneamente a un Consiglio o a una Giunta regionale e ad una delle Camere del Parlamento, ad un altro Consiglio o ad altra Giunta regionale, ovvero al Parlamento europeo.\n Il Consiglio elegge tra i suoi componenti un Presidente e un ufficio di presidenza.\n I consiglieri regionali non possono essere chiamati a rispondere delle opinioni espresse e dei voti dati nell'esercizio delle loro funzioni.\n Il Presidente della Giunta regionale, salvo che lo statuto regionale disponga diversamente, e' eletto a suffragio universale e diretto. Il Presidente eletto nomina e revoca i componenti della Giunta.</p>","notesHtml":""},{"id":"art_123","numText":"Art. 123","group":"-","heading":"","contentHtml":"<p>Ciascuna Regione ha uno statuto che, in armonia con la Costituzione, ne determina la forma di governo e i principi fondamentali di organizzazione e funzionamento. Lo statuto regola l'esercizio del diritto di iniziativa e del referendum su leggi e provvedimenti amministrativi della Regione e la pubblicazione delle leggi e dei regolamenti regionali.\n Lo statuto e' approvato e modificato dal Consiglio regionale con legge approvata a maggioranza assoluta dei suoi componenti, con due deliberazioni successive adottate ad intervallo non minore di due mesi. Per tale legge non e' richiesta l'apposizione del visto da parte del Commissario del Governo. Il Governo della Repubblica puo' promuovere la questione di legittimita' costituzionale sugli statuti regionali dinanzi alla Corte costituzionale entro trenta giorni dalla loro pubblicazione.\n Lo statuto e' sottoposto a referendum popolare qualora entro tre mesi dalla sua pubblicazione ne faccia richiesta un cinquantesimo degli elettori della Regione o un quinto dei componenti il Consiglio regionale. Lo statuto sottoposto a referendum non e' promulgato se non e' approvato dalla maggioranza dei voti validi.\nIn ogni Regione, lo statuto disciplina il Consiglio delle autonomie locali, quale organo di consultazione fra la Regione e gli enti locali.</p>","notesHtml":""},{"id":"art_124","numText":"Art. 124","group":"-","heading":"","contentHtml":"<p>ARTICOLO ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3</p>","notesHtml":""},{"id":"art_125","numText":"Art. 125","group":"-","heading":"","contentHtml":"<p>COMMA ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3.\n Nella Regione sono istituiti organi di giustizia amministrativa di primo grado, secondo l'ordinamento stabilito da legge della Repubblica. Possono istituirsi sezioni con sede diversa dal capoluogo della Regione.</p>","notesHtml":""},{"id":"art_126","numText":"Art. 126","group":"-","heading":"","contentHtml":"<p>Con decreto motivato del Presidente della Repubblica sono disposti lo scioglimento del Consiglio regionale e la rimozione del Presidente della Giunta che abbiano compiuto atti contrari alla Costituzione o gravi violazioni di legge. Lo scioglimento e la rimozione possono altresi' essere disposti per ragioni di sicurezza nazionale. Il decreto e' adottato sentita una Commissione di deputati e senatori costituita, per le questioni regionali, nei modi stabiliti con legge della Repubblica.\n Il Consiglio regionale puo' esprimere la sfiducia nei confronti del Presidente della Giunta mediante mozione motivata, sottoscritta da almeno un quinto dei suoi componenti e approvata per appello nominale a maggioranza assoluta dei componenti. La mozione non puo' essere messa in discussione prima di tre giorni dalla presentazione.\n L'approvazione della mozione di sfiducia nei confronti del Presidente della Giunta eletto a suffragio universale e diretto, nonche' la rimozione, l'impedimento permanente, la morte o le dimissioni volontarie dello stesso comportano le dimissioni della Giunta e lo scioglimento del Consiglio. In ogni caso i medesimi effetti conseguono alle dimissioni contestuali della maggioranza dei componenti il Consiglio.</p>","notesHtml":""},{"id":"art_127","numText":"Art. 127","group":"-","heading":"","contentHtml":"<p>Il Governo, quando ritenga che una legge regionale ecceda la competenza della Regione, puo' promuovere la questione di legittimita' costituzionale dinanzi alla Corte costituzionale entro sessanta giorni dalla sua pubblicazione.\n La Regione, quando ritenga che una legge o un atto avente valore di legge dello Stato o di un'altra Regione leda la sua sfera di competenza, puo' promuovere la questione di legittimita' costituzionale dinanzi alla Corte costituzionale entro sessanta giorni dalla pubblicazione della legge o dell'atto avente valore di legge.</p>","notesHtml":""},{"id":"art_128","numText":"Art. 128","group":"-","heading":"","contentHtml":"<p>ARTICOLO ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3</p>","notesHtml":""},{"id":"art_129","numText":"Art. 129","group":"-","heading":"","contentHtml":"<p>ARTICOLO ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3</p>","notesHtml":""},{"id":"art_130","numText":"Art. 130","group":"-","heading":"","contentHtml":"<p>ARTICOLO ABROGATO DALLA L. COSTITUZIONALE 18 OTTOBRE 2001, N. 3</p>","notesHtml":""},{"id":"art_131","numText":"Art. 131","group":"-","heading":"","contentHtml":"<p>Sono costituite le seguenti Regioni:\n\nPiemonte; Marche;\nValle d'Aosta; Lazio;\nLombardia; Abruzzi;\nTrentino-Alto Adige; Molise;\nVeneto; Campania;\nFriuli-Venezia Giulia; Puglia;\nLiguria; Basilicata;\nEmilia-Romagna; Calabria;\nToscana; Sicilia;\nUmbria; Sardegna.</p>","notesHtml":""},{"id":"art_132","numText":"Art. 132","group":"-","heading":"","contentHtml":"<p>Si puo' con legge costituzionale, sentiti i Consigli regionali, disporre la fusione di Regioni esistenti o la creazione di nuove Regioni con un minimo di un milione d'abitanti, quando ne facciano richiesta tanti Consigli comunali che rappresentino almeno un terzo delle popolazioni interessate, e la proposta sia approvata con referendum dalla maggioranza delle popolazioni stesse.\n Si puo', con l'approvazione della maggioranza delle popolazioni della Provincia o delle Province interessate e del Comune o dei Comuni interessati espressa mediante referendum e con legge della Repubblica, sentiti i Consigli regionali, consentire che Provincie e Comuni, che ne facciano richiesta, siano staccati da una Regione ed aggregati ad un'altra.</p>","notesHtml":""},{"id":"art_133","numText":"Art. 133","group":"-","heading":"","contentHtml":"<p>Il mutamento delle circoscrizioni provinciali e la istituzione di nuove Provincie nell'ambito d'una Regione sono stabiliti con leggi della Repubblica, su iniziative dei Comuni, sentita la stessa Regione.\n La Regione, sentite le popolazioni interessate, puo' con sue leggi istituire nel proprio territorio nuovi Comuni e modificare le loro circoscrizioni e denominazioni.</p>","notesHtml":""},{"id":"art_134","numText":"Art. 134","group":"-","heading":"","contentHtml":"<p>La Corte costituzionale giudica:\n sulle controversie relative alla legittimita' costituzionale delle leggi e degli atti, aventi forza di legge, dello Stato e delle Regioni;\n sui conflitti di attribuzione tra i poteri dello Stato e su quelli tra lo Stato e le Regioni, e tra le Regioni;\n sulle accuse promosse contro il Presidente della Repubblica  . . . , a norma della Costituzione.</p>","notesHtml":""},{"id":"art_135","numText":"Art. 135","group":"-","heading":"","contentHtml":"<p>La Corte costituzionale e' composta di quindici giudici nominati per un terzo dal Presidente della Repubblica, per un terzo dal Parlamento in seduta comune e per un terzo dalle supreme magistrature ordinaria ed amministrative.\n I giudici della Corte costituzionale sono scelti fra i magistrati anche a riposo delle giurisdizioni superiori ordinaria ed amministrative, i professori ordinari di universita' in materie giuridiche e gli avvocati dopo venti anni di esercizio.\n I giudici della Corte costituzionale sono nominati per nove anni, decorrenti per ciascuno di essi dal giorno del giuramento, e non possono essere nuovamente nominati.\n Alla scadenza del termine il giudice costituzionale cessa dalla carica e dall'esercizio delle funzioni.\n La Corte elegge tra i suoi componenti, secondo le norme stabilite dalla legge, il Presidente, che rimane in carica per un triennio, ed e' rieleggibile, fermi in ogni caso i termini di scadenza dall'ufficio di giudice.\n L'ufficio di giudice della Corte e' incompatibile con quello di membro del Parlamento, di un Consiglio regionale, con l'esercizio della professione di avvocato e con ogni carica ed ufficio indicati dalla legge.\n Nei giudizi d'accusa contro il Presidente della Repubblica \n . . .  intervengono, oltre i giudici ordinari della Corte, sedici membri tratti a sorte da un elenco di cittadini aventi i requisiti per l'eleggibilita' a senatore, che il Parlamento compila ogni nove anni mediante elezione con le stesse modalita' stabilite \nper la nomina dei giudici ordinari.</p>","notesHtml":""},{"id":"art_136","numText":"Art. 136","group":"-","heading":"","contentHtml":"<p>Quando la Corte dichiara l'illegittimita' costituzionale di una norma di legge o di atto avente forza di legge, la norma cessa di avere efficacia dal giorno successivo alla pubblicazione della decisione.\n La decisione della Corte e' pubblicata e comunicata alle Camere ed ai Consigli regionali interessati, affinche', ove lo ritengano necessario, provvedano nelle forme costituzionali.</p>","notesHtml":""},{"id":"art_137","numText":"Art. 137","group":"-","heading":"","contentHtml":"<p>Una legge costituzionale stabilisce le condizioni, le forme, i termini di proponibilita' dei giudizi di legittimita' costituzionale, e le garanzie d'indipendenza dei giudici della Corte.\n Con legge ordinaria sono stabilite le altre norme necessarie per la costituzione e il funzionamento della Corte.\n Contro le decisioni della Corte costituzionale non e' ammessa alcuna impugnazione.</p>","notesHtml":""},{"id":"art_138","numText":"Art. 138","group":"-","heading":"","contentHtml":"<p>Le leggi di revisione della Costituzione e le altre leggi costituzionali sono adottate da ciascuna Camera con due successive deliberazioni ad intervallo non minore di tre mesi, e sono approvate a maggioranza assoluta dei componenti di ciascuna Camera nella seconda votazione.\n Le leggi stesse sono sottoposte a referendum popolare quando, entro tre mesi dalla loro pubblicazione, ne facciano domanda un quinto dei membri di una Camera o cinquecentomila elettori o cinque Consigli regionali. La legge sottoposta a referendum non e' promulgata, se non e' approvata dalla maggioranza dei voti validi.\n Non si fa luogo a referendum se la legge e' stata approvata nella seconda votazione da ciascuna delle Camere a maggioranza di due terzi dei suoi componenti.</p>","notesHtml":""},{"id":"art_139","numText":"Art. 139","group":"-","heading":"","contentHtml":"<p>La forma repubblicana non puo' essere oggetto di revisione costituzionale.</p>","notesHtml":""}]
+};</script>
+<script>
+(function() {
+  'use strict';
+  // DATA is injected per page
+
+  var currentIdx = 0;
+  var filteredIndices = CODE.articles.map(function(_, i) { return i; });
+
+  function init() {
+    // Pre-compute plain text for full-text search
+    CODE.articles.forEach(function(art) {
+      art._searchText = (art.numText + ' ' + (art.heading || '') + ' ' +
+        (art.contentHtml || '').replace(/<[^>]+>/g, '')).toLowerCase();
+    });
+    renderToc();
+
+    // Navigate to hash article if present, otherwise show first article
+    var initHash = location.hash.replace('#', '');
+    var initIdx = 0;
+    if (initHash) {
+      var found = CODE.articles.findIndex(function(a) { return a.id === initHash || a.numText === decodeURIComponent(initHash); });
+      if (found >= 0) initIdx = found;
+    }
+    showArticle(initIdx);
+
+    document.getElementById('search').addEventListener('input', onSearch);
+    document.getElementById('prev-btn').addEventListener('click', function() { navigate(-1); });
+    document.getElementById('next-btn').addEventListener('click', function() { navigate(1); });
+    document.getElementById('hamburger').addEventListener('click', toggleSidebar);
+    document.getElementById('overlay').addEventListener('click', closeSidebar);
+    document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+    });
+    window.addEventListener('hashchange', onHashChange);
+  }
+
+  function onHashChange() {
+    var hash = location.hash.replace('#', '');
+    if (!hash) return;
+    var idx = CODE.articles.findIndex(function(a) { return a.id === hash || a.numText === decodeURIComponent(hash); });
+    if (idx >= 0) showArticle(idx);
+  }
+
+  function renderToc() {
+    var nav = document.getElementById('toc');
+    var html = '';
+    var lastGroup = null;
+    CODE.articles.forEach(function(art, i) {
+      if (art.group && art.group !== lastGroup) {
+        html += '<div class="group-label">' + esc(art.group) + '</div>';
+        lastGroup = art.group;
+      }
+      html += '<div class="art-link" data-idx="' + i + '" onclick="goTo(' + i + ')">' +
+        '<span class="art-num">' + esc(art.numText) + '</span>' +
+        '<span class="art-heading-mini">' + esc(art.heading || '') + '</span>' +
+        '</div>';
+    });
+    nav.innerHTML = html;
+  }
+
+  function showArticle(idx) {
+    if (idx < 0 || idx >= CODE.articles.length) return;
+    currentIdx = idx;
+    var art = CODE.articles[idx];
+
+    // Update URL hash
+    history.replaceState(null, '', '#' + encodeURIComponent(art.numText));
+
+    // Update header title
+    document.getElementById('header-article').textContent = art.numText + (art.heading ? ' – ' + art.heading : '');
+
+    // Render article
+    var notesSection = art.notesHtml
+      ? '<div class="article-notes">' +
+        '<button class="notes-toggle" onclick="toggleNotes(this)">Aggiornamenti e note</button>' +
+        '<div class="notes-body"><div class="article-body">' + art.notesHtml + '</div></div>' +
+        '</div>'
+      : '';
+
+    document.getElementById('article-view').innerHTML =
+      '<div class="article-card">' +
+        '<div class="article-badge">📖 ' + esc(CODE.shortTitle) + '</div>' +
+        '<h1 class="article-num">' + esc(art.numText) + '</h1>' +
+        (art.heading ? '<p class="article-heading">' + esc(art.heading) + '</p>' : '<div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border)"></div>') +
+        '<div class="article-body">' + art.contentHtml + '</div>' +
+        notesSection +
+        '<div class="article-actions">' +
+          '<button class="action-btn wa-btn" onclick="shareWhatsApp()" title="Invia su WhatsApp">' +
+            '<span class="action-icon">📲</span> WhatsApp' +
+          '</button>' +
+          '<button class="action-btn" onclick="copyArticle()" title="Copia articolo">' +
+            '<span class="action-icon">📋</span> Copia' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+
+    // Update counter
+    document.getElementById('article-counter').textContent = (idx + 1) + ' / ' + CODE.articles.length;
+    document.getElementById('prev-btn').disabled = idx === 0;
+    document.getElementById('next-btn').disabled = idx === CODE.articles.length - 1;
+
+    // Highlight active in TOC
+    document.querySelectorAll('.art-link').forEach(function(el) { el.classList.remove('active'); });
+    var activeEl = document.querySelector('.art-link[data-idx="' + idx + '"]');
+    if (activeEl) {
+      activeEl.classList.add('active');
+      activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    // Scroll main to top
+    document.getElementById('main').scrollTop = 0;
+    window.scrollTo(0, 0);
+  }
+
+  window.goTo = function(idx) { showArticle(idx); closeSidebar(); };
+
+  function navigate(dir) {
+    var pos = filteredIndices.indexOf(currentIdx);
+    if (pos === -1) pos = 0;
+    var newPos = pos + dir;
+    if (newPos >= 0 && newPos < filteredIndices.length) {
+      showArticle(filteredIndices[newPos]);
+    }
+  }
+
+  function onSearch(e) {
+    var q = e.target.value.toLowerCase().trim();
+    filteredIndices = [];
+    document.querySelectorAll('.art-link').forEach(function(el) {
+      var idx = parseInt(el.dataset.idx, 10);
+      var art = CODE.articles[idx];
+      var hidden = q && !art._searchText.includes(q);
+      el.classList.toggle('hidden', hidden);
+      if (!hidden) filteredIndices.push(idx);
+    });
+    if (!q) filteredIndices = CODE.articles.map(function(_, i) { return i; });
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('visible');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('visible');
+  }
+  window.toggleNotes = function(btn) {
+    btn.classList.toggle('open');
+    btn.nextElementSibling.classList.toggle('visible');
+  };
+
+  function getArticleText(art, bold) {
+    var body = (art.contentHtml || '').replace(/<\/p>\s*<p>/gi, '\n').replace(/<[^>]+>/g, '').replace(/[ \t]+/g, ' ').trim();
+    var heading = art.numText;
+    if (art.heading) heading += ' – ' + art.heading;
+    if (bold) heading = '*' + heading + '*';
+    return CODE.title + '\n' + heading + '\n' + body;
+  }
+
+  window.shareWhatsApp = function() {
+    var art = CODE.articles[currentIdx];
+    var text = getArticleText(art, true);
+    var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
+  };
+
+  window.copyArticle = function() {
+    var art = CODE.articles[currentIdx];
+    var text = getArticleText(art, false);
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Articolo copiato negli appunti');
+    }, function() {
+      // fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Articolo copiato negli appunti');
+    });
+  };
+
+  function showToast(msg) {
+    var el = document.getElementById('copy-toast');
+    el.textContent = msg;
+    el.classList.add('visible');
+    setTimeout(function() { el.classList.remove('visible'); }, 2000);
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
