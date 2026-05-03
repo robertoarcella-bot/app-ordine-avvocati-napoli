@@ -81,7 +81,7 @@ const AppShell: React.FC = () => {
           <Route exact path="/aule-udienze" component={AuleUdienze} />
           <Route exact path="/aule-udienze/recapiti" component={RecapitiUffici} />
           <Route exact path="/aule-udienze/sezioni" component={RicercaSezione} />
-          <Route exact path="/aule-udienze/:officeId" component={UfficioGiudiziario} />
+          <Route exact path="/aule-udienze/ufficio/:officeId" component={UfficioGiudiziario} />
           <Route exact path="/area-riservata" component={AreaRiservata} />
           <Route exact path="/info" component={Info} />
           <Route exact path="/commissione" component={Commissione} />

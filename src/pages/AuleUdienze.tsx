@@ -58,7 +58,7 @@ const AuleUdienze: React.FC = () => {
               key={office.id}
               button
               detail={false}
-              onClick={() => history.push(`/aule-udienze/${office.id}`)}
+              onClick={() => history.push(`/aule-udienze/ufficio/${office.id}`)}
             >
               <IonIcon slot="start" icon={businessOutline} color="primary" />
               <IonLabel>
