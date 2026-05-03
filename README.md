@@ -9,6 +9,19 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 
 ---
 
+## Identificativi del package
+
+| Contesto | Nome / ID |
+|---|---|
+| **Android `applicationId` / `namespace`** (identificativo univoco dell'app sul dispositivo e sugli store) | `it.ordineavvocatinapoli.app` |
+| **App display name** (etichetta sotto l'icona, definita in `capacitor.config.ts → appName`) | `Ordine Avvocati Napoli` |
+| **npm package** (`package.json → name`) | `app-coa` |
+| **Repository GitHub** | [`robertoarcella-bot/app-ordine-avvocati-napoli`](https://github.com/robertoarcella-bot/app-ordine-avvocati-napoli) |
+
+> L'ID Android `it.ordineavvocatinapoli.app` è quello da utilizzare per ogni riferimento "ufficiale" all'app installata (autorizzazioni TestFlight/Play, deep link, integrazioni esterne, segnalazioni di abusi). Una volta pubblicato l'app deve mantenere questo identificativo: cambiarlo equivale a creare una nuova app distinta agli occhi degli store.
+
+---
+
 ## Sommario
 
 1. [Changelog](#changelog)
