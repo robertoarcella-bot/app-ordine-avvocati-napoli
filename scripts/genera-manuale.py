@@ -91,7 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
-    C.append(("SUB3", "Versione 1.1.1 — maggio 2026"))
+    C.append(("SUB3", "Versione 1.1.2 — maggio 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -120,7 +120,8 @@ def build_content(images):
         "    14.2 Corte d'Appello di Napoli",
         "    14.3 Cerca per autorità e sezione",
         "    14.4 Recapiti uffici giudiziari del distretto",
-        "    14.5 Sezione Lavoro, Aule Penali, Calendario GdP",
+        "    14.5 Cancellerie e uffici penali",
+        "    14.6 Sezione Lavoro, Aule Penali, Calendario GdP",
         "15. Processo Telematico",
         "    15.1 Notifiche di nuovi avvisi PST",
         "    15.2 Fonti di news ufficiali",
@@ -222,7 +223,7 @@ def build_content(images):
     h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-1.1.1-debug.apk.")
+      "OrdineAvvocatiNapoli-1.1.2-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -617,7 +618,35 @@ def build_content(images):
       "client di posta del telefono. I dati sono offline-first: una volta "
       "installata l'app, sono disponibili anche senza connessione.")
 
-    h2("14.5 Sezione Lavoro, Aule Penali, Calendario GdP")
+    h2("14.5 Cancellerie e uffici penali")
+    p("Pagina dedicata, novità della v1.1.2, alla dislocazione delle "
+      "cancellerie e degli uffici del settore penale all'interno del "
+      "Nuovo Palazzo di Giustizia di Napoli. Censiti circa 78 uffici "
+      "tra Tribunale, Corte d'Appello, Tribunale di Sorveglianza, Procura "
+      "della Repubblica e Procura Generale, ciascuno con torre, piano, "
+      "stanza, e-mail istituzionale, PEC e responsabile.")
+    h3("Funzioni")
+    for x in [
+        "**Filtro per ente**: Tutti / Tribunale / Corte d'Appello / "
+        "Sorveglianza / Procura / Procura Generale.",
+        "**Ricerca testuale** per nome ufficio, sezione, torre, piano o stanza.",
+        "**Riquadro a tutto schermo** al tocco di un risultato: viene aperta "
+        "una scheda di dettaglio con badge dell'ente e della macro-area, "
+        "ubicazione (torre, piano, stanza, eventuale ingresso), "
+        "responsabile/telefono, e-mail e PEC cliccabili, e — quando "
+        "presenti — note di verifica della fonte.",
+        "**Raggruppamento dinamico**: con il filtro \"Tutti\" gli uffici sono "
+        "raggruppati per ente; selezionando un singolo ente, sono raggruppati "
+        "per macro-area (GIP/GUP, Dibattimento, Riesame, Esecuzioni, "
+        "U.N.R., Sezioni, ecc.).",
+    ]:
+        b(x)
+    note("I dati sono offline-first ed estratti dai siti istituzionali del "
+         "Ministero della Giustizia (ricognizione del 3 maggio 2026). "
+         "Eventuali discrasie tra le diverse pagine ufficiali sono riportate "
+         "nel campo \"Note di verifica\" della scheda dell'ufficio.")
+
+    h2("14.6 Sezione Lavoro, Aule Penali, Calendario GdP")
     for x in [
         "**Aule Sezione Lavoro Napoli** — calendario delle udienze dei "
         "giudici della Sezione Lavoro del Tribunale, in formato a card "
@@ -873,7 +902,7 @@ def build_content(images):
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.1 — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.2 — Documento generato automaticamente"))
 
     return C
 

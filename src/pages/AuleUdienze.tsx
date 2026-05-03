@@ -6,7 +6,7 @@ import {
 import {
   chevronForwardOutline, openOutline,
   cloudOfflineOutline, wifiOutline, businessOutline,
-  callOutline, gridOutline,
+  callOutline, gridOutline, shieldHalfOutline,
 } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { Browser } from '@capacitor/browser';
@@ -81,6 +81,20 @@ const AuleUdienze: React.FC = () => {
               <h3>Cerca per autorità e sezione</h3>
               <p style={{ whiteSpace: 'normal' }}>
                 Tribunale o Corte d'Appello → sezione → elenco completo dei magistrati con piano e Torre
+              </p>
+            </IonLabel>
+            <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />
+          </IonItem>
+          <IonItem
+            button
+            detail={false}
+            onClick={() => history.push('/aule-udienze/penali')}
+          >
+            <IonIcon slot="start" icon={shieldHalfOutline} color="primary" />
+            <IonLabel>
+              <h3>Cancellerie e uffici penali</h3>
+              <p style={{ whiteSpace: 'normal' }}>
+                Tribunale, Corte d'Appello, Sorveglianza, Procura e Procura Generale — Nuovo Palazzo di Giustizia, ricercabili per torre/piano
               </p>
             </IonLabel>
             <IonIcon slot="end" icon={chevronForwardOutline} color="medium" />

@@ -18,6 +18,7 @@ import AuleUdienze from './pages/AuleUdienze';
 import UfficioGiudiziario from './pages/UfficioGiudiziario';
 import RecapitiUffici from './pages/RecapitiUffici';
 import RicercaSezione from './pages/RicercaSezione';
+import UfficiPenali from './pages/UfficiPenali';
 import AreaRiservata from './pages/AreaRiservata';
 import Info from './pages/Info';
 import Commissione from './pages/Commissione';
@@ -81,6 +82,7 @@ const AppShell: React.FC = () => {
           <Route exact path="/aule-udienze" component={AuleUdienze} />
           <Route exact path="/aule-udienze/recapiti" component={RecapitiUffici} />
           <Route exact path="/aule-udienze/sezioni" component={RicercaSezione} />
+          <Route exact path="/aule-udienze/penali" component={UfficiPenali} />
           <Route exact path="/aule-udienze/ufficio/:officeId" component={UfficioGiudiziario} />
           <Route exact path="/area-riservata" component={AreaRiservata} />
           <Route exact path="/info" component={Info} />
