@@ -1,11 +1,18 @@
 """
-Genera il Manuale Utente dell'app Ordine Avvocati Napoli.
+Genera il Manuale Utente dell'app Ordine Avvocati Napoli (v1.1.0).
 
 Output (entrambi):
   - ../Manuale_App_OrdineAvvocatiNapoli.docx  (Microsoft Word)
   - ../Manuale_App_OrdineAvvocatiNapoli.md    (Markdown, leggibile su GitHub)
 
 Le immagini sono reali screenshot dell'app (cartella FOTO_Manuale del workspace).
+
+Vincoli di impaginazione applicati nel DOCX:
+  - Larghezza immagine 7 cm (~50% pagina A4) per non occupare troppo spazio.
+  - keep_with_next sul paragrafo immediatamente precedente all'immagine, così
+    l'immagine non si separa dal testo che la introduce.
+  - keep_with_next sul paragrafo dell'immagine e su quello della didascalia,
+    così non si producono orfane fra immagine, caption e descrizione.
 """
 import shutil
 from pathlib import Path
@@ -24,15 +31,19 @@ IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 OUT_DOCX = WORKSPACE / "Manuale_App_OrdineAvvocatiNapoli.docx"
 OUT_MD = WORKSPACE / "Manuale_App_OrdineAvvocatiNapoli.md"
 
-# Mapping screenshot → nome semantico
+# Mapping screenshot v1.1.0 → nome semantico
 PHOTO_MAPPING = [
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (6).jpeg", "home.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (5).jpeg", "menu.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (1).jpeg", "consiglio.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (4).jpeg", "news.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (3).jpeg", "strumenti.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53 (2).jpeg", "processo_telematico.jpeg"),
-    ("WhatsApp Image 2026-05-02 at 09.12.53.jpeg", "commissione.jpeg"),
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (6).jpeg", "home.jpeg"),                       # Home con tile
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (5).jpeg", "news.jpeg"),                       # News con cards
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (4).jpeg", "sito.jpeg"),                       # Sito dell'Ordine
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (3).jpeg", "documenti.jpeg"),                  # Documenti
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (2).jpeg", "strumenti_generali.jpeg"),         # Strumenti — Servizi generali (con Codici Italiani)
+    ("WhatsApp Image 2026-05-03 at 17.01.55.jpeg",     "strumenti_civile.jpeg"),           # Strumenti — Civile
+    ("WhatsApp Image 2026-05-03 at 17.01.55 (1).jpeg", "codici.jpeg"),                     # Codici Italiani — home
+    ("WhatsApp Image 2026-05-03 at 17.01.54 (3).jpeg", "tribunale.jpeg"),                  # Tribunale Napoli (magistrati con Torre/Piano)
+    ("WhatsApp Image 2026-05-03 at 17.01.54 (2).jpeg", "processo_telematico.jpeg"),        # Processo Telematico
+    ("WhatsApp Image 2026-05-03 at 17.01.54 (1).jpeg", "consiglio.jpeg"),                  # Consiglio dell'Ordine
+    ("WhatsApp Image 2026-05-03 at 17.01.54.jpeg",     "commissione.jpeg"),                # Commissione Informatica
 ]
 
 
@@ -80,6 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
+    C.append(("SUB3", "Versione 1.1.0 — maggio 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -91,31 +103,35 @@ def build_content(images):
     h1("Sommario")
     sezioni = [
         "1. Introduzione",
-        "2. Installazione",
-        "3. Schermata principale (Home)",
-        "4. Menu di navigazione",
-        "5. Consiglio dell'Ordine",
-        "6. News dal Consiglio",
-        "7. News dagli Uffici Giudiziari",
-        "8. Sito Ordine Avvocati",
-        "9. Albo Avvocati Napoli e Albo Nazionale",
-        "10. Documenti",
-        "11. Strumenti",
-        "12. Aule Udienze Napoli",
-        "    12.1 Tribunale di Napoli",
-        "    12.2 Corte d'Appello di Napoli",
-        "    12.3 Sezione Lavoro, Aule Penali, Calendario GdP",
-        "13. Processo Telematico",
-        "    13.1 Notifiche di nuovi avvisi PST",
-        "    13.2 Fonti di news ufficiali",
-        "    13.3 Strumenti operativi PCT",
-        "14. Riconosco",
-        "15. Area Riservata Consiglieri",
-        "16. Commissione Informatica",
-        "17. Info & Crediti",
-        "18. Funzionalità trasversali",
-        "19. Privacy e sicurezza",
-        "20. Risoluzione problemi",
+        "2. Novità della versione 1.1.0",
+        "3. Installazione",
+        "4. Schermata principale (Home)",
+        "5. Menu di navigazione",
+        "6. Consiglio dell'Ordine",
+        "7. News dal Consiglio",
+        "8. News dagli Uffici Giudiziari",
+        "9. Sito Ordine Avvocati",
+        "10. Albo Avvocati Napoli e Albo Nazionale",
+        "11. Documenti",
+        "12. Strumenti",
+        "13. Codici Italiani",
+        "14. Aule Udienze Napoli",
+        "    14.1 Tribunale di Napoli",
+        "    14.2 Corte d'Appello di Napoli",
+        "    14.3 Cerca per autorità e sezione",
+        "    14.4 Recapiti uffici giudiziari del distretto",
+        "    14.5 Sezione Lavoro, Aule Penali, Calendario GdP",
+        "15. Processo Telematico",
+        "    15.1 Notifiche di nuovi avvisi PST",
+        "    15.2 Fonti di news ufficiali",
+        "    15.3 Strumenti operativi PCT",
+        "16. Riconosco",
+        "17. Area Riservata Consiglieri",
+        "18. Commissione Informatica",
+        "19. Info & Crediti",
+        "20. Funzionalità trasversali",
+        "21. Privacy e sicurezza",
+        "22. Risoluzione problemi",
     ]
     for s in sezioni:
         n(s)
@@ -130,18 +146,19 @@ def build_content(images):
       "Concentra in un unico punto le funzioni più frequentemente utili al "
       "professionista forense: news del Consiglio, news degli Uffici Giudiziari "
       "di Napoli, accesso rapido al sito istituzionale, modulistica, calcolatori "
-      "e strumenti operativi, informazioni sui processi telematici (PCT, PPT, "
-      "amministrativo e tributario), accesso all'area riservata, dislocazione "
-      "magistrati e cancellerie del Tribunale e della Corte d'Appello.")
+      "e strumenti operativi, codici italiani consultabili offline, informazioni "
+      "sui processi telematici (PCT, PPT, amministrativo e tributario), accesso "
+      "all'area riservata, dislocazione magistrati, aule d'udienza e cancellerie "
+      "del Tribunale e della Corte d'Appello.")
     p("L'app è stata sviluppata dall'Avv. Roberto Arcella su idea e con la "
       "collaborazione della Commissione Informatica del Consiglio dell'Ordine "
       "degli Avvocati di Napoli.")
     h2("Caratteristiche principali")
     for x in [
         "Funziona prevalentemente offline: i calcolatori, gli strumenti, "
-        "l'elenco di magistrati e cancellerie, i contatti del Consiglio, "
-        "la composizione del Consiglio e della Commissione Informatica sono "
-        "incorporati nel pacchetto e non richiedono connessione.",
+        "i codici italiani, l'elenco di magistrati e cancellerie, i contatti "
+        "del Consiglio, la composizione del Consiglio e della Commissione "
+        "Informatica sono incorporati nel pacchetto e non richiedono connessione.",
         "News in tempo reale dal sito ufficiale del Consiglio (via API REST "
         "WordPress), con cache locale (le ultime news sono consultabili "
         "anche offline).",
@@ -152,6 +169,9 @@ def build_content(images):
         "Dipartimento della Giustizia Tributaria.",
         "Notifiche automatiche di nuovi avvisi PST (background fetch periodico, "
         "previa autorizzazione dell'utente).",
+        "Codici italiani offline (Costituzione, codice civile, codice penale, "
+        "codici di procedura, CAD, Codice del processo amministrativo) "
+        "ricercabili anche cross-codice e con copia/condivisione articoli su WhatsApp.",
         "Accesso integrato all'area riservata Consiglieri tramite il browser "
         "di sistema, con flusso a 2 step esplicito.",
         "Tema istituzionale conforme alle linee guida AgID per i siti della "
@@ -162,12 +182,47 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 2. INSTALLAZIONE
+    # 2. NOVITÀ v1.1.0
     # ===================================================================
-    h1("2. Installazione")
+    h1("2. Novità della versione 1.1.0")
+    p("Questa edizione del manuale documenta le novità introdotte con la "
+      "versione 1.1.0 dell'app, rilasciata a maggio 2026. Le principali "
+      "aree interessate sono tre.")
+
+    h2("Codici Italiani offline")
+    p("È stata integrata, completamente in app, una raccolta dei principali "
+      "codici italiani: Costituzione, Codice civile, Disposizioni di attuazione "
+      "del codice civile, Codice di procedura civile, Disposizioni di attuazione "
+      "del codice di procedura civile, Codice penale, Codice di procedura penale, "
+      "Norme di attuazione del codice di procedura penale, Regolamento di "
+      "esecuzione del codice di procedura penale, Codice dell'amministrazione "
+      "digitale (CAD) e Codice del processo amministrativo (CPA). Tutti i "
+      "testi sono navigabili e ricercabili senza connessione e ogni articolo "
+      "può essere copiato o condiviso direttamente su WhatsApp.")
+
+    h2("Aule giudici Tribunale di Napoli (Torre A)")
+    p("L'elenco dei magistrati del Tribunale di Napoli ora indica per ciascun "
+      "giudice la Torre e il Piano della relativa aula d'udienza. Toccando un "
+      "magistrato si apre un riquadro a tutto schermo con tutte le informazioni "
+      "in formato leggibile, compresi (per i giudici della Sezione Lavoro) i "
+      "giorni d'udienza tipici.")
+
+    h2("Nuove pagine di ricerca uffici")
+    p("È stata aggiunta una pagina di ricerca per autorità (Tribunale o Corte "
+      "d'Appello) e sezione, in cui si possono visualizzare in un solo colpo "
+      "d'occhio tutti i magistrati assegnati a una determinata sezione con il "
+      "loro piano. È stata inoltre aggiunta una pagina con i recapiti completi "
+      "(indirizzo, telefono, e-mail, fax) di tutti gli uffici del distretto "
+      "della Corte d'Appello di Napoli — circa 80 voci, ricercabili.")
+    pb()
+
+    # ===================================================================
+    # 3. INSTALLAZIONE
+    # ===================================================================
+    h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-debug.apk.")
+      "OrdineAvvocatiNapoli-1.1.0-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -189,20 +244,20 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 3. HOME
+    # 4. HOME
     # ===================================================================
-    h1("3. Schermata principale (Home)")
+    h1("4. Schermata principale (Home)")
     p("La home presenta in alto il logo del Consiglio e la denominazione "
-      "completa, e a seguire una griglia di otto riquadri rapidi che danno "
-      "accesso alle aree principali dell'app.")
-    img("home", "Home — griglia 2×4 di accesso rapido")
+      "completa, e a seguire una griglia di riquadri rapidi che danno accesso "
+      "alle aree principali dell'app.")
+    img("home", "Home — logo del Consiglio e tile di accesso rapido")
     h2("Riquadri disponibili")
     tiles = [
         ("News", "Ultime news del Consiglio dell'Ordine"),
         ("Sito", "Sezioni del sito istituzionale (in WebView interna)"),
         ("Documenti", "Modulistica, Albo, Trasparenza, Verbali"),
-        ("Strumenti", "Oltre 20 calcolatori e strumenti professionali"),
-        ("Aule Udienze", "Tribunale, Corte d'Appello, Sezione Lavoro, Aule Penali, GdP"),
+        ("Strumenti", "Oltre 20 calcolatori e strumenti professionali, codici italiani"),
+        ("Aule Udienze", "Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto"),
         ("Processo Telematico", "Notizie da PST, GA, Giustizia Tributaria"),
         ("Area Riservata", "Accesso area riservata Consiglieri (browser di sistema)"),
         ("Riconosco", "Sistema di identità digitale dei consigli forensi"),
@@ -210,17 +265,16 @@ def build_content(images):
     for name, desc in tiles:
         b(f"**{name}** — {desc}")
     p("In ogni schermata è disponibile l'icona ☰ in alto a sinistra che apre "
-      "il menu laterale con tutte le voci di navigazione (vedi sezione 4).")
+      "il menu laterale con tutte le voci di navigazione (vedi sezione successiva).")
     pb()
 
     # ===================================================================
-    # 4. MENU
+    # 5. MENU
     # ===================================================================
-    h1("4. Menu di navigazione")
+    h1("5. Menu di navigazione")
     p("Toccando l'icona ☰ in alto a sinistra (o scorrendo dal bordo sinistro "
       "dello schermo) si apre il menu laterale con tutte le voci di "
       "navigazione dell'app, in ordine logico di consultazione.")
-    img("menu", "Menu laterale (hamburger)")
     h2("Voci del menu")
     for v in [
         "**Home** — Torna alla schermata principale.",
@@ -231,8 +285,8 @@ def build_content(images):
         "**Albo Avvocati Napoli** — Apre l'albo iscritti al COA Napoli direttamente nel browser interno.",
         "**Albo Nazionale Avvocati** — Apre il portale ricerca avvocati del CNF in browser di sistema.",
         "**Documenti** — Modulistica e documenti pubblici di rilievo.",
-        "**Strumenti** — Calcolatori e strumenti operativi.",
-        "**Aule Udienze Napoli** — Tribunale, Corte d'Appello, calendari e canali.",
+        "**Strumenti** — Calcolatori, strumenti operativi e codici italiani.",
+        "**Aule Udienze Napoli** — Tribunale, Corte d'Appello, ricerca per sezione, recapiti distretto, calendari e canali.",
         "**Processo Telematico** — Notizie e strumenti per i processi telematici, notifiche di nuovi avvisi.",
         "**Area Riservata** — Accesso area riservata Consiglieri (browser di sistema).",
         "**Commissione Informatica** — Componenti della Commissione che ha ideato l'app.",
@@ -242,30 +296,31 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 5. CONSIGLIO
+    # 6. CONSIGLIO
     # ===================================================================
-    h1("5. Consiglio dell'Ordine")
+    h1("6. Consiglio dell'Ordine")
     p("Mostra la composizione completa del Consiglio dell'Ordine in carica, "
       "suddivisa in due sezioni: l'Ufficio di Presidenza (Presidente, "
       "Segretario, Tesoriera, Vice Presidenti) e i Consiglieri, in ordine "
       "di pubblicazione sul sito istituzionale.")
-    img("consiglio", "Composizione del Consiglio dell'Ordine")
+    img("consiglio", "Composizione del Consiglio dell'Ordine — Ufficio di Presidenza e Consiglieri")
     p("Per ciascun componente è indicato il nome con il prefisso Avv. e, "
       "sotto, la carica ricoperta. Una piccola icona evidenzia "
       "l'appartenenza all'Ufficio di Presidenza.")
     note("Questa pagina contiene dati offline-first incorporati nell'app. "
          "Vanno aggiornati ad ogni rinnovo del Consiglio o sostituzione di "
          "un componente, ricompilando l'app.")
+    pb()
 
     # ===================================================================
-    # 6. NEWS COA
+    # 7. NEWS COA
     # ===================================================================
-    h1("6. News dal Consiglio")
+    h1("7. News dal Consiglio")
     p("Aggregatore delle news pubblicate sul sito istituzionale del Consiglio. "
       "Le news sono recuperate tramite l'API REST ufficiale di WordPress "
       "del sito (no scraping), con cache locale di 30 minuti per ridurre "
       "il consumo di dati.")
-    img("news", "Lista news con barra di ricerca")
+    img("news", "Lista news con barra di ricerca e cards riassuntive")
     h2("Funzioni")
     for x in [
         "Ricerca testuale all'interno delle news (campo cerca in alto).",
@@ -280,9 +335,9 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 7. NEWS UFFICI
+    # 8. NEWS UFFICI
     # ===================================================================
-    h1("7. News dagli Uffici Giudiziari")
+    h1("8. News dagli Uffici Giudiziari")
     p("Sezione dedicata che aggrega in un unico flusso cronologico le news "
       "pubblicate dai siti istituzionali del Tribunale di Napoli e della "
       "Corte d'Appello di Napoli. Ogni news riporta un chip con l'indicazione "
@@ -300,12 +355,13 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 8. SITO
+    # 9. SITO
     # ===================================================================
-    h1("8. Sito Ordine Avvocati")
+    h1("9. Sito Ordine Avvocati")
     p("Indice delle sezioni del sito istituzionale rese accessibili "
       "direttamente dall'app, ciascuna in WebView interna ottimizzata per "
       "dispositivi mobili.")
+    img("sito", "Indice delle sezioni del sito istituzionale del COA")
     h2("Sezioni disponibili")
     for s in [
         "Componenti C.O.A.",
@@ -319,11 +375,12 @@ def build_content(images):
         "Contatti",
     ]:
         b(s)
+    pb()
 
     # ===================================================================
-    # 9. ALBI
+    # 10. ALBI
     # ===================================================================
-    h1("9. Albo Avvocati Napoli e Albo Nazionale")
+    h1("10. Albo Avvocati Napoli e Albo Nazionale")
     h2("Albo Avvocati Napoli")
     p("Voce di menu autonoma che apre direttamente la sezione Albo ed Elenchi "
       "del sito ufficiale del COA Napoli (avvocati, praticanti, elenchi "
@@ -337,90 +394,160 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 10. DOCUMENTI
+    # 11. DOCUMENTI
     # ===================================================================
-    h1("10. Documenti")
-    p("Catalogo dei documenti pubblici di rilievo del Consiglio, con accesso "
-      "in un solo tocco a:")
+    h1("11. Documenti")
+    p("Catalogo dei documenti pubblici di rilievo del Consiglio. Le voci con "
+      "icona di download avviano il salvataggio del file nella cartella "
+      "Documenti del telefono; quelle con icona di apertura esterna aprono la "
+      "relativa pagina del sito.")
+    img("documenti", "Catalogo documenti — modulistica, albo, regolamenti, verbali, trasparenza")
+    h2("Voci disponibili")
     for s in [
-        "Modulistica Ordine Professionale",
-        "Albo ed Elenchi",
-        "Compiti e regolamenti del Consiglio",
-        "Verbali delle sedute consiliari",
-        "Amministrazione Trasparente",
+        "Modulistica Ordine Professionale — moduli per iscrizioni, cancellazioni, certificati.",
+        "Albo ed Elenchi — avvocati, praticanti, elenchi specialistici.",
+        "Compiti e regolamenti — Statuto, regolamenti interni, codici deontologici.",
+        "Verbali sedute consiliari — delibere e verbali del Consiglio.",
+        "Amministrazione Trasparente — documenti ai sensi del d.lgs. 33/2013.",
     ]:
         b(s)
     pb()
 
     # ===================================================================
-    # 11. STRUMENTI
+    # 12. STRUMENTI
     # ===================================================================
-    h1("11. Strumenti")
-    p("Catalogo di calcolatori e strumenti professionali, raggruppati per "
-      "area di competenza, in totale circa 19 strumenti tutti incorporati "
-      "nell'app. Una piccola icona accanto al titolo indica se lo strumento "
-      "funziona offline (☁) o richiede internet (📶).")
-    img("strumenti", "Strumenti — raggruppamento per area di competenza")
-    note("Lo screenshot qui sopra mostra una versione precedente del catalogo, "
-         "che includeva l'Anonimizzatore atti, il Markdown→PDF e InvoicyLex; "
-         "questi tre strumenti sono stati successivamente rimossi perché poco "
-         "adatti all'uso da smartphone.")
+    h1("12. Strumenti")
+    p("Catalogo di calcolatori, strumenti professionali e raccolte normative, "
+      "raggruppati per area di competenza. Una piccola icona accanto al titolo "
+      "indica se lo strumento funziona offline (☁) o richiede internet (📶).")
+    img("strumenti_generali", "Strumenti — Servizi di interesse generale (con Codici Italiani)")
+
     h2("Servizi di interesse generale")
     for s in [
-        "Parametri Forensi (D.M. 147/2022) — calcolatore parcelle",
-        "Calcolo Fattura Avvocato (CPA, IVA, ritenuta)",
-        "Preventivo professionale",
-        "Contributo Unificato (Civile/Tributario/Amministrativo)",
-        "Interessi Legali e Moratori (tasso legale, BCE)",
-        "Procura alle liti — generatore",
+        "Parametri Forensi (D.M. 147/2022) — calcolatore parcelle.",
+        "Calcolo Fattura Avvocato (CPA, IVA, ritenuta).",
+        "Preventivo professionale.",
+        "Contributo Unificato (Civile/Tributario/Amministrativo).",
+        "Interessi Legali e Moratori (tasso legale, BCE).",
+        "Procura alle liti — generatore.",
+        "Note di Udienza — Diritto Pratico (verbalizzazione PCT, online).",
+        "**Codici Italiani** — Costituzione, codici civile/penale e relative "
+        "disposizioni di attuazione, CAD e Cod. Proc. Amministrativo, con "
+        "copia/condivisione articoli su WhatsApp (vedi sezione successiva).",
     ]:
         b(s)
+
+    img("strumenti_civile", "Strumenti — area Civile")
     h2("Civile")
     for s in [
-        "Termini c.p.c. (Cartabia) — calcolatore termini processuali",
-        "Termini Esecuzioni Civili",
-        "Danno alla Persona — TUN 2025 (D.P.R. 12/2025)",
-        "Danno Micropermanenti (metodo coefficienti)",
-        "Contributo Unificato Famiglia",
-        "Piano Genitoriale — redazione assistita",
-        "FAQ Patrocinio Spese Stato (Civile)",
-        "Analizzatore atti D.M. 110/2023",
-        "Analisi Verbale Ricerca Beni",
+        "Termini c.p.c. (Cartabia) — calcolatore termini processuali.",
+        "Termini Esecuzioni Civili.",
+        "Danno alla Persona — TUN 2025 (D.P.R. 12/2025).",
+        "Danno Micropermanenti (metodo coefficienti).",
+        "Contributo Unificato Famiglia.",
+        "Piano Genitoriale — redazione assistita.",
+        "Analizzatore atti D.M. 110/2023.",
+        "Analisi Verbale Ricerca Beni.",
+        "FAQ Patrocinio Spese Stato (Civile).",
     ]:
         b(s)
+
     h2("Penale")
     for s in [
-        "Calcolo Prescrizione Penale (avanzato)",
-        "Patrocinio S.S. Penale — Protocollo Napoli",
-        "PEC Uffici Giudiziari (PPT)",
+        "Calcolo Prescrizione Penale (avanzato).",
+        "Patrocinio S.S. Penale — Protocollo Napoli.",
+        "PEC Uffici Giudiziari (PPT).",
     ]:
         b(s)
+
     note("Tutti gli strumenti tradizionalmente pubblicati su "
          "avvocatotelematico.studiolegalearcella.it sono inclusi nel pacchetto "
          "dell'app a beneficio degli iscritti.")
     pb()
 
     # ===================================================================
-    # 12. AULE UDIENZE
+    # 13. CODICI ITALIANI (NUOVO v1.1)
     # ===================================================================
-    h1("12. Aule Udienze Napoli")
-    p("Sezione dedicata alla logistica delle udienze e alla dislocazione "
-      "degli uffici giudiziari di Napoli. La home della sezione mostra in "
-      "cima i due grandi blocchi (Tribunale e Corte d'Appello), seguiti dai "
-      "calendari e canali specifici.")
+    h1("13. Codici Italiani")
+    p("Toccando la voce \"Codici Italiani\" tra gli Strumenti si accede alla "
+      "raccolta completa dei principali codici e testi normativi della "
+      "legislazione italiana, completamente disponibili offline e ricercabili "
+      "anche cross-codice tramite la barra di ricerca globale.")
+    img("codici", "Codici Italiani — home con barra di ricerca globale")
 
-    h2("12.1 Tribunale di Napoli")
-    p("Pagina dedicata con quattro tab interne (segments) e ricerca:")
+    h2("Codici disponibili")
+    p("L'elenco è organizzato secondo la consueta partizione delle aree del "
+      "diritto, in modo da rendere la ricerca rapida e intuitiva:")
+    for s in [
+        "Costituzione della Repubblica Italiana.",
+        "Codice civile.",
+        "Disposizioni per l'attuazione del Codice civile e disposizioni transitorie.",
+        "Codice di procedura civile.",
+        "Disposizioni per l'attuazione del Codice di procedura civile e disposizioni transitorie.",
+        "Codice penale.",
+        "Codice di procedura penale.",
+        "Norme di attuazione, di coordinamento e transitorie del Codice di procedura penale.",
+        "Regolamento di esecuzione del Codice di procedura penale.",
+        "Codice dell'amministrazione digitale (CAD) — D.Lgs. 7 marzo 2005, n. 82.",
+        "Codice del processo amministrativo (CPA) — D.Lgs. 2 luglio 2010, n. 104, "
+        "con i relativi Allegati 1 (Codice), 2 (Norme di attuazione), 3 (Norme "
+        "transitorie) e 4 (Disposizioni abrogative e di coordinamento).",
+    ]:
+        b(s)
+
+    h2("Funzioni di consultazione")
     for x in [
-        "**Magistrati** — circa 287 magistrati raggruppati per sezione, con "
+        "**Ricerca globale**: la barra di ricerca nella home cerca in tutti gli "
+        "11 codici contemporaneamente per parola chiave, numero di articolo o titolo.",
+        "**Sfoglia per codice**: ogni card apre il codice corrispondente con un "
+        "indice degli articoli sul lato (sidebar) e il testo dell'articolo "
+        "selezionato a tutta pagina.",
+        "**Note di aggiornamento**: ogni articolo riporta in calce, in box "
+        "dedicato, le note di aggiornamento Normattiva (es. \"AGGIORNAMENTO (Xa)\") "
+        "con il riferimento alle leggi modificative.",
+        "**Copia articolo**: il pulsante \"Copia\" inserisce il testo "
+        "dell'articolo (numero, rubrica, contenuto) negli appunti del telefono, "
+        "pronto per essere incollato in qualsiasi documento.",
+        "**Condivisione su WhatsApp**: il pulsante WhatsApp apre direttamente "
+        "una chat con il testo dell'articolo precompilato.",
+    ]:
+        b(x)
+    note("CAD e CPA sono stati generati automaticamente a partire dagli XML "
+         "AkomaNtoso pubblicati da Normattiva.it, lo stesso formato standard "
+         "utilizzato dagli altri codici. Tutti i testi risultano aggiornati alle "
+         "ultime versioni vigenti pubblicate.")
+    pb()
+
+    # ===================================================================
+    # 14. AULE UDIENZE
+    # ===================================================================
+    h1("14. Aule Udienze Napoli")
+    p("Sezione dedicata alla logistica delle udienze, alla dislocazione degli "
+      "uffici giudiziari di Napoli e ai recapiti degli uffici dell'intero "
+      "distretto della Corte d'Appello. La home della sezione presenta in alto "
+      "i due grandi blocchi (Tribunale e Corte d'Appello), poi la voce di "
+      "ricerca per autorità e sezione, poi i recapiti del distretto, infine "
+      "i calendari e i canali specifici.")
+
+    h2("14.1 Tribunale di Napoli")
+    p("Pagina dedicata con quattro tab interne (segments) e ricerca; "
+      "l'intestazione è ora in bianco su blu istituzionale per assicurare "
+      "la massima leggibilità.")
+    img("tribunale", "Tribunale di Napoli — magistrati con Torre e Piano dell'aula d'udienza")
+    for x in [
+        "**Magistrati** — circa 350 magistrati raggruppati per sezione, con "
         "filtro per area giurisdizione (Civile / Lavoro / Penale) e ricerca "
-        "testuale per cognome, nome o sezione. Ogni magistrato indica nome, "
-        "cognome, ruolo (Presidente di Sezione, Giudice, Giudice Onorario, "
-        "GIP/GUP, ecc.) e tipo (Togato/Onorario).",
-        "**Uffici** — 11 uffici amministrativi (Presidenza, Dirigenza, "
+        "testuale per cognome, nome o sezione. Per ogni magistrato sono "
+        "indicati nome, cognome, ruolo (Presidente di Sezione, Giudice, "
+        "Giudice Onorario, GIP/GUP, ecc.) e — novità della v1.1 — la "
+        "**Torre e il Piano** dell'aula d'udienza (Torre A, piani 7-22 a "
+        "seconda della sezione). Toccando un magistrato si apre una scheda "
+        "a tutto schermo con tutte le informazioni in formato leggibile, "
+        "compresi (per i giudici della Sezione Lavoro) i giorni d'udienza tipici.",
+        "**Uffici** — gli uffici amministrativi (Presidenza, Dirigenza, "
         "Personale, Recupero Crediti, Spese pagate dall'Erario, Economato, "
-        "Archivio, Corpi di Reato, Centralino) con dislocazione su torre/piano, "
-        "responsabile, telefono cliccabile, email cliccabile, PEC.",
+        "Archivio, Corpi di Reato, Centralino) con dislocazione su "
+        "torre/piano, responsabile, telefono cliccabile, email cliccabile, PEC.",
         "**Dislocazione** — mappa logica dei settori del Tribunale per "
         "torre (A/B/C) e range di piani (es. Settore Civile su torre A "
         "piani 6-22, Settore Penale GIP/GUP su torre B piani 12-16, "
@@ -429,13 +556,13 @@ def build_content(images):
     ]:
         b(x)
 
-    h2("12.2 Corte d'Appello di Napoli")
+    h2("14.2 Corte d'Appello di Napoli")
     p("Pagina dedicata con cinque tab interne e ricerca:")
     for x in [
-        "**Magistrati** — circa 113 magistrati delle sezioni civili, lavoro "
+        "**Magistrati** — i magistrati delle sezioni civili, lavoro "
         "(5 unità), penali (6 sezioni) e Sezione Minorenni-Persona-Famiglia, "
         "con filtro per area e ricerca.",
-        "**Uffici** — 46 uffici e cancellerie con responsabile, telefono, "
+        "**Uffici** — uffici e cancellerie con responsabile, telefono, "
         "email, PEC. Raggruppati per torre.",
         "**Vertici** — Presidente, Vicario, Coordinatori dei settori "
         "(Civile, Penale, Lavoro, Sezioni Assise Appello, Innovazione).",
@@ -443,9 +570,56 @@ def build_content(images):
     ]:
         b(x)
 
-    h2("12.3 Sezione Lavoro, Aule Penali, Calendario GdP")
+    h2("14.3 Cerca per autorità e sezione")
+    p("Pagina di ricerca, novità della v1.1, che permette di scegliere "
+      "rapidamente l'autorità giudiziaria (Tribunale di Napoli oppure Corte "
+      "d'Appello di Napoli) e poi la sezione di interesse, ottenendo l'elenco "
+      "completo dei magistrati assegnati a quella sezione, con il loro piano "
+      "ed eventuali giorni d'udienza. Lo strumento è particolarmente utile "
+      "quando si conosce la sezione di un fascicolo ma non il nome del "
+      "magistrato, oppure quando si vuole avere un colpo d'occhio sulla "
+      "composizione di un'intera sezione.")
+
+    h2("14.4 Recapiti uffici giudiziari del distretto")
+    p("Pagina, anch'essa novità della v1.1, con i recapiti completi (indirizzo, "
+      "CAP, telefono, e-mail istituzionale, fax) di tutti gli uffici giudiziari "
+      "del distretto della Corte d'Appello di Napoli — circa 80 voci, "
+      "ricercabili per nome, comune, circondario o tipologia.")
+    h3("Uffici inclusi")
     for x in [
-        "**Aule Sezione Lavoro Napoli** — calendario delle udienze dei 45 "
+        "Uffici distrettuali: Corte d'Appello, Procura Generale, Tribunale "
+        "per i Minorenni, Procura presso il Tribunale per i Minorenni, "
+        "Tribunale di Sorveglianza, Uffici di Sorveglianza (Avellino, Napoli, "
+        "Santa Maria Capua Vetere), Tribunale Regionale delle Acque Pubbliche, "
+        "Corte di Assise d'Appello.",
+        "Circondario di Ariano Irpino: Tribunale, Procura, Giudici di Pace.",
+        "Circondario di Avellino: Tribunale, Sezione Distaccata, Procura, "
+        "Giudici di Pace, Corte di Assise.",
+        "Circondario di Benevento: Tribunale, Sezioni Distaccate, Procura, "
+        "Giudici di Pace, Corte di Assise.",
+        "Circondario di Giugliano in Campania: Tribunale, Sezioni Distaccate "
+        "(Pozzuoli, Marano), Procura, Giudici di Pace.",
+        "Circondario di Napoli: Tribunale, Sezioni Distaccate (Portici, "
+        "Afragola, Capri, Casoria, Frattamaggiore, Ischia), Procura, Giudici "
+        "di Pace, Corte di Assise.",
+        "Circondario di Nola: Tribunale, Procura, Giudici di Pace.",
+        "Circondario di Sant'Angelo dei Lombardi: Tribunale, Procura, Giudici di Pace.",
+        "Circondario di Santa Maria Capua Vetere: Tribunale, Sezioni Distaccate "
+        "(Piedimonte Matese, Aversa, Carinola, Caserta, Marcianise), Procura, "
+        "Giudici di Pace, Corte di Assise.",
+        "Circondario di Torre Annunziata: Tribunale, Sezioni Distaccate "
+        "(Sorrento, Castellammare di Stabia, Gragnano, Torre del Greco), "
+        "Procura, Giudici di Pace.",
+    ]:
+        b(x)
+    p("Toccando un indirizzo si apre Google Maps con la posizione; toccando "
+      "un numero di telefono parte la chiamata; toccando un'e-mail si apre il "
+      "client di posta del telefono. I dati sono offline-first: una volta "
+      "installata l'app, sono disponibili anche senza connessione.")
+
+    h2("14.5 Sezione Lavoro, Aule Penali, Calendario GdP")
+    for x in [
+        "**Aule Sezione Lavoro Napoli** — calendario delle udienze dei "
         "giudici della Sezione Lavoro del Tribunale, in formato a card "
         "responsive con sezione, piano e giorni di udienza in evidenza. "
         "Filtri per giorno della settimana (auto-seleziona il giorno corrente) "
@@ -460,15 +634,15 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 13. PROCESSO TELEMATICO
+    # 15. PROCESSO TELEMATICO
     # ===================================================================
-    h1("13. Processo Telematico")
+    h1("15. Processo Telematico")
     p("Aggregatore di notizie istituzionali e strumenti operativi sui processi "
       "telematici (civile, penale, amministrativo, tributario), con un sistema "
       "di notifiche per i nuovi avvisi del PST.")
-    img("processo_telematico", "Processo Telematico — notifiche, fonti e strumenti")
+    img("processo_telematico", "Processo Telematico — toggle notifiche, fonti istituzionali e strumenti operativi")
 
-    h2("13.1 Notifiche di nuovi avvisi PST")
+    h2("15.1 Notifiche di nuovi avvisi PST")
     p("In cima alla pagina è presente un toggle per attivare le notifiche "
       "automatiche di nuovi avvisi pubblicati sul Portale Servizi Telematici "
       "del Ministero della Giustizia. All'attivazione l'app richiede il "
@@ -483,7 +657,7 @@ def build_content(images):
          "dalle impostazioni di risparmio energetico per ricevere le notifiche "
          "con regolarità in background.")
 
-    h2("13.2 Fonti di news ufficiali")
+    h2("15.2 Fonti di news ufficiali")
     for x in [
         "**PST — Min. Giustizia**: avvisi su PCT, PPT, malfunzionamenti dei "
         "sistemi telematici (ordinari e penali). Scraping HTML.",
@@ -494,7 +668,7 @@ def build_content(images):
     ]:
         b(x)
 
-    h2("13.3 Strumenti operativi PCT")
+    h2("15.3 Strumenti operativi PCT")
     for x in [
         "**Depositi CCII** — selettore atto-ruolo per i depositi nel Codice "
         "della Crisi d'Impresa.",
@@ -506,9 +680,9 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 14. RICONOSCO
+    # 16. RICONOSCO
     # ===================================================================
-    h1("14. Riconosco")
+    h1("16. Riconosco")
     p("Apre il portale Riconosco (riconosco.dcssrl.it), sistema di identità "
       "digitale degli iscritti agli ordini forensi italiani, in Chrome Custom "
       "Tabs di sistema. Questa scelta garantisce il corretto funzionamento "
@@ -516,9 +690,9 @@ def build_content(images):
       "tutte le funzionalità avanzate.")
 
     # ===================================================================
-    # 15. AREA RISERVATA
+    # 17. AREA RISERVATA
     # ===================================================================
-    h1("15. Area Riservata Consiglieri")
+    h1("17. Area Riservata Consiglieri")
     p("Accesso all'area riservata del sito istituzionale, riservata ai "
       "consiglieri e ai professionisti che vi sono abilitati.")
     p("La pagina propone un workflow esplicito a 2 step (in alto un avviso "
@@ -542,13 +716,13 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 16. COMMISSIONE
+    # 18. COMMISSIONE
     # ===================================================================
-    h1("16. Commissione Informatica")
+    h1("18. Commissione Informatica")
     p("Pagina dedicata ai componenti della Commissione Informatica del "
       "Consiglio dell'Ordine degli Avvocati di Napoli, ideatrice e "
       "collaboratrice del progetto.")
-    img("commissione", "Composizione della Commissione Informatica")
+    img("commissione", "Composizione della Commissione Informatica — Coordinatore e Componenti")
     p("L'elenco riporta:")
     for x in [
         "Il **Delegato all'informatica e all'innovazione** (Cons. Avv. "
@@ -557,11 +731,12 @@ def build_content(images):
         "I **Componenti** in ordine alfabetico per cognome.",
     ]:
         b(x)
+    pb()
 
     # ===================================================================
-    # 17. INFO
+    # 19. INFO
     # ===================================================================
-    h1("17. Info & Crediti")
+    h1("19. Info & Crediti")
     p("Pagina informativa con i dati di contatto del Consiglio dell'Ordine "
       "(disponibili anche offline) e i crediti dell'app.")
     h2("Contatti del Consiglio (offline)")
@@ -584,21 +759,24 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 18. FUNZIONALITÀ TRASVERSALI
+    # 20. FUNZIONALITÀ TRASVERSALI
     # ===================================================================
-    h1("18. Funzionalità trasversali")
+    h1("20. Funzionalità trasversali")
     h2("Tema scuro")
     p("L'app supporta automaticamente il tema scuro/chiaro in base alle "
       "preferenze di sistema del telefono. Anche le mini-webapp incluse si "
-      "adattano al tema.")
+      "adattano al tema, fatta eccezione per i Codici Italiani che adottano "
+      "il tema istituzionale del COA (blu e bianco) in modo costante per "
+      "garantire la massima leggibilità del testo normativo.")
     h2("Funzionamento offline")
-    p("La maggior parte degli strumenti funziona senza connessione: 13 "
-      "calcolatori sono completamente autonomi (icona ☁), gli altri "
+    p("La maggior parte degli strumenti funziona senza connessione: i "
+      "calcolatori principali sono completamente autonomi (icona ☁), gli altri "
       "richiedono la prima apertura con internet (icona 📶). I contatti "
       "del Consiglio, la composizione del Consiglio e della Commissione "
       "Informatica, l'elenco dei magistrati e cancellerie del Tribunale e "
-      "della Corte d'Appello sono sempre disponibili offline. Le ultime "
-      "news lette restano consultabili offline grazie alla cache.")
+      "della Corte d'Appello, **i recapiti completi degli uffici del distretto** "
+      "e **gli undici codici italiani** sono sempre disponibili offline. Le "
+      "ultime news lette restano consultabili offline grazie alla cache.")
     h2("Apertura siti esterni")
     p("I siti istituzionali integrabili in iframe (PST, sito COA, sezioni) "
       "si aprono nel browser interno dell'app per un'esperienza coerente. "
@@ -615,13 +793,15 @@ def build_content(images):
       "inviarle ad altre app del telefono (WhatsApp, e-mail, Telegram, "
       "ecc.). Anche le mini-webapp che producono testi (calcoli, modelli) "
       "possono inviare il risultato via WhatsApp grazie all'integrazione "
-      "automatica.")
+      "automatica. Per i Codici Italiani, ogni articolo dispone di un "
+      "pulsante dedicato per copiarlo negli appunti e di uno per inviarlo "
+      "direttamente su WhatsApp.")
     pb()
 
     # ===================================================================
-    # 19. PRIVACY
+    # 21. PRIVACY
     # ===================================================================
-    h1("19. Privacy e sicurezza")
+    h1("21. Privacy e sicurezza")
     p("L'app è progettata con attenzione alla privacy degli utenti:")
     for s in [
         "Le password dell'area riservata non vengono mai viste né memorizzate "
@@ -638,13 +818,17 @@ def build_content(images):
         "autorizzazione dell'utente; l'app comunica al sistema operativo "
         "soltanto le credenziali tecniche per la schedulazione del task "
         "background.",
+        "I codici italiani sono incorporati nell'app come testi normativi "
+        "estratti da Normattiva.it: la consultazione non richiede connessione "
+        "né tracciamento.",
     ]:
         b(s)
+    pb()
 
     # ===================================================================
-    # 20. RISOLUZIONE PROBLEMI
+    # 22. RISOLUZIONE PROBLEMI
     # ===================================================================
-    h1("20. Risoluzione problemi")
+    h1("22. Risoluzione problemi")
     h2("L'app non scarica le news")
     p("Verificare la connessione a internet. Se persiste, tirare la lista "
       "delle news verso il basso per forzare il refresh; in caso di errore "
@@ -676,18 +860,30 @@ def build_content(images):
       "Riservata Consiglieri\" (Step 2). Senza questo secondo tocco la "
       "sessione resta attiva nel browser ma non si entra nell'area vera "
       "e propria.")
+    h2("Codici Italiani: il testo di un articolo va a capo in modo strano")
+    p("I codici sono presentati nello stesso formato della webapp originale "
+      "di avvocatotelematico.studiolegalearcella.it: ogni comma in un proprio "
+      "paragrafo. Se la formattazione di un articolo specifico risulta "
+      "difficile da leggere, si può comunque copiarlo intero col pulsante "
+      "\"Copia\" e incollarlo in un editor di testo dove il rendering sarà "
+      "ottimale.")
 
     # ===================================================================
     # FOOTER
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.0 — Documento generato automaticamente"))
 
     return C
 
 
 # ============== Render DOCX ==============
+# Larghezza standard immagine (cm) — calibrata su screenshot mobile portrait
+# (proporzioni ~9:19), per non occupare più della metà di una pagina A4.
+IMG_WIDTH_CM = 7.0
+
+
 def render_docx(content):
     doc = Document()
     styles = doc.styles
@@ -695,10 +891,14 @@ def render_docx(content):
     normal.font.name = "Calibri"
     normal.font.size = Pt(11)
 
+    # Default margini più generosi (Word di default è 2.54 cm: ok)
+
     def add_heading(text, level):
         h = doc.add_heading(text, level=level)
         for run in h.runs:
             run.font.color.rgb = RGBColor(*PRIMARY_DARK)
+        # Heading deve restare con il paragrafo successivo (no orfana)
+        h.paragraph_format.keep_with_next = True
         return h
 
     def add_para(text, **kw):
@@ -719,11 +919,19 @@ def render_docx(content):
             bold = not bold
         return p
 
-    def add_image(path, caption=None, width_cm=8):
+    def add_image(path, caption=None, width_cm=IMG_WIDTH_CM):
         if not path or not Path(path).exists():
             return
+        # Forza il paragrafo precedente (testo che introduce l'immagine) a
+        # restare con quello dell'immagine: evita che il testo finisca a fine
+        # pagina e l'immagine inizi nella pagina successiva orfana.
+        if doc.paragraphs:
+            doc.paragraphs[-1].paragraph_format.keep_with_next = True
         p = doc.add_paragraph()
         p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        # L'intero blocco immagine + caption non si spezza
+        p.paragraph_format.keep_together = True
+        p.paragraph_format.keep_with_next = True
         r = p.add_run()
         try:
             r.add_picture(str(path), width=Cm(width_cm))
@@ -732,6 +940,8 @@ def render_docx(content):
         if caption:
             cap = doc.add_paragraph()
             cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            cap.paragraph_format.keep_together = True
+            cap.paragraph_format.keep_with_next = True
             cr = cap.add_run(caption)
             cr.italic = True
             cr.font.size = Pt(9)
@@ -741,6 +951,7 @@ def render_docx(content):
         if kind == "TITLE":
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = True
             r = p.add_run(payload)
             r.font.size = Pt(28)
             r.bold = True
@@ -748,15 +959,24 @@ def render_docx(content):
         elif kind == "SUBTITLE":
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = True
             r = p.add_run(payload)
             r.font.size = Pt(20)
             r.font.color.rgb = RGBColor(*PRIMARY)
         elif kind == "SUB2":
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = True
             r = p.add_run(payload)
             r.italic = True
             r.font.size = Pt(13)
+        elif kind == "SUB3":
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = True
+            r = p.add_run(payload)
+            r.font.size = Pt(11)
+            r.font.color.rgb = RGBColor(*MUTED)
             doc.add_paragraph()
         elif kind == "CREDIT":
             p = doc.add_paragraph()
@@ -779,7 +999,6 @@ def render_docx(content):
         elif kind == "P":
             add_para(payload)
         elif kind == "BULLET":
-            # Estrai bold inline ** **
             p = doc.add_paragraph(style="List Bullet")
             parts = payload.split("**")
             bold = False
@@ -795,6 +1014,7 @@ def render_docx(content):
             add_image(path, caption)
         elif kind == "NOTE":
             p = doc.add_paragraph()
+            p.paragraph_format.keep_together = True
             r = p.add_run("ⓘ  " + payload)
             r.italic = True
             r.font.size = Pt(10)
@@ -802,6 +1022,7 @@ def render_docx(content):
         elif kind == "QUOTE":
             p = doc.add_paragraph()
             p.paragraph_format.left_indent = Cm(0.7)
+            p.paragraph_format.keep_together = True
             r = p.add_run(payload)
             r.italic = True
         elif kind == "PAGEBREAK":
@@ -839,7 +1060,7 @@ def render_md(content):
 
     for kind, payload in content:
         if kind in ("H1", "H2", "H3", "P", "IMG", "NOTE", "QUOTE", "PAGEBREAK",
-                    "TITLE", "SUBTITLE", "SUB2", "CREDIT", "CREDIT_SUB",
+                    "TITLE", "SUBTITLE", "SUB2", "SUB3", "CREDIT", "CREDIT_SUB",
                     "FOOTER", "FOOTER_SUB"):
             close_lists()
 
@@ -850,6 +1071,9 @@ def render_md(content):
             lines.append(f"## {payload}")
             lines.append("")
         elif kind == "SUB2":
+            lines.append(f"*{payload}*")
+            lines.append("")
+        elif kind == "SUB3":
             lines.append(f"*{payload}*")
             lines.append("")
         elif kind == "CREDIT":
@@ -877,7 +1101,6 @@ def render_md(content):
         elif kind == "NUM":
             if not num_open:
                 num_open = True
-            # Mantengo il testo del number che già contiene il prefisso "1." ecc.
             lines.append(f"- {payload}")
         elif kind == "IMG":
             path, caption = payload
