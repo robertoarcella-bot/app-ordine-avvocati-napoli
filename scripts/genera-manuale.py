@@ -91,7 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
-    C.append(("SUB3", "Versione 1.1.2 — maggio 2026"))
+    C.append(("SUB3", "Versione 1.2.3 — maggio 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -103,7 +103,8 @@ def build_content(images):
     h1("Sommario")
     sezioni = [
         "1. Introduzione",
-        "2. Novità della versione 1.1.0",
+        "2. Novità della versione 1.2.3",
+        "2.b Novità della versione 1.1.0",
         "3. Installazione",
         "4. Schermata principale (Home)",
         "5. Menu di navigazione",
@@ -183,10 +184,38 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 2. NOVITÀ v1.1.0
+    # 2. NOVITÀ v1.2.3
     # ===================================================================
-    h1("2. Novità della versione 1.1.0")
-    p("Questa edizione del manuale documenta le novità introdotte con la "
+    h1("2. Novità della versione 1.2.3")
+    p("La v1.2.3 interviene esclusivamente sulla miniapp Codici Italiani, "
+      "recependo i feedback degli utenti.")
+
+    h2("Scroll bloccato all'apertura di un codice — risolto")
+    p("In precedenza, su Android, all'apertura di un singolo codice la pagina "
+      "restava \"immobile\" finché l'utente non toccava la barra di ricerca. "
+      "La causa era un noto difetto del WebView che non riattiva il rilevatore "
+      "di gesti dopo il primo render dinamico: ora la pagina forza un piccolo "
+      "\"tickle\" di scroll subito dopo il caricamento, sbloccando "
+      "immediatamente il gesto.")
+
+    h2("Menu a discesa \"Vai a articolo\"")
+    p("In cima a ciascun codice è ora presente un selettore degli articoli "
+      "raggruppato per Libri/Titoli, che consente di saltare in un solo tap "
+      "a qualsiasi articolo senza dover aprire la sidebar. È utile soprattutto "
+      "su smartphone, dove la sidebar è nascosta dietro l'hamburger.")
+
+    h2("Pulsante \"Tutti i codici\"")
+    p("Quando si è dentro un singolo codice, accanto al nuovo menu a discesa "
+      "è disponibile un pulsante \"🔍 Tutti i codici\" che riporta alla "
+      "ricerca globale fra tutti gli 11 codici, con focus automatico sulla "
+      "barra di ricerca.")
+    pb()
+
+    # ===================================================================
+    # 2.b NOVITÀ v1.1.0
+    # ===================================================================
+    h1("2.b Novità della versione 1.1.0")
+    p("Questa edizione del manuale documenta anche le novità introdotte con la "
       "versione 1.1.0 dell'app, rilasciata a maggio 2026. Le principali "
       "aree interessate sono tre.")
 
@@ -223,7 +252,7 @@ def build_content(images):
     h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-1.1.2-debug.apk.")
+      "OrdineAvvocatiNapoli-1.2.3-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -499,7 +528,14 @@ def build_content(images):
     h2("Funzioni di consultazione")
     for x in [
         "**Ricerca globale**: la barra di ricerca nella home cerca in tutti gli "
-        "11 codici contemporaneamente per parola chiave, numero di articolo o titolo.",
+        "11 codici contemporaneamente per parola chiave, numero di articolo o titolo. "
+        "Quando si è già dentro un codice, il pulsante \"🔍 Tutti i codici\" in alto "
+        "consente di tornare immediatamente alla ricerca globale (la barra prende "
+        "il focus automaticamente).",
+        "**Menu a discesa \"Vai a\"** (novità della v1.2.3): in cima a ciascun "
+        "codice è presente un selettore degli articoli, raggruppato per Libri/Titoli, "
+        "che permette di saltare in un tap a qualsiasi articolo senza dover aprire "
+        "la sidebar.",
         "**Sfoglia per codice**: ogni card apre il codice corrispondente con un "
         "indice degli articoli sul lato (sidebar) e il testo dell'articolo "
         "selezionato a tutta pagina.",
@@ -902,7 +938,7 @@ def build_content(images):
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.1.2 — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.2.3 — Documento generato automaticamente"))
 
     return C
 

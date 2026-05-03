@@ -445,6 +445,68 @@ mark.ins {
 /* ── SCROLLBAR ── */
 * { scrollbar-width: thin; scrollbar-color: #d1d5db transparent; }
 
+
+/* ── ARTICLE JUMP BAR (v1.2.3) ── */
+.article-jump-bar {
+  max-width: 820px;
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.article-jump-bar label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.article-jump-bar select {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: .85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--article-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.article-jump-bar select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.article-jump-bar .global-search-link {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--article-bg);
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.article-jump-bar .global-search-link:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+@media (max-width: 768px) {
+  .article-jump-bar { padding: 0 4px; }
+  .article-jump-bar label { display: none; }
+  .article-jump-bar .global-search-link { padding: 8px 10px; font-size: .75rem; }
+}
+
 </style>
 </head>
 <body>
@@ -473,6 +535,11 @@ mark.ins {
 
 <!-- MAIN -->
 <main class="main-content" id="main">
+  <div class="article-jump-bar">
+    <label for="article-jump">Vai a:</label>
+    <select id="article-jump"></select>
+    <a href="home.html#search" class="global-search-link" title="Cerca in tutti i codici">🔍 Tutti i codici</a>
+  </div>
   <div id="article-view"></div>
   <div class="nav-footer">
     <button class="nav-btn" id="prev-btn">← Precedente</button>
@@ -515,6 +582,16 @@ mark.ins {
       if (found >= 0) initIdx = found;
     }
     showArticle(initIdx);
+    populateJump();
+
+    // Workaround WebView Android: dopo il primo render dinamico il gesture
+    // detector non si attiva finché l'utente non tocca un elemento focusabile.
+    // Forziamo un piccolo "tickle" scroll + resize per svegliarlo.
+    setTimeout(function() {
+      window.scrollTo(0, 1); window.scrollTo(0, 0);
+      window.dispatchEvent(new Event('resize'));
+    }, 50);
+    setTimeout(function() { window.scrollTo(0, 1); window.scrollTo(0, 0); }, 400);
 
     document.getElementById('search').addEventListener('input', onSearch);
     document.getElementById('prev-btn').addEventListener('click', function() { navigate(-1); });
@@ -553,10 +630,41 @@ mark.ins {
     nav.innerHTML = html;
   }
 
+  function populateJump() {
+    var sel = document.getElementById('article-jump');
+    if (!sel) return;
+    var html = '';
+    var lastGroup = null;
+    var inGroup = false;
+    CODE.articles.forEach(function(art, i) {
+      if (art.group && art.group !== lastGroup) {
+        if (inGroup) html += '</optgroup>';
+        var gLabel = art.group.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        html += '<optgroup label="' + gLabel + '">';
+        lastGroup = art.group;
+        inGroup = true;
+      }
+      var label = art.numText + (art.heading ? ' — ' + art.heading : '');
+      if (label.length > 90) label = label.slice(0, 87) + '…';
+      var safe = label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      html += '<option value="' + i + '">' + safe + '</option>';
+    });
+    if (inGroup) html += '</optgroup>';
+    sel.innerHTML = html;
+    sel.addEventListener('change', function() {
+      var idx = parseInt(this.value, 10);
+      if (!isNaN(idx)) showArticle(idx);
+    });
+  }
+
   function showArticle(idx) {
     if (idx < 0 || idx >= CODE.articles.length) return;
     currentIdx = idx;
     var art = CODE.articles[idx];
+
+    // Sync dropdown jump
+    var jumpSel = document.getElementById('article-jump');
+    if (jumpSel) jumpSel.value = String(idx);
 
     // Update URL hash
     history.replaceState(null, '', '#' + encodeURIComponent(art.numText));
