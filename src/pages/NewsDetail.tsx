@@ -19,14 +19,21 @@ const NewsDetail: React.FC = () => {
   const [item, setItem] = useState<NewsItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       setLoading(true);
+      setError(null);
       try {
         const data = await fetchNewsById(Number(id));
-        if (alive) setItem(data);
+        if (alive) {
+          setItem(data);
+          // fetchNewsById ritorna null (senza lanciare) su 404/errore HTTP:
+          // senza questo ramo la pagina resterebbe bianca.
+          if (!data) setError('Notizia non trovata o momentaneamente non disponibile.');
+        }
       } catch (e) {
         if (alive) setError(e instanceof Error ? e.message : 'Errore');
       } finally {
@@ -34,7 +41,7 @@ const NewsDetail: React.FC = () => {
       }
     })();
     return () => { alive = false; };
-  }, [id]);
+  }, [id, reloadKey]);
 
   const onShare = async () => {
     if (!item) return;
@@ -72,9 +79,14 @@ const NewsDetail: React.FC = () => {
           <div style={{ textAlign: 'center', padding: 24 }}><IonSpinner name="dots" /></div>
         )}
 
-        {error && (
+        {error && !loading && (
           <IonCard color="danger">
-            <IonCardContent>{error}</IonCardContent>
+            <IonCardContent>
+              <p style={{ marginTop: 0 }}>{error}</p>
+              <IonButton size="small" fill="outline" color="light" onClick={() => setReloadKey(k => k + 1)}>
+                Riprova
+              </IonButton>
+            </IonCardContent>
           </IonCard>
         )}
 

@@ -4,15 +4,13 @@ import {
   IonList, IonItem, IonIcon, IonLabel, IonItemDivider, IonText,
   IonToggle, IonNote,
 } from '@ionic/react';
-import {
-  chevronForwardOutline, openOutline,
-  cloudOfflineOutline, wifiOutline, notificationsOutline,
-} from 'ionicons/icons';
+import { chevronForwardOutline, notificationsOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Browser } from '@capacitor/browser';
 import { SOURCES } from '../config/sources';
-import { MINIAPPS, type MiniApp } from '../config/miniapps';
+import { MINIAPPS } from '../config/miniapps';
+import MiniAppItem from '../components/MiniAppItem';
+import { useOpenMiniApp } from '../hooks/useOpenMiniApp';
 import {
   getNotifyPref, setNotifyPref,
   requestNotificationPermission, checkNotificationPermission,
@@ -22,6 +20,7 @@ const ProcessoTelematico: React.FC = () => {
   const history = useHistory();
   const tools = MINIAPPS.filter(a => a.jurisdiction === 'pct');
   const [notifyOn, setNotifyOn] = useState(false);
+  const onOpenTool = useOpenMiniApp();
 
   useEffect(() => {
     (async () => {
@@ -38,18 +37,6 @@ const ProcessoTelematico: React.FC = () => {
     } else {
       await setNotifyPref('denied');
       setNotifyOn(false);
-    }
-  };
-
-  const onOpenTool = (app: MiniApp) => {
-    if (app.externalUrl) {
-      void Browser.open({ url: app.externalUrl });
-    } else if (app.webviewUrl) {
-      const u = encodeURIComponent(app.webviewUrl);
-      const t = encodeURIComponent(app.title);
-      history.push(`/sito/view?u=${u}&t=${t}`);
-    } else {
-      history.push(`/miniapps/${app.id}`);
     }
   };
 
@@ -132,25 +119,7 @@ const ProcessoTelematico: React.FC = () => {
                 <IonLabel><strong>Strumenti operativi</strong></IonLabel>
               </IonItemDivider>
               {tools.map(app => (
-                <IonItem key={app.id} button detail={false} onClick={() => onOpenTool(app)}>
-                  <IonIcon slot="start" icon={app.icon} color="primary" />
-                  <IonLabel>
-                    <h3>
-                      {app.title}
-                      <IonIcon
-                        icon={app.externalUrl ? openOutline
-                              : app.offlineReady ? cloudOfflineOutline
-                              : wifiOutline}
-                        color={app.externalUrl ? 'medium'
-                               : app.offlineReady ? 'success'
-                               : 'warning'}
-                        style={{ verticalAlign: 'middle', marginLeft: 6, fontSize: 14 }}
-                      />
-                    </h3>
-                    <p style={{ whiteSpace: 'normal' }}>{app.subtitle}</p>
-                  </IonLabel>
-                  <IonIcon slot="end" icon={app.externalUrl ? openOutline : chevronForwardOutline} color="medium" />
-                </IonItem>
+                <MiniAppItem key={app.id} app={app} onOpen={onOpenTool} />
               ))}
             </>
           )}

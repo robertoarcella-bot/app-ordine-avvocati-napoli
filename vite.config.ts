@@ -1,9 +1,18 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+
+const pkg = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
+) as { version: string };
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    /** Unica fonte della versione mostrata in app: package.json */
+    __APP_VERSION__: JSON.stringify(pkg.version),
+  },
   server: {
     /**
      * Proxy per dev mode (browser). In produzione (Capacitor)
@@ -33,12 +42,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/proxy\/pst/, ''),
         secure: true,
-      },
-      '/proxy/ga': {
-        target: 'https://www.giustizia-amministrativa.it',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/proxy\/ga/, ''),
-        secure: false,
       },
       '/proxy/gt': {
         target: 'https://www.dgt.mef.gov.it',

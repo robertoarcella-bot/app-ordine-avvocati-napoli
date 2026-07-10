@@ -4,7 +4,7 @@ import {
 } from '@ionic/react';
 import { useParams } from 'react-router';
 import { useEffect, useRef } from 'react';
-import { Browser } from '@capacitor/browser';
+import { openExternal } from '../services/download';
 import { MINIAPPS } from '../config/miniapps';
 
 interface RouteParams { id: string }
@@ -142,12 +142,7 @@ const MiniAppView: React.FC = () => {
       if ((data as { __coa?: string }).__coa === 'open-external' &&
           typeof (data as { url?: unknown }).url === 'string') {
         const url = (data as { url: string }).url;
-        try {
-          await Browser.open({ url });
-        } catch (e) {
-          // Su browser senza Capacitor, fallback nativo
-          window.open(url, '_blank', 'noopener');
-        }
+        await openExternal(url);
       }
     };
     window.addEventListener('message', onMessage);

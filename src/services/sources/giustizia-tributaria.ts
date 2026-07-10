@@ -11,6 +11,7 @@
 import { Capacitor } from '@capacitor/core';
 import { fetchText } from './http';
 import type { SourceNewsItem } from '../../config/sources';
+import { stripTags } from '../../utils/text';
 
 const SOURCE_ID = 'gt';
 const GT_BASE = 'https://www.dgt.mef.gov.it';
@@ -20,9 +21,6 @@ const GT_RSS_URL = Capacitor.isNativePlatform()
 
 const stripCdata = (s: string) =>
   s.replace(/^<!\[CDATA\[/, '').replace(/\]\]>$/, '').trim();
-
-const stripTags = (s: string) =>
-  s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
 export async function fetchGiustiziaTributariaNews(_page = 1): Promise<SourceNewsItem[]> {
   // Il feed restituisce ~50 item, sufficiente per ora (no paginazione lato server).

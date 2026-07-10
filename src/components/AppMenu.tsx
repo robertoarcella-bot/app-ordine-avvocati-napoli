@@ -8,7 +8,7 @@ import {
   shieldHalfOutline, peopleOutline, businessOutline, bookOutline,
   openOutline, createOutline,
 } from 'ionicons/icons';
-import { Browser } from '@capacitor/browser';
+import { openExternal } from '../services/download';
 
 interface MenuItem {
   title: string;
@@ -52,7 +52,7 @@ const AppMenu: React.FC = () => {
     if (item.external || item.url.startsWith('EXTERNAL:')) {
       e.preventDefault();
       const url = item.url.startsWith('EXTERNAL:') ? item.url.slice(9) : item.url;
-      void Browser.open({ url });
+      void openExternal(url);
     }
     // altrimenti il routerLink di Ionic gestisce la navigazione interna
   };

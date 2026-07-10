@@ -30,6 +30,26 @@ addEventListener('resetBaseline', (resolve) => {
   resolve();
 });
 
+/** Espone il baseline al main thread (evita doppie notifiche foreground/background) */
+addEventListener('getLastSeen', (resolve) => {
+  try {
+    resolve({ lastSeen: CapacitorKV.get('pst.lastSeen') || '' });
+  } catch (e) {
+    resolve({ lastSeen: '' });
+  }
+});
+
+/** Allinea il baseline quando il check foreground ha già visto/notificato un avviso */
+addEventListener('setLastSeen', (resolve, _reject, args) => {
+  try {
+    if (args && args.id) {
+      CapacitorKV.set('pst.lastSeen', args.id);
+      CapacitorKV.set('pst.bootSeen', '1');
+    }
+  } catch (e) { /* noop */ }
+  resolve();
+});
+
 addEventListener('checkPstNews', async (resolve, reject) => {
   try {
     const PST_URL = 'https://pst.giustizia.it/PST/it/news.page';
@@ -94,8 +114,10 @@ addEventListener('checkPstNews', async (resolve, reject) => {
       return;
     }
 
-    // Schedula notifica locale
-    const notifId = (Date.now() & 0x7fffffff);
+    // Schedula notifica locale. Id deterministico dal numero dell'avviso
+    // (stesso schema del check foreground): un eventuale doppione
+    // sostituisce la notifica esistente invece di aggiungersi.
+    const notifId = parseInt(newestId.replace(/\D/g, '').slice(-9), 10) || (Date.now() & 0x7fffffff);
     CapacitorNotifications.schedule([{
       id: notifId,
       title: 'Nuovo avviso PST — Min. Giustizia',

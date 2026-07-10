@@ -12,18 +12,13 @@ import {
   ribbonOutline, businessOutline, shieldCheckmarkOutline,
   closeOutline, layersOutline, calendarOutline,
 } from 'ionicons/icons';
-import { Browser } from '@capacitor/browser';
 import { UFFICI, type Magistrato, type UfficioInfo } from '../config/uffici-giudiziari-na';
+import { openExternal } from '../services/download';
+import { norm } from '../utils/text';
 
 interface RouteParams { officeId: string }
 
 type View = 'magistrati' | 'cancellerie' | 'dislocazione' | 'vertici' | 'info';
-
-const norm = (s: string) =>
-  s.toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/['']/g, "'");
 
 const matchSezioneArea = (sezione: string, area: { sezioniPrefix?: string[]; sezioniInclude?: string[] }) => {
   if (area.sezioniPrefix && area.sezioniPrefix.some(p => sezione.startsWith(p))) return true;
@@ -241,21 +236,21 @@ const UfficioGiudiziario: React.FC = () => {
                           {u.telefono && (
                             <a href={`tel:${u.telefono.split(';')[0].replace(/\s/g, '')}`}
                                style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'center', textDecoration: 'none', color: 'var(--ion-color-primary)' }}
-                               onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'tel:' + u.telefono!.split(';')[0].replace(/\s/g, '') }); }}>
+                               onClick={(e) => { e.preventDefault(); void openExternal('tel:' + u.telefono!.split(';')[0].replace(/\s/g, '')); }}>
                               <IonIcon icon={callOutline} /> {u.telefono}
                             </a>
                           )}
                           {u.email && (
                             <a href={`mailto:${u.email.split(';')[0].trim()}`}
                                style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'flex-start', textDecoration: 'none', color: 'var(--ion-color-primary)', wordBreak: 'break-all' }}
-                               onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'mailto:' + u.email!.split(';')[0].trim() }); }}>
+                               onClick={(e) => { e.preventDefault(); void openExternal('mailto:' + u.email!.split(';')[0].trim()); }}>
                               <IonIcon icon={mailOutline} style={{ flex: '0 0 auto', marginTop: 2 }} /> {u.email}
                             </a>
                           )}
                           {u.pec && (
                             <a href={`mailto:${u.pec.split(';')[0].trim()}`}
                                style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'flex-start', textDecoration: 'none', color: 'var(--ion-color-primary)', wordBreak: 'break-all' }}
-                               onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'mailto:' + u.pec!.split(';')[0].trim() }); }}>
+                               onClick={(e) => { e.preventDefault(); void openExternal('mailto:' + u.pec!.split(';')[0].trim()); }}>
                               <IonIcon icon={shieldCheckmarkOutline} style={{ flex: '0 0 auto', marginTop: 2 }} /> {u.pec}
                             </a>
                           )}
@@ -397,24 +392,24 @@ const UfficioGiudiziario: React.FC = () => {
               <IonCardContent>
                 <h2 style={{ marginTop: 0, color: 'var(--ion-color-primary-shade)' }}>{office.label}</h2>
                 <IonList lines="full" style={{ background: 'transparent' }}>
-                  <IonItem button detail={false} onClick={() => Browser.open({ url: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(office.sede) })}>
+                  <IonItem button detail={false} onClick={() => openExternal('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(office.sede))}>
                     <IonIcon slot="start" icon={locationOutline} color="primary" />
                     <IonLabel><h3>Sede</h3><p style={{ whiteSpace: 'normal' }}>{office.sede}</p></IonLabel>
                   </IonItem>
                   {office.telefono && (
-                    <IonItem button detail={false} onClick={() => Browser.open({ url: 'tel:' + office.telefono!.replace(/\s/g, '') })}>
+                    <IonItem button detail={false} onClick={() => openExternal('tel:' + office.telefono!.replace(/\s/g, ''))}>
                       <IonIcon slot="start" icon={callOutline} color="primary" />
                       <IonLabel><h3>Telefono</h3><p>{office.telefono}</p></IonLabel>
                     </IonItem>
                   )}
                   {office.email && (
-                    <IonItem button detail={false} onClick={() => Browser.open({ url: 'mailto:' + office.email })}>
+                    <IonItem button detail={false} onClick={() => openExternal('mailto:' + office.email)}>
                       <IonIcon slot="start" icon={mailOutline} color="primary" />
                       <IonLabel><h3>Email</h3><p>{office.email}</p></IonLabel>
                     </IonItem>
                   )}
                   {office.pec && (
-                    <IonItem button detail={false} onClick={() => Browser.open({ url: 'mailto:' + office.pec })}>
+                    <IonItem button detail={false} onClick={() => openExternal('mailto:' + office.pec)}>
                       <IonIcon slot="start" icon={shieldCheckmarkOutline} color="primary" />
                       <IonLabel><h3>PEC</h3><p>{office.pec}</p></IonLabel>
                     </IonItem>

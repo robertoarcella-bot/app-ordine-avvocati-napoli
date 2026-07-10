@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 /**
  * Aggiunge CAD e CPA al SEARCH_INDEX globale di home.html, estraendo gli
  * articles dal const CODE = {...}; di ciascuna pagina.

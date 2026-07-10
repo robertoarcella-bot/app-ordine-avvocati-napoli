@@ -4,6 +4,7 @@
  */
 
 import { SITE, NEWS_PER_PAGE } from '../config/site';
+import { stripTags } from '../utils/text';
 
 export interface NewsItem {
   id: number;
@@ -36,9 +37,6 @@ const decodeEntities = (s: string): string => {
   ta.innerHTML = s;
   return ta.value;
 };
-
-const stripTags = (html: string): string =>
-  html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
 const mapPost = (p: WpPostRaw): NewsItem => ({
   id: p.id,

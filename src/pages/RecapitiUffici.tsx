@@ -1,7 +1,7 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonText, IonSearchbar,
-  IonList, IonItem, IonLabel, IonItemDivider, IonIcon,
+  IonList, IonLabel, IonItemDivider, IonIcon,
   IonChip, IonCard, IonCardContent,
 } from '@ionic/react';
 import { useMemo, useState } from 'react';
@@ -9,14 +9,10 @@ import {
   callOutline, mailOutline, locationOutline,
   shieldCheckmarkOutline, businessOutline, printOutline,
 } from 'ionicons/icons';
-import { Browser } from '@capacitor/browser';
 import { RECAPITI_UFFICI, type RecapitoUfficio } from '../config/recapiti-uffici-na';
+import { openExternal } from '../services/download';
+import { norm } from '../utils/text';
 
-const norm = (s: string) =>
-  s.toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/['']/g, "'");
 
 const groupKey = (r: RecapitoUfficio) =>
   r.circondario ? `Circondario di ${r.circondario}` : 'Uffici distrettuali';
@@ -107,7 +103,7 @@ const RecapitiUffici: React.FC = () => {
                   <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {r.indirizzo && (
                       <a
-                        onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${r.indirizzo}, ${r.cap || ''} ${r.comune}`) }); }}
+                        onClick={(e) => { e.preventDefault(); void openExternal('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(`${r.indirizzo}, ${r.cap || ''} ${r.comune}`)); }}
                         href="#"
                         style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'flex-start', textDecoration: 'none', color: 'var(--ion-color-primary)' }}>
                         <IonIcon icon={locationOutline} style={{ flex: '0 0 auto', marginTop: 2 }} />
@@ -116,7 +112,7 @@ const RecapitiUffici: React.FC = () => {
                     )}
                     {r.telefono && (
                       <a
-                        onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'tel:' + r.telefono!.split(/[—;\/]/)[0].replace(/\s/g, '') }); }}
+                        onClick={(e) => { e.preventDefault(); void openExternal('tel:' + r.telefono!.split(/[—;/]/)[0].replace(/\s/g, '')); }}
                         href="#"
                         style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'flex-start', textDecoration: 'none', color: 'var(--ion-color-primary)' }}>
                         <IonIcon icon={callOutline} style={{ flex: '0 0 auto', marginTop: 2 }} />
@@ -125,7 +121,7 @@ const RecapitiUffici: React.FC = () => {
                     )}
                     {r.email && (
                       <a
-                        onClick={(e) => { e.preventDefault(); void Browser.open({ url: 'mailto:' + r.email!.split(/[;,]/)[0].trim() }); }}
+                        onClick={(e) => { e.preventDefault(); void openExternal('mailto:' + r.email!.split(/[;,]/)[0].trim()); }}
                         href="#"
                         style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'flex-start', textDecoration: 'none', color: 'var(--ion-color-primary)', wordBreak: 'break-all' }}>
                         <IonIcon icon={mailOutline} style={{ flex: '0 0 auto', marginTop: 2 }} />

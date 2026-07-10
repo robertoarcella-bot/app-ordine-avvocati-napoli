@@ -43,6 +43,44 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 
 ## Changelog
 
+### v1.2.4 (luglio 2026)
+
+**Pulizia catalogo Strumenti**
+- Rimossi 5 strumenti (con relativi HTML da `public/miniapps/at/`): Parametri Forensi (D.M. 147/2022), Procura alle liti, Piano Genitoriale, Analizzatore atti D.M. 110/2023, Analisi Verbale Ricerca Beni
+
+**Correzioni**
+- La versione mostrata in "Info & Crediti" è ora derivata da `package.json` a build-time (define Vite `__APP_VERSION__`); era hardcoded "1.0.1"
+- Notifiche PST: baseline foreground/background sincronizzati via `dispatchEvent` (`getLastSeen`/`setLastSeen`) + ID notifica deterministico dal numero avviso → niente più notifiche duplicate; rimossa `smallIcon` inesistente
+- Sicurezza: `webContentsDebuggingEnabled` ora `false` di default (riattivabile con `CAP_WEBVIEW_DEBUG=1` al sync)
+- Fix errori TypeScript/ESLint (tipo `SiteSection` con `external?`, import inutilizzati); `capacitor.config.ts` incluso nel typecheck
+- `Preventivo_Avvocati.html` reso davvero offline (rimosse Google Fonts da CDN)
+
+**Prestazioni**
+- Code splitting per route: tutte le pagine tranne Home sono `React.lazy` con `Suspense` dentro ciascuna `Route` (pattern compatibile con `IonRouterOutlet`); `cheerio` caricato con `await import()` solo quando serve il parsing — chunk iniziale molto più piccolo
+
+**Offline e robustezza**
+- Gestione offline reale con `@capacitor/network`: hook `useNetworkStatus`, banner globale `OfflineBanner`, e avviso/blocco all'apertura di strumenti online-only senza rete (`useOpenMiniApp`)
+- `openExternal` non lancia mai (fallback `window.open`); tutti i `Browser.open` sparsi ora passano da lì
+- `NewsDetail` mostra "Notizia non trovata" con Riprova invece della pagina bianca su 404/errore
+
+**Refactoring e codice morto**
+- Rimossi: vecchio login in-app via iframe (~250 righe in `auth.ts`, restano i 2 URL usati), scraper Giustizia Amministrativa irraggiungibile (la fonte GA è in webview), `SITE.loginUrl`, `resetNotificationState`, proxy Vite `/proxy/ga`, `public/miniapps/esempio.html`, `scripts/patch_codici_v123.mjs`
+- Deduplicati: `norm()` e `stripTags()` in `utils/text.ts`; `parseItalianDate`/`extractContentId`/`toAbsoluteUrl` in `services/sources/scrape.ts` (e `pst.ts` usa il `fetchText` condiviso); componenti `MiniAppItem` e `SourceNewsCard`; handler apertura miniapp in `hooks/useOpenMiniApp.ts`
+
+**Tooling**
+- `cap:sync`/`android:build`/`android:open` ora passano per `npm run build` (typecheck incluso); nuovo script `type-check`
+- ESLint pulito (0 errori/warning); config con `ignores` per `android/` e `argsIgnorePattern: '^_'`
+- `npm audit`: 0 vulnerabilità (aggiornamenti via `npm audit fix` + rimossa devDependency `@capacitor/assets`, richiamabile con `npx`)
+- Build: versionName `1.2.4`, versionCode `124`
+
+### v1.2.3 (maggio 2026)
+
+**Codici Italiani**
+- Fix scroll bloccato all'apertura di un codice su Android (tickle di scroll post-render)
+- Menu a discesa "Vai a articolo" raggruppato per Libri/Titoli in cima a ogni codice
+- Pulsante "Tutti i codici" per tornare alla ricerca globale
+- Build: versionName `1.2.3`, versionCode `123`
+
 ### v1.1.0 (maggio 2026)
 
 **Sedi e dislocazione uffici**
@@ -98,9 +136,9 @@ app-coa/
 │   ├── background-pst.js                  # Runner JS per background fetch PST
 │   └── miniapps/                          # Mini-webapp HTML autoportate
 │       ├── at/                            # App di Avv. Roberto Arcella (avvocatotelematico)
-│       │   ├── Calcolatore_parcelle_avvocati.html
+│       │   ├── Calcolatore_termini_cpc.html
 │       │   ├── Calcolo_fattura_Avvocati.html
-│       │   └── ...                        # ~21 file html
+│       │   └── ...                        # ~16 file html
 │       ├── sedi/
 │       │   └── Aule_sezione_lavoro.html
 │       └── codici/                        # ★ v1.1 — Codici italiani offline
@@ -424,6 +462,7 @@ App icon Android: `android/app/src/main/res/mipmap-*/ic_launcher.png`. Per rigen
 ```bash
 npx capacitor-assets generate --android --iconBackgroundColor "#FDF9F5" --splashBackgroundColor "#FDF9F5"
 ```
+> Nota: `@capacitor/assets` non è più tra le devDependencies (dal v1.2.4, per vulnerabilità senza fix nel suo albero di dipendenze dev-only): `npx` lo scarica al volo quando serve.
 
 ---
 

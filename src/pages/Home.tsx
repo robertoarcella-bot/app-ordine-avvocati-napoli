@@ -11,7 +11,7 @@ import {
 import { useEffect, useState, useCallback } from 'react';
 import { useHistory } from 'react-router';
 import type { RefresherEventDetail } from '@ionic/core';
-import { Browser } from '@capacitor/browser';
+import { openExternal } from '../services/download';
 import { fetchNews, type NewsItem } from '../services/api';
 import { cacheGet, cacheSet } from '../services/cache';
 import { NEWS_CACHE_MINUTES } from '../config/site';
@@ -60,6 +60,9 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Fetch-on-mount: i setState avvengono dopo gli await, non in modo
+    // sincrono; falso positivo noto della regola.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, [load]);
 
@@ -102,7 +105,7 @@ const Home: React.FC = () => {
                   button
                   onClick={() => {
                     if (t.route.startsWith('EXTERNAL:')) {
-                      void Browser.open({ url: t.route.slice(9) });
+                      void openExternal(t.route.slice(9));
                     } else {
                       history.push(t.route);
                     }

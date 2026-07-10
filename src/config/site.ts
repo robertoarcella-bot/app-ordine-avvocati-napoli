@@ -5,13 +5,18 @@
  * basta aggiornare questo file (o in futuro un JSON remoto).
  */
 
-export const SITE = {
-  baseUrl: 'https://www.ordineavvocatinapoli.it',
-  wpApi: 'https://www.ordineavvocatinapoli.it/wp-json/wp/v2',
-  loginUrl: 'https://www.ordineavvocatinapoli.it/login-logout/',
+export interface SiteSection {
+  id: string;
+  label: string;
+  url: string;
+  /** Nome icona ionicons */
+  icon: string;
+  /** true se il link va aperto nel browser esterno invece che nella WebView interna */
+  external?: boolean;
+}
 
-  /** Sezioni pubbliche del sito (per la WebView e il menu rapido) */
-  sections: [
+/** Sezioni pubbliche del sito (per la WebView e il menu rapido) */
+const SECTIONS: readonly SiteSection[] = [
     {
       id: 'componenti',
       label: 'Componenti C.O.A.',
@@ -67,7 +72,13 @@ export const SITE = {
       url: 'https://www.ordineavvocatinapoli.it/contatti-2/',
       icon: 'call-outline',
     },
-  ],
+];
+
+export const SITE = {
+  baseUrl: 'https://www.ordineavvocatinapoli.it',
+  wpApi: 'https://www.ordineavvocatinapoli.it/wp-json/wp/v2',
+
+  sections: SECTIONS,
 
   /** CSS iniettato nella WebView per ottimizzare il sito su mobile */
   mobileFriendlyCss: `

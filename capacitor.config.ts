@@ -7,7 +7,12 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: true,
+    /**
+     * Ispezione WebView da chrome://inspect. Deve restare false nelle
+     * build distribuite; riattivabile con CAP_WEBVIEW_DEBUG=1 al cap sync
+     * quando serve fare troubleshooting.
+     */
+    webContentsDebuggingEnabled: process.env.CAP_WEBVIEW_DEBUG === '1',
   },
   plugins: {
     SplashScreen: {

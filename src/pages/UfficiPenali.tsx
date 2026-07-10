@@ -7,22 +7,17 @@ import {
 } from '@ionic/react';
 import { useMemo, useState } from 'react';
 import {
-  layersOutline, callOutline, mailOutline, shieldCheckmarkOutline,
-  closeOutline, businessOutline, personOutline, locationOutline,
+  layersOutline, mailOutline, shieldCheckmarkOutline,
+  closeOutline, businessOutline, personOutline,
   homeOutline, alertCircleOutline,
 } from 'ionicons/icons';
-import { Browser } from '@capacitor/browser';
 import {
   UFFICI_PENALI, ENTI_PENALI,
   type EntePenale, type UfficioPenale,
 } from '../config/uffici-penali-na';
+import { openExternal } from '../services/download';
+import { norm } from '../utils/text';
 
-const norm = (s: string) =>
-  (s || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/['']/g, "'");
 
 const firstFromList = (s: string | undefined) =>
   (s || '').split(/[;,]/)[0].trim();
@@ -229,7 +224,7 @@ const UfficiPenali: React.FC = () => {
                       <IonItem
                         button
                         detail={false}
-                        onClick={() => { void Browser.open({ url: 'mailto:' + firstFromList(selected.email) }); }}
+                        onClick={() => { void openExternal('mailto:' + firstFromList(selected.email)); }}
                       >
                         <IonIcon slot="start" icon={mailOutline} color="primary" />
                         <IonLabel>
@@ -242,7 +237,7 @@ const UfficiPenali: React.FC = () => {
                       <IonItem
                         button
                         detail={false}
-                        onClick={() => { void Browser.open({ url: 'mailto:' + firstFromList(selected.pec) }); }}
+                        onClick={() => { void openExternal('mailto:' + firstFromList(selected.pec)); }}
                       >
                         <IonIcon slot="start" icon={shieldCheckmarkOutline} color="primary" />
                         <IonLabel>

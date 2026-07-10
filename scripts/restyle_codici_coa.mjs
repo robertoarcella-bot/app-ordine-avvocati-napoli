@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 /**
  * Applica il tema istituzionale COA Napoli (blu #0066CC + bianco) ai file
  * della miniapp codici. Sostituisce le CSS variables del tema scuro originale

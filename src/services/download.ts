@@ -39,6 +39,15 @@ export async function downloadAndOpen(url: string, suggestedName?: string): Prom
   return { uri: result.path || '', filename };
 }
 
+/**
+ * Apre un URL fuori dall'app (Chrome Custom Tabs / app di sistema per
+ * tel:, mailto:, deep link). Non lancia mai: se il plugin rigetta
+ * (es. nessuna app gestore per lo schema), ripiega su window.open.
+ */
 export async function openExternal(url: string): Promise<void> {
-  await Browser.open({ url });
+  try {
+    await Browser.open({ url });
+  } catch {
+    window.open(url, '_blank', 'noopener');
+  }
 }

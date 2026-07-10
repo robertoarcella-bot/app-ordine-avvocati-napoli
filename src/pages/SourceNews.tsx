@@ -3,17 +3,16 @@ import {
   IonButtons, IonBackButton, IonButton, IonIcon, IonSpinner,
   IonCard, IonCardContent, IonText,
   IonRefresher, IonRefresherContent,
-  IonInfiniteScroll, IonInfiniteScrollContent, IonChip,
+  IonInfiniteScroll, IonInfiniteScrollContent,
 } from '@ionic/react';
 import type { RefresherEventDetail } from '@ionic/core';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useHistory } from 'react-router';
-import { Browser } from '@capacitor/browser';
-import { format, parseISO } from 'date-fns';
-import { it as itLocale } from 'date-fns/locale';
+import { openExternal } from '../services/download';
 import { getSource, type SourceNewsItem } from '../config/sources';
 import { cacheGet, cacheSet } from '../services/cache';
 import { openOutline, alertCircleOutline, refreshOutline } from 'ionicons/icons';
+import SourceNewsCard from '../components/SourceNewsCard';
 
 interface RouteParams { sourceId: string }
 
@@ -80,10 +79,12 @@ const SourceNews: React.FC = () => {
   const isWebview = source?.viewMode === 'webview';
 
   useEffect(() => {
+    // In modalità webview non c'è nulla da caricare qui: lo spinner è
+    // gestito da SourceWebView e lo stato `loading` esterno non è usato.
     if (source && source.viewMode !== 'webview') {
+      // Fetch-on-mount: falso positivo noto della regola (setState post-await).
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       void loadFirst();
-    } else {
-      setLoading(false);
     }
   }, [loadFirst, source]);
 
@@ -93,7 +94,7 @@ const SourceNews: React.FC = () => {
   };
 
   const openInBrowser = async (url: string) => {
-    await Browser.open({ url });
+    await openExternal(url);
   };
 
   if (!source) {
@@ -172,48 +173,7 @@ const SourceNews: React.FC = () => {
         )}
 
         {items.map(n => (
-          <IonCard
-            key={n.id}
-            button
-            onClick={() => openInBrowser(n.link)}
-            style={{ borderRadius: 'var(--coa-card-radius)', boxShadow: 'var(--coa-card-shadow)' }}
-          >
-            {n.imageUrl && (
-              <img
-                src={n.imageUrl}
-                alt=""
-                loading="lazy"
-                style={{ width: '100%', maxHeight: 160, objectFit: 'cover' }}
-              />
-            )}
-            <IonCardContent>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                {n.category && (
-                  <IonChip color="primary" outline style={{ marginInlineStart: 0, height: 22, fontSize: 11 }}>
-                    {n.category}
-                  </IonChip>
-                )}
-                {n.date && (
-                  <span style={{ fontSize: 12, color: 'var(--ion-color-medium)' }}>
-                    {(() => {
-                      try {
-                        return format(parseISO(n.date), "d MMMM yyyy", { locale: itLocale });
-                      } catch { return n.date; }
-                    })()}
-                  </span>
-                )}
-              </div>
-              <div style={{ fontWeight: 700, marginTop: 6 }}>{n.title}</div>
-              {n.excerpt && (
-                <div style={{ marginTop: 6, fontSize: 14 }}>
-                  {n.excerpt.length > 200 ? n.excerpt.slice(0, 200) + '…' : n.excerpt}
-                </div>
-              )}
-              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ion-color-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                Apri sul sito <IonIcon icon={openOutline} />
-              </div>
-            </IonCardContent>
-          </IonCard>
+          <SourceNewsCard key={n.id} item={n} onOpen={url => { void openInBrowser(url); }} />
         ))}
 
         <IonInfiniteScroll
@@ -243,9 +203,14 @@ const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Rimostra lo spinner quando cambia la pagina o si ricarica: pattern React
+  // "adjust state when props change" (setState durante il render).
+  const viewKey = `${reloadKey}|${url}`;
+  const [prevViewKey, setPrevViewKey] = useState(viewKey);
+  if (prevViewKey !== viewKey) {
+    setPrevViewKey(viewKey);
     setLoading(true);
-  }, [url, reloadKey]);
+  }
 
   return (
     <IonPage>
@@ -259,7 +224,7 @@ const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }
             <IonButton onClick={bumpReload}>
               <IonIcon slot="icon-only" icon={refreshOutline} />
             </IonButton>
-            <IonButton onClick={() => Browser.open({ url })}>
+            <IonButton onClick={() => openExternal(url)}>
               <IonIcon slot="icon-only" icon={openOutline} />
             </IonButton>
           </IonButtons>

@@ -35,6 +35,50 @@ async function syncRunnerEnabled(enabled: boolean): Promise<void> {
   }
 }
 
+/** Id news senza il prefisso sorgente: 'pst:NWS4803' → 'NWS4803' (formato del runner) */
+function rawNewsId(id: string): string {
+  return id.split(':').pop() || id;
+}
+
+/** Legge il baseline del runner background (KV separato dal nostro Preferences) */
+async function getRunnerLastSeen(): Promise<string> {
+  if (!Capacitor.isNativePlatform()) return '';
+  try {
+    const r = await BackgroundRunner.dispatchEvent<{ lastSeen?: string }>({
+      label: RUNNER_LABEL,
+      event: 'getLastSeen',
+      details: {},
+    });
+    return r?.lastSeen || '';
+  } catch {
+    return '';
+  }
+}
+
+/** Allinea il baseline del runner a quello del check foreground */
+async function syncRunnerLastSeen(rawId: string): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return;
+  try {
+    await BackgroundRunner.dispatchEvent({
+      label: RUNNER_LABEL,
+      event: 'setLastSeen',
+      details: { id: rawId },
+    });
+  } catch {
+    // background runner potrebbe non essere ancora avviato: ignora
+  }
+}
+
+/**
+ * ID numerico deterministico ricavato dall'id news ('pst:NWS4803' → 4803).
+ * Stesso avviso ⇒ stesso id ⇒ un'eventuale seconda notifica (foreground o
+ * background) SOSTITUISCE la prima invece di duplicarla nella tray.
+ */
+function notificationIdFor(newsId: string): number {
+  const n = parseInt(newsId.replace(/\D/g, '').slice(-9), 10);
+  return Number.isFinite(n) && n > 0 ? n : (Date.now() & 0x7fffffff);
+}
+
 const PREFS_LAST_SEEN = 'pst:last-seen-id';
 const PREFS_PERMISSION_ASKED = 'pst:perm-asked';
 const PREFS_NOTIFY_ENABLED = 'pst:notify-enabled';
@@ -114,20 +158,18 @@ export async function checkNotificationPermission(): Promise<boolean> {
   }
 }
 
-async function showNotification(title: string, body: string, extra?: Record<string, unknown>): Promise<void> {
+async function showNotification(id: number, title: string, body: string, extra?: Record<string, unknown>): Promise<void> {
   if (!Capacitor.isNativePlatform()) {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
       new Notification(title, { body });
     }
     return;
   }
-  const id = (Date.now() & 0x7fffffff);
   await LocalNotifications.schedule({
     notifications: [{
       id,
       title,
       body,
-      smallIcon: 'ic_stat_icon_config_sample',
       schedule: { at: new Date(Date.now() + 200) },
       extra,
     }],
@@ -156,17 +198,24 @@ export async function checkAndNotifyNewPstNews(): Promise<{ checked: boolean; ne
   if (news.length === 0) return { checked: true, newCount: 0 };
 
   const lastSeen = (await Preferences.get({ key: PREFS_LAST_SEEN })).value || '';
+  // Baseline del runner background: ciò che ha già visto (e notificato) lui
+  // non va rinotificato qui, anche se il nostro Preferences è più indietro.
+  const runnerLastSeen = await getRunnerLastSeen();
+
   // News vengono restituite in ordine cronologico discendente
   const newsItems: SourceNewsItem[] = [];
   for (const n of news) {
     if (n.id === lastSeen) break;
+    if (runnerLastSeen && rawNewsId(n.id) === runnerLastSeen) break;
     newsItems.push(n);
   }
 
-  const isFirstRun = !lastSeen;
+  const isFirstRun = !lastSeen && !runnerLastSeen;
   const newest = news[0];
-  // Salva come "visto" il primo della lista per evitare di rinotificare
+  // Salva come "visto" il primo della lista per evitare di rinotificare,
+  // e allinea anche il baseline del runner background.
   await Preferences.set({ key: PREFS_LAST_SEEN, value: newest.id });
+  await syncRunnerLastSeen(rawNewsId(newest.id));
 
   if (isFirstRun) {
     // Prima volta: NON notificare, solo segna lo stato attuale
@@ -182,14 +231,8 @@ export async function checkAndNotifyNewPstNews(): Promise<{ checked: boolean; ne
     ? newsItems[0].title.slice(0, 200)
     : newsItems[0].title.slice(0, 120) + (newsItems.length > 1 ? ` (+${newsItems.length - 1})` : '');
 
-  await showNotification(title, body, { source: 'pst', newCount: newsItems.length });
+  await showNotification(notificationIdFor(newest.id), title, body, { source: 'pst', newCount: newsItems.length });
 
   return { checked: true, newCount: newsItems.length };
 }
 
-/** Reset dello stato (utile per debug o se si reinstalla l'app) */
-export async function resetNotificationState(): Promise<void> {
-  await Preferences.remove({ key: PREFS_LAST_SEEN });
-  await Preferences.remove({ key: PREFS_PERMISSION_ASKED });
-  await Preferences.remove({ key: PREFS_NOTIFY_ENABLED });
-}

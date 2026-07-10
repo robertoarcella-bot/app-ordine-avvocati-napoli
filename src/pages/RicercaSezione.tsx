@@ -2,19 +2,15 @@ import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonSegment, IonSegmentButton,
   IonLabel, IonSearchbar, IonList, IonItem, IonIcon, IonChip,
-  IonItemDivider, IonText,
+  IonText,
 } from '@ionic/react';
 import { useMemo, useState } from 'react';
 import { ribbonOutline, layersOutline, businessOutline } from 'ionicons/icons';
 import { UFFICI, type Magistrato } from '../config/uffici-giudiziari-na';
+import { norm } from '../utils/text';
 
 type AutoritaId = 'tribunale-napoli' | 'corte-appello-napoli';
 
-const norm = (s: string) =>
-  s.toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/['']/g, "'");
 
 const RicercaSezione: React.FC = () => {
   const [autorita, setAutorita] = useState<AutoritaId>('tribunale-napoli');

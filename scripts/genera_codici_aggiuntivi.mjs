@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 /**
  * Genera cad.html e codice-processo-amministrativo.html partendo dagli XML
  * AkomaNtoso di Normattiva e dal template di costituzione.html già presente

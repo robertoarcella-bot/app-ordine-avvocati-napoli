@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // dist e android sono output di build (android/app/build contiene JS
+  // rigenerato da gradle/capacitor); node_modules per sicurezza.
+  globalIgnores(['dist', 'android', 'node_modules']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -17,6 +19,15 @@ export default defineConfig([
     ],
     languageOptions: {
       globals: globals.browser,
+    },
+    rules: {
+      // Consenti la convenzione `_nome` per parametri/variabili volutamente
+      // inutilizzati (es. `_page` nelle firme uniformi dei fetcher news).
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
     },
   },
 ])

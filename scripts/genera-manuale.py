@@ -1,5 +1,5 @@
 """
-Genera il Manuale Utente dell'app Ordine Avvocati Napoli (v1.1.0).
+Genera il Manuale Utente dell'app Ordine Avvocati Napoli (v1.2.4).
 
 Output (entrambi):
   - ../Manuale_App_OrdineAvvocatiNapoli.docx  (Microsoft Word)
@@ -91,7 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
-    C.append(("SUB3", "Versione 1.2.3 — maggio 2026"))
+    C.append(("SUB3", "Versione 1.2.4 — luglio 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -103,8 +103,9 @@ def build_content(images):
     h1("Sommario")
     sezioni = [
         "1. Introduzione",
-        "2. Novità della versione 1.2.3",
-        "2.b Novità della versione 1.1.0",
+        "2. Novità della versione 1.2.4",
+        "2.b Novità della versione 1.2.3",
+        "2.c Novità della versione 1.1.0",
         "3. Installazione",
         "4. Schermata principale (Home)",
         "5. Menu di navigazione",
@@ -184,9 +185,33 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 2. NOVITÀ v1.2.3
+    # 2. NOVITÀ v1.2.4
     # ===================================================================
-    h1("2. Novità della versione 1.2.3")
+    h1("2. Novità della versione 1.2.4")
+    p("La v1.2.4 è una versione di pulizia e consolidamento.")
+
+    h2("Catalogo Strumenti alleggerito")
+    p("Sono stati rimossi cinque strumenti: Parametri Forensi (D.M. 147/2022), "
+      "Procura alle liti, Piano Genitoriale, Analizzatore atti D.M. 110/2023 e "
+      "Analisi Verbale Ricerca Beni. Il catalogo resta organizzato per aree "
+      "(generale, civile, penale, PCT) con gli strumenti descritti al capitolo 12.")
+
+    h2("Correzioni tecniche")
+    for x in [
+        "La schermata Info & Crediti mostra ora la versione corretta dell'app.",
+        "Le notifiche di nuovi avvisi PST non possono più arrivare duplicate "
+        "(il controllo all'apertura dell'app e quello periodico in background "
+        "sono ora coordinati).",
+        "Sicurezza: disattivata l'ispezione remota del contenuto dell'app "
+        "nelle versioni distribuite.",
+    ]:
+        b(x)
+    pb()
+
+    # ===================================================================
+    # 2.b NOVITÀ v1.2.3
+    # ===================================================================
+    h1("2.b Novità della versione 1.2.3")
     p("La v1.2.3 interviene esclusivamente sulla miniapp Codici Italiani, "
       "recependo i feedback degli utenti.")
 
@@ -212,9 +237,9 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 2.b NOVITÀ v1.1.0
+    # 2.c NOVITÀ v1.1.0
     # ===================================================================
-    h1("2.b Novità della versione 1.1.0")
+    h1("2.c Novità della versione 1.1.0")
     p("Questa edizione del manuale documenta anche le novità introdotte con la "
       "versione 1.1.0 dell'app, rilasciata a maggio 2026. Le principali "
       "aree interessate sono tre.")
@@ -252,7 +277,7 @@ def build_content(images):
     h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-1.2.3-debug.apk.")
+      "OrdineAvvocatiNapoli-1.2.4-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -454,12 +479,10 @@ def build_content(images):
 
     h2("Servizi di interesse generale")
     for s in [
-        "Parametri Forensi (D.M. 147/2022) — calcolatore parcelle.",
         "Calcolo Fattura Avvocato (CPA, IVA, ritenuta).",
         "Preventivo professionale.",
         "Contributo Unificato (Civile/Tributario/Amministrativo).",
         "Interessi Legali e Moratori (tasso legale, BCE).",
-        "Procura alle liti — generatore.",
         "Note di Udienza — Diritto Pratico (verbalizzazione PCT, online).",
         "**Codici Italiani** — Costituzione, codici civile/penale e relative "
         "disposizioni di attuazione, CAD e Cod. Proc. Amministrativo, con "
@@ -475,9 +498,6 @@ def build_content(images):
         "Danno alla Persona — TUN 2025 (D.P.R. 12/2025).",
         "Danno Micropermanenti (metodo coefficienti).",
         "Contributo Unificato Famiglia.",
-        "Piano Genitoriale — redazione assistita.",
-        "Analizzatore atti D.M. 110/2023.",
-        "Analisi Verbale Ricerca Beni.",
         "FAQ Patrocinio Spese Stato (Civile).",
     ]:
         b(s)
@@ -490,8 +510,8 @@ def build_content(images):
     ]:
         b(s)
 
-    note("Tutti gli strumenti tradizionalmente pubblicati su "
-         "avvocatotelematico.studiolegalearcella.it sono inclusi nel pacchetto "
+    note("Gli strumenti sono una selezione di quelli pubblicati su "
+         "avvocatotelematico.studiolegalearcella.it, inclusi nel pacchetto "
          "dell'app a beneficio degli iscritti.")
     pb()
 
@@ -938,7 +958,7 @@ def build_content(images):
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.2.3 — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.2.4 — Documento generato automaticamente"))
 
     return C
 

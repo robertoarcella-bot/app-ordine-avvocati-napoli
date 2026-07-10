@@ -25,9 +25,18 @@ const SitoView: React.FC = () => {
   const [slowHint, setSlowHint] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
-  useEffect(() => {
+  // Reset dello spinner quando cambia la pagina da mostrare: pattern React
+  // "adjust state when props change" (setState durante il render), così
+  // l'effect si occupa solo dei timer.
+  const viewKey = `${reloadKey}|${url}`;
+  const [prevViewKey, setPrevViewKey] = useState(viewKey);
+  if (prevViewKey !== viewKey) {
+    setPrevViewKey(viewKey);
     setLoading(true);
     setSlowHint(false);
+  }
+
+  useEffect(() => {
     const tHint = setTimeout(() => setSlowHint(true), SLOW_HINT_MS);
     const tHide = setTimeout(() => setLoading(false), SPINNER_TIMEOUT_MS);
     return () => {

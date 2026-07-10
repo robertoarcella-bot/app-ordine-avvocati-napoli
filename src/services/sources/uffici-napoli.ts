@@ -15,9 +15,9 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import * as cheerio from 'cheerio';
 import { fetchText } from './http';
 import type { SourceNewsItem } from '../../config/sources';
+import { extractContentId, parseItalianDate, toAbsoluteUrl } from './scrape';
 
 const SOURCE_ID = 'uffici-na';
 
@@ -46,42 +46,13 @@ const FEEDS: OfficeFeed[] = [
   },
 ];
 
-const MONTHS_IT: Record<string, number> = {
-  gen: 0, gennaio: 0,
-  feb: 1, febbraio: 1,
-  mar: 2, marzo: 2,
-  apr: 3, aprile: 3,
-  mag: 4, maggio: 4,
-  giu: 5, giugno: 5,
-  lug: 6, luglio: 6,
-  ago: 7, agosto: 7,
-  set: 8, settembre: 8,
-  ott: 9, ottobre: 9,
-  nov: 10, novembre: 10,
-  dic: 11, dicembre: 11,
-};
-
-function parseItalianDate(s: string): string | undefined {
-  // "20 aprile 2026" / "20 apr 2026"
-  const m = s.toLowerCase().match(/(\d{1,2})\s+([a-zà]{3,12})\s+(\d{4})/);
-  if (!m) return undefined;
-  const day = parseInt(m[1], 10);
-  const month = MONTHS_IT[m[2]] ?? MONTHS_IT[m[2].slice(0, 3)];
-  const year = parseInt(m[3], 10);
-  if (month === undefined || isNaN(day) || isNaN(year)) return undefined;
-  return new Date(Date.UTC(year, month, day, 12)).toISOString();
-}
-
-function extractContentId(href: string): string | undefined {
-  const m = href.match(/contentId=([A-Z]+\d+)/i);
-  return m ? m[1] : undefined;
-}
-
 async function fetchOffice(feed: OfficeFeed): Promise<SourceNewsItem[]> {
   const url = Capacitor.isNativePlatform()
     ? feed.origin + feed.newsListPath
     : feed.proxyPrefix + feed.newsListPath;
   const html = await fetchText(url);
+  // Import dinamico: tiene cheerio fuori dal chunk iniziale.
+  const cheerio = await import('cheerio');
   const $ = cheerio.load(html);
 
   const items: SourceNewsItem[] = [];
@@ -94,9 +65,7 @@ async function fetchOffice(feed: OfficeFeed): Promise<SourceNewsItem[]> {
     if (!contentId || seen.has(contentId)) return;
     seen.add(contentId);
 
-    const absLink = href.startsWith('http')
-      ? href
-      : feed.origin + (href.startsWith('/') ? href : '/' + href);
+    const absLink = toAbsoluteUrl(href, feed.origin);
 
     // Risali al contenitore "card"
     const $card = $a.closest('li, article, .news-item, .card, .card-body, div').first();

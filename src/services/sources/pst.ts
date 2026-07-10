@@ -15,9 +15,9 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import { CapacitorHttp } from '@capacitor/core';
-import * as cheerio from 'cheerio';
 import type { SourceNewsItem } from '../../config/sources';
+import { fetchText } from './http';
+import { extractContentId, parseItalianDate, toAbsoluteUrl } from './scrape';
 
 const SOURCE_ID = 'pst';
 const PST_BASE = 'https://pst.giustizia.it';
@@ -28,67 +28,15 @@ const PST_LIST_URL = Capacitor.isNativePlatform()
 
 const ABS_BASE_FOR_LINKS = `${PST_BASE}/PST/`;
 
-/**
- * Recupera HTML come stringa, usando CapacitorHttp su nativo (bypass CORS)
- * o fetch standard nel browser (passando per il proxy Vite).
- */
-async function fetchHtml(url: string, params?: Record<string, string>): Promise<string> {
-  if (Capacitor.isNativePlatform()) {
-    const res = await CapacitorHttp.get({
-      url,
-      params,
-      headers: {
-        Accept: 'text/html,application/xhtml+xml',
-        'User-Agent': 'AppCOANapoli/1.0',
-      },
-      responseType: 'text',
-    });
-    if (res.status >= 400) throw new Error(`HTTP ${res.status} su ${url}`);
-    // CapacitorHttp può restituire stringa o oggetto; normalizziamo.
-    return typeof res.data === 'string' ? res.data : String(res.data ?? '');
-  }
-  const qs = params ? '?' + new URLSearchParams(params).toString() : '';
-  const r = await fetch(url + qs, { headers: { Accept: 'text/html' } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} su ${url}`);
-  return r.text();
-}
-
-/** Converte URL relativi (tipici di pst.giustizia.it) in assoluti */
-function toAbsoluteUrl(href: string | undefined): string {
-  if (!href) return '';
-  if (/^https?:\/\//i.test(href)) return href;
-  if (href.startsWith('/')) return `${PST_BASE}${href}`;
-  return new URL(href, ABS_BASE_FOR_LINKS).toString();
-}
-
-/** Estrae la data in formato ISO (best-effort) da stringhe tipo "24 apr 2026" */
-function parseItalianDate(s: string): string | undefined {
-  const months: Record<string, number> = {
-    gen: 0, feb: 1, mar: 2, apr: 3, mag: 4, giu: 5,
-    lug: 6, ago: 7, set: 8, ott: 9, nov: 10, dic: 11,
-  };
-  const m = s.toLowerCase().match(/(\d{1,2})\s+([a-zà]+)\.?\s+(\d{4})/);
-  if (!m) return undefined;
-  const day = parseInt(m[1], 10);
-  const monthKey = m[2].slice(0, 3);
-  const year = parseInt(m[3], 10);
-  const month = months[monthKey];
-  if (month === undefined || isNaN(day) || isNaN(year)) return undefined;
-  const d = new Date(Date.UTC(year, month, day, 12, 0, 0));
-  return d.toISOString();
-}
-
-/** Estrae contentId da link tipo "/PST/page/it/foo?contentId=NWS4803" */
-function extractContentId(link: string): string | undefined {
-  const m = link.match(/contentId=([A-Z]+\d+)/i);
-  return m ? m[1] : undefined;
-}
-
 export async function fetchPstNews(page = 1): Promise<SourceNewsItem[]> {
   const params: Record<string, string> = {};
   if (page > 1) params.frame6_item = String(page);
 
-  const html = await fetchHtml(PST_LIST_URL, params);
+  const html = await fetchText(PST_LIST_URL, params);
+  // Import dinamico: cheerio è pesante e questo modulo è raggiungibile dal
+  // chunk iniziale (via polling notifiche in App.tsx) — lo carichiamo solo
+  // quando serve davvero fare parsing.
+  const cheerio = await import('cheerio');
   const $ = cheerio.load(html);
 
   const items: SourceNewsItem[] = [];
@@ -107,7 +55,7 @@ export async function fetchPstNews(page = 1): Promise<SourceNewsItem[]> {
   $('a[href*="contentId=NWS"]').each((_, el) => {
     const $a = $(el);
     const href = $a.attr('href') || '';
-    const absLink = toAbsoluteUrl(href);
+    const absLink = toAbsoluteUrl(href, PST_BASE, ABS_BASE_FOR_LINKS);
     const contentId = extractContentId(href);
     if (!contentId || seen.has(contentId)) return;
     seen.add(contentId);
@@ -133,7 +81,7 @@ export async function fetchPstNews(page = 1): Promise<SourceNewsItem[]> {
     // Immagine
     const $img = $card.find('img').first();
     const imgSrc = $img.attr('src');
-    const imageUrl = imgSrc ? toAbsoluteUrl(imgSrc) : undefined;
+    const imageUrl = imgSrc ? toAbsoluteUrl(imgSrc, PST_BASE, ABS_BASE_FOR_LINKS) : undefined;
 
     items.push({
       id: `${SOURCE_ID}:${contentId}`,

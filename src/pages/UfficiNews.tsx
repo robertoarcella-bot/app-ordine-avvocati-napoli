@@ -2,17 +2,16 @@ import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonMenuButton,
   IonCard, IonCardContent, IonSpinner, IonText, IonButton,
-  IonRefresher, IonRefresherContent, IonChip, IonIcon,
+  IonRefresher, IonRefresherContent, IonIcon,
 } from '@ionic/react';
 import type { RefresherEventDetail } from '@ionic/core';
 import { useEffect, useState, useCallback } from 'react';
-import { Browser } from '@capacitor/browser';
-import { format, parseISO } from 'date-fns';
-import { it as itLocale } from 'date-fns/locale';
+import { openExternal } from '../services/download';
 import { fetchUfficiNapoliNews } from '../services/sources/uffici-napoli';
 import type { SourceNewsItem } from '../config/sources';
 import { cacheGet, cacheSet } from '../services/cache';
-import { openOutline, alertCircleOutline, businessOutline } from 'ionicons/icons';
+import { alertCircleOutline, businessOutline } from 'ionicons/icons';
+import SourceNewsCard from '../components/SourceNewsCard';
 
 const CACHE_KEY = 'uffici-napoli:news';
 const CACHE_MIN = 30;
@@ -44,6 +43,8 @@ const UfficiNews: React.FC = () => {
     }
   }, []);
 
+  // Fetch-on-mount: falso positivo noto della regola (setState post-await).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void load(); }, [load]);
 
   const onRefresh = async (e: CustomEvent<RefresherEventDetail>) => {
@@ -51,7 +52,7 @@ const UfficiNews: React.FC = () => {
     e.detail.complete();
   };
 
-  const open = async (url: string) => { await Browser.open({ url }); };
+  const open = async (url: string) => { await openExternal(url); };
 
   return (
     <IonPage>
@@ -106,37 +107,7 @@ const UfficiNews: React.FC = () => {
         )}
 
         {items.map(n => (
-          <IonCard
-            key={n.id}
-            button
-            onClick={() => open(n.link)}
-            style={{ borderRadius: 'var(--coa-card-radius)', boxShadow: 'var(--coa-card-shadow)' }}
-          >
-            <IonCardContent>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                {n.category && (
-                  <IonChip color="primary" outline style={{ marginInlineStart: 0, height: 22, fontSize: 11 }}>
-                    {n.category}
-                  </IonChip>
-                )}
-                {n.date && (
-                  <span style={{ fontSize: 12, color: 'var(--ion-color-medium)' }}>
-                    {(() => {
-                      try { return format(parseISO(n.date), "d MMMM yyyy", { locale: itLocale }); }
-                      catch { return n.date; }
-                    })()}
-                  </span>
-                )}
-              </div>
-              <div style={{ fontWeight: 700, marginTop: 6 }}>{n.title}</div>
-              {n.excerpt && (
-                <div style={{ marginTop: 6, fontSize: 14 }}>{n.excerpt}</div>
-              )}
-              <div style={{ marginTop: 8, fontSize: 12, color: 'var(--ion-color-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                Apri sul sito <IonIcon icon={openOutline} />
-              </div>
-            </IonCardContent>
-          </IonCard>
+          <SourceNewsCard key={n.id} item={n} onOpen={url => { void open(url); }} />
         ))}
       </IonContent>
     </IonPage>

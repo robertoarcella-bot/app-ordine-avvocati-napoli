@@ -1,31 +1,19 @@
 import {
   IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonButtons, IonBackButton, IonMenuButton,
-  IonList, IonItem, IonIcon, IonLabel, IonItemDivider, IonText,
+  IonList, IonIcon, IonLabel, IonItemDivider, IonText,
 } from '@ionic/react';
-import { chevronForwardOutline, cloudOfflineOutline, wifiOutline, openOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router';
-import { Browser } from '@capacitor/browser';
-import { MINIAPPS, type MiniApp } from '../config/miniapps';
+import { cloudOfflineOutline, wifiOutline } from 'ionicons/icons';
+import { MINIAPPS } from '../config/miniapps';
 import { groupByJurisdiction } from '../config/jurisdictions';
+import MiniAppItem from '../components/MiniAppItem';
+import { useOpenMiniApp } from '../hooks/useOpenMiniApp';
 
 const MiniAppsPage: React.FC = () => {
-  const history = useHistory();
   // "sedi" sono nella pagina "Dislocazione Aule e Uffici"; "pct" sono dentro "Processo Telematico"
   const apps = MINIAPPS.filter(a => a.jurisdiction !== 'sedi' && a.jurisdiction !== 'pct');
   const groups = groupByJurisdiction(apps);
-
-  const onOpen = (app: MiniApp) => {
-    if (app.externalUrl) {
-      void Browser.open({ url: app.externalUrl });
-    } else if (app.webviewUrl) {
-      const u = encodeURIComponent(app.webviewUrl);
-      const t = encodeURIComponent(app.title);
-      history.push(`/sito/view?u=${u}&t=${t}`);
-    } else {
-      history.push(`/miniapps/${app.id}`);
-    }
-  };
+  const onOpen = useOpenMiniApp();
 
   return (
     <IonPage>
@@ -59,33 +47,7 @@ const MiniAppsPage: React.FC = () => {
                 <IonLabel><strong>{g.meta.label}</strong></IonLabel>
               </IonItemDivider>
               {g.items.map(app => (
-                <IonItem
-                  key={app.id}
-                  button
-                  detail={false}
-                  onClick={() => onOpen(app)}
-                >
-                  <IonIcon slot="start" icon={app.icon} color="primary" />
-                  <IonLabel>
-                    <h3>
-                      {app.title}
-                      <IonIcon
-                        icon={app.externalUrl ? openOutline
-                              : app.offlineReady ? cloudOfflineOutline
-                              : wifiOutline}
-                        color={app.externalUrl ? 'medium'
-                               : app.offlineReady ? 'success'
-                               : 'warning'}
-                        style={{ verticalAlign: 'middle', marginLeft: 6, fontSize: 14 }}
-                        title={app.externalUrl ? 'Apre in app esterna'
-                               : app.offlineReady ? 'Funziona offline'
-                               : 'Richiede internet'}
-                      />
-                    </h3>
-                    <p>{app.subtitle}</p>
-                  </IonLabel>
-                  <IonIcon slot="end" icon={app.externalUrl ? openOutline : chevronForwardOutline} color="medium" />
-                </IonItem>
+                <MiniAppItem key={app.id} app={app} onOpen={onOpen} />
               ))}
             </div>
           ))}

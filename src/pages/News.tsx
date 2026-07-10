@@ -66,6 +66,8 @@ const NewsPage: React.FC = () => {
     }
   }, [page, search]);
 
+  // Fetch-on-mount: falso positivo noto della regola (setState post-await).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void loadFirst(); }, [loadFirst]);
 
   const onRefresh = async (e: CustomEvent<RefresherEventDetail>) => {

@@ -11,7 +11,6 @@
  */
 
 import { fetchPstNews } from '../services/sources/pst';
-import { fetchGiustiziaAmministrativaNews } from '../services/sources/giustizia-amministrativa';
 import { fetchGiustiziaTributariaNews } from '../services/sources/giustizia-tributaria';
 import type { Jurisdiction } from './jurisdictions';
 
@@ -71,11 +70,11 @@ export const SOURCES: Source[] = [
      * Il sito GA ha una catena di certificati SSL non standard che fa fallire
      * la verifica su molti runtime (CapacitorHttp / fetch nativo).
      * Visualizzazione diretta in WebView nativa: garantisce sempre il contenuto
-     * aggiornato senza dipendere da scraping fragile.
+     * aggiornato senza dipendere da scraping fragile. (Il vecchio scraper è
+     * nella history git, rimosso perché irraggiungibile in questa modalità.)
      */
     viewMode: 'webview',
     newsUrl: 'https://www.giustizia-amministrativa.it/news',
-    fetchNews: fetchGiustiziaAmministrativaNews, // disponibile come fallback
   },
   {
     id: 'gt',

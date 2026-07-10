@@ -8,7 +8,7 @@ import {
   lockClosedOutline, openOutline, logInOutline, ribbonOutline,
   shieldCheckmarkOutline, alertCircleOutline,
 } from 'ionicons/icons';
-import { Browser } from '@capacitor/browser';
+import { openExternal } from '../services/download';
 import { AUTH_URLS } from '../services/auth';
 
 /**
@@ -25,11 +25,11 @@ import { AUTH_URLS } from '../services/auth';
 const AreaRiservata: React.FC = () => {
 
   const openLogin = async () => {
-    await Browser.open({ url: AUTH_URLS.loginPage });
+    await openExternal(AUTH_URLS.loginPage);
   };
 
   const openConsiglieri = async () => {
-    await Browser.open({ url: AUTH_URLS.areaConsiglieri });
+    await openExternal(AUTH_URLS.areaConsiglieri);
   };
 
   return (
