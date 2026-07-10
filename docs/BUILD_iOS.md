@@ -76,7 +76,7 @@ npx cap add ios
 
 # Genera icone e splash screen iOS dalle immagini sorgente
 # (resources/icon.png 1024×1024 e resources/splash.png 2732×2732)
-npx capacitor-assets generate --ios --iconBackgroundColor "#FDF9F5" --splashBackgroundColor "#FDF9F5"
+npx capacitor-assets generate --ios --iconBackgroundColor "#FDF9F5" --splashBackgroundColor "#FDF9F5" --splashBackgroundColorDark "#111111"
 
 # Build delle web assets + sync con il progetto iOS
 npm run build:web
@@ -84,6 +84,14 @@ npx cap sync ios
 ```
 
 A questo punto esiste la cartella `ios/`.
+
+> ⚠️ **Icone e splash: usare SOLO il comando qui sopra.** Non inserire
+> immagini a mano in `Assets.xcassets` (AppIcon/Splash): nella prima build
+> TestFlight (v1.0.x) l'AppIcon era una miniatura a bassa risoluzione col
+> testo tagliato e lo splash uno screenshot di telefono. Il fix è stato
+> proposto col branch `fix/ios-app-icon` sulla repo principale: rigenerare
+> sempre da `resources/icon.png` e `resources/splash.png`, che sono la
+> fonte unica del brand (stessi file usati per Android).
 
 ### 4. Primo commit del progetto iOS
 

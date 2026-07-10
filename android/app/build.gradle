@@ -1,5 +1,17 @@
 apply plugin: 'com.android.application'
 
+/**
+ * Firma release per il Play Store: le credenziali del keystore stanno in
+ * android/key.properties (NON committato — vedi .gitignore). Se il file
+ * manca, la build release resta non firmata (per Play serve la firma).
+ * Template del file in README, sezione "Pubblicazione sugli store".
+ */
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "it.ordineavvocatinapoli.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +28,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

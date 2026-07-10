@@ -67,6 +67,10 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 - Rimossi: vecchio login in-app via iframe (~250 righe in `auth.ts`, restano i 2 URL usati), scraper Giustizia Amministrativa irraggiungibile (la fonte GA è in webview), `SITE.loginUrl`, `resetNotificationState`, proxy Vite `/proxy/ga`, `public/miniapps/esempio.html`, `scripts/patch_codici_v123.mjs`
 - Deduplicati: `norm()` e `stripTags()` in `utils/text.ts`; `parseItalianDate`/`extractContentId`/`toAbsoluteUrl` in `services/sources/scrape.ts` (e `pst.ts` usa il `fetchText` condiviso); componenti `MiniAppItem` e `SourceNewsCard`; handler apertura miniapp in `hooks/useOpenMiniApp.ts`
 
+**Store readiness**
+- Firma release Android da `android/key.properties` (gitignorato) + script `android:release` che produce l'AAB per il Play Store; nuova sezione README "Pubblicazione sugli store"
+- Fix asset iOS (AppIcon sgranata + splash-screenshot) rigenerati dagli asset ufficiali: branch `fix/ios-app-icon` da mergiare sul fork iOS; avvertenza in `docs/BUILD_iOS.md`
+
 **Tooling**
 - `cap:sync`/`android:build`/`android:open` ora passano per `npm run build` (typecheck incluso); nuovo script `type-check`
 - ESLint pulito (0 errori/warning); config con `ignores` per `android/` e `argsIgnorePattern: '^_'`
@@ -375,6 +379,45 @@ APK generato in `android/app/build/outputs/apk/debug/app-debug.apk`.
 ### Build iOS
 
 Vedi documento dedicato: [`docs/BUILD_iOS.md`](docs/BUILD_iOS.md).
+
+### Pubblicazione sugli store
+
+> ⚠️ **L'APK `-debug` NON è pubblicabile sul Play Store**: è firmato con la
+> chiave di debug. Per Google Play serve una build **release** firmata con
+> keystore proprio, in formato **AAB** (obbligatorio per le nuove app).
+
+**1. Creare il keystore di upload (una sola volta, conservarlo con cura):**
+```bash
+keytool -genkeypair -v -keystore coa-napoli-upload.keystore -alias coa-napoli \
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+Custodire il file `.keystore` e le password FUORI dal repository (password
+manager + backup). Se si perde l'upload key, va richiesto il reset a Google.
+
+**2. Creare `android/key.properties`** (già in `.gitignore`, mai committarlo):
+```properties
+storeFile=C:\\percorso\\sicuro\\coa-napoli-upload.keystore
+storePassword=***
+keyAlias=coa-napoli
+keyPassword=***
+```
+
+**3. Generare l'AAB firmato:**
+```bash
+npm run android:release
+```
+Output: `android/app/build/outputs/bundle/release/app-release.aab`, da
+caricare su Play Console (con Play App Signing attivo, raccomandato).
+
+**Requisiti Play Console oltre all'AAB**: account sviluppatore (25 USD una
+tantum; per un ente conviene account organizzazione verificato), privacy
+policy pubblica (URL), scheda store (descrizioni, screenshot, icona 512×512,
+feature graphic 1024×500), questionari Data Safety e Content Rating,
+`targetSdk` recente (già a 36 ✓).
+
+**iOS / App Store**: build gestita sul fork `app-ordine-avvocati-napoli-ios`
+(vedi `docs/BUILD_iOS.md`); richiede Apple Developer Program e — prima della
+submission — il merge del fix icona/splash rigenerati dagli asset ufficiali.
 
 ---
 

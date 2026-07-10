@@ -188,7 +188,7 @@ def build_content(images):
     # 2. NOVITÀ v1.2.4
     # ===================================================================
     h1("2. Novità della versione 1.2.4")
-    p("La v1.2.4 è una versione di pulizia e consolidamento.")
+    p("La v1.2.4 è una versione di pulizia, consolidamento e prestazioni.")
 
     h2("Catalogo Strumenti alleggerito")
     p("Sono stati rimossi cinque strumenti: Parametri Forensi (D.M. 147/2022), "
@@ -196,12 +196,26 @@ def build_content(images):
       "Analisi Verbale Ricerca Beni. Il catalogo resta organizzato per aree "
       "(generale, civile, penale, PCT) con gli strumenti descritti al capitolo 12.")
 
+    h2("Avvio più rapido")
+    p("L'app carica all'avvio solo la schermata principale; le altre pagine "
+      "vengono scaricate dal pacchetto al primo accesso (con un breve "
+      "indicatore di caricamento). Il tempo di apertura si riduce sensibilmente.")
+
+    h2("Gestione offline")
+    p("Quando il telefono è senza connessione, l'app ora lo rileva davvero: "
+      "compare un banner giallo in fondo allo schermo, gli strumenti che "
+      "richiedono internet avvisano prima di aprirsi e quelli esterni "
+      "(es. canali Telegram) vengono bloccati con un messaggio, evitando "
+      "schermate vuote.")
+
     h2("Correzioni tecniche")
     for x in [
         "La schermata Info & Crediti mostra ora la versione corretta dell'app.",
         "Le notifiche di nuovi avvisi PST non possono più arrivare duplicate "
         "(il controllo all'apertura dell'app e quello periodico in background "
         "sono ora coordinati).",
+        "Le news del Consiglio non più raggiungibili mostrano un messaggio "
+        "con pulsante Riprova invece di una pagina vuota.",
         "Sicurezza: disattivata l'ispezione remota del contenuto dell'app "
         "nelle versioni distribuite.",
     ]:

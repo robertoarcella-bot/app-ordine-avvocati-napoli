@@ -44,3 +44,8 @@ android/local.properties
 .env
 .env.*
 !.env.example
+
+# Firma release Android (NON committare mai keystore e credenziali)
+android/key.properties
+*.keystore
+*.jks
