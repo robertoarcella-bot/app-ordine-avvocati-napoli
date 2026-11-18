@@ -82,6 +82,8 @@ filtered.push(cadEntry, cpaEntry);
 console.log(`SEARCH_INDEX nuovo: ${filtered.length} codici (+ CAD ${cadEntry.articles.length} art., + CPA ${cpaEntry.articles.length} art.)`);
 
 const newIdxJson = JSON.stringify(filtered);
-home = home.replace(re, `var SEARCH_INDEX = ${newIdxJson};`);
+// Replacer come funzione: evita che eventuali "$&", "$1"… nei testi normativi
+// vengano interpretati come pattern speciali di String.prototype.replace.
+home = home.replace(re, () => `var SEARCH_INDEX = ${newIdxJson};`);
 writeFileSync(homePath, home, 'utf8');
 console.log('home.html aggiornata');

@@ -49,3 +49,6 @@ android/local.properties
 android/key.properties
 *.keystore
 *.jks
+
+# File di sistema creati da Google Drive per desktop in ogni cartella
+desktop.ini

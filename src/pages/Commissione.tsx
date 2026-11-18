@@ -40,6 +40,7 @@ const COMPONENTI: Member[] = [
   { name: 'Raffaele', surname: 'Monaco', role: 'Componente', prefix: 'Avv.' },
   { name: 'Pierluigi', surname: 'Serra', role: 'Componente', prefix: 'Avv.' },
   { name: 'Orso Maria', surname: 'Soporso', role: 'Componente', prefix: 'Avv.' },
+  { name: 'Bruno', surname: 'Spagna Musso', role: 'Componente', prefix: 'Avv.' },
   { name: 'Davide', surname: 'Villani', role: 'Componente', prefix: 'Avv.' },
 ];
 

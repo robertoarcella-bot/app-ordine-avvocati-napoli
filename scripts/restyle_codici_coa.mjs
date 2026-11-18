@@ -100,6 +100,11 @@ for (const f of files) {
   const fp = resolve(CODICI_DIR, f);
   let h = readFileSync(fp, 'utf8');
   if (f === 'home.html') {
+    // Idempotenza: il blocco di override va aggiunto una sola volta
+    if (h.includes('=== Tema COA Napoli (override istituzionale) ===')) {
+      console.log('skip home.html (tema COA già applicato)');
+      continue;
+    }
     h = patchHome(h);
   } else {
     h = patchCodicePage(h);

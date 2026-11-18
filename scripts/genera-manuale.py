@@ -1,5 +1,5 @@
 """
-Genera il Manuale Utente dell'app Ordine Avvocati Napoli (v1.2.4).
+Genera il Manuale Utente dell'app Ordine Avvocati Napoli (v1.2.5).
 
 Output (entrambi):
   - ../Manuale_App_OrdineAvvocatiNapoli.docx  (Microsoft Word)
@@ -91,7 +91,7 @@ def build_content(images):
     C.append(("TITLE", "Manuale d'uso"))
     C.append(("SUBTITLE", "App Ordine Avvocati Napoli"))
     C.append(("SUB2", "Consiglio dell'Ordine degli Avvocati di Napoli"))
-    C.append(("SUB3", "Versione 1.2.4 — luglio 2026"))
+    C.append(("SUB3", "Versione 1.2.5 — novembre 2026"))
     img("home", "Schermata principale dell'app")
     C.append(("CREDIT", "Autore: Avv. Roberto Arcella"))
     C.append(("CREDIT_SUB", "Idea e collaborazione: Commissione Informatica del COA Napoli"))
@@ -103,9 +103,10 @@ def build_content(images):
     h1("Sommario")
     sezioni = [
         "1. Introduzione",
-        "2. Novità della versione 1.2.4",
-        "2.b Novità della versione 1.2.3",
-        "2.c Novità della versione 1.1.0",
+        "2. Novità della versione 1.2.5",
+        "2.b Novità della versione 1.2.4",
+        "2.c Novità della versione 1.2.3",
+        "2.d Novità della versione 1.1.0",
         "3. Installazione",
         "4. Schermata principale (Home)",
         "5. Menu di navigazione",
@@ -185,9 +186,42 @@ def build_content(images):
     pb()
 
     # ===================================================================
-    # 2. NOVITÀ v1.2.4
+    # 2. NOVITÀ v1.2.5
     # ===================================================================
-    h1("2. Novità della versione 1.2.4")
+    h1("2. Novità della versione 1.2.5")
+    p("La v1.2.5 è una versione di aggiornamento dei contenuti.")
+
+    h2("Codici Italiani aggiornati al 15 ottobre 2026")
+    p("I nove codici principali (Costituzione, codice civile e disposizioni di "
+      "attuazione, codice di procedura civile e disposizioni di attuazione, "
+      "codice penale, codice di procedura penale, norme di attuazione e "
+      "regolamento di esecuzione del c.p.p.) sono stati sostituiti con la "
+      "versione più recente, con testi vigenti al 15/10/2026 e nuovi articoli "
+      "introdotti dalle ultime riforme. I codici restano integralmente "
+      "consultabili offline; CAD e Codice del processo amministrativo, la "
+      "ricerca globale, il menu \"Vai a\" e la condivisione su WhatsApp "
+      "funzionano come prima.")
+
+    h2("Magistrati e uffici del Tribunale e della Corte d'Appello")
+    p("L'elenco dei magistrati e delle cancellerie è stato riallineato ai siti "
+      "ufficiali del Tribunale e della Corte d'Appello di Napoli (rilevazione "
+      "del 17/11/2026): nuovi ingressi, trasferimenti, nuovi presidenti di "
+      "sezione e Presidente Vicario della Corte, articolazione della Corte di "
+      "Assise in tre sezioni, Corte di Assise di Appello e sezione Misure di "
+      "Prevenzione, PEC delle cancellerie della Corte e dislocazione completa "
+      "degli uffici del Tribunale.")
+
+    h2("Interessi moratori: secondo semestre 2026")
+    p("Il calcolatore degli interessi applica dal 1° luglio 2026 il tasso di "
+      "mora del 10,40% (tasso di riferimento 2,40% + 8 punti, comunicato MEF "
+      "in G.U. n. 163 del 16/07/2026), in luogo del 10,15% del primo semestre.")
+
+    h2("Commissione Informatica")
+    p("Aggiornata la composizione della Commissione Informatica con "
+      "l'inserimento dell'Avv. Bruno Spagna Musso.")
+    pb()
+
+    h1("2.b Novità della versione 1.2.4")
     p("La v1.2.4 è una versione di pulizia, consolidamento e prestazioni.")
 
     h2("Catalogo Strumenti alleggerito")
@@ -225,7 +259,7 @@ def build_content(images):
     # ===================================================================
     # 2.b NOVITÀ v1.2.3
     # ===================================================================
-    h1("2.b Novità della versione 1.2.3")
+    h1("2.c Novità della versione 1.2.3")
     p("La v1.2.3 interviene esclusivamente sulla miniapp Codici Italiani, "
       "recependo i feedback degli utenti.")
 
@@ -253,7 +287,7 @@ def build_content(images):
     # ===================================================================
     # 2.c NOVITÀ v1.1.0
     # ===================================================================
-    h1("2.c Novità della versione 1.1.0")
+    h1("2.d Novità della versione 1.1.0")
     p("Questa edizione del manuale documenta anche le novità introdotte con la "
       "versione 1.1.0 dell'app, rilasciata a maggio 2026. Le principali "
       "aree interessate sono tre.")
@@ -291,7 +325,7 @@ def build_content(images):
     h1("3. Installazione")
     p("Nella prima fase l'app viene distribuita come file APK Android, da "
       "installare manualmente. Il file installer si chiama "
-      "OrdineAvvocatiNapoli-1.2.4-debug.apk.")
+      "OrdineAvvocatiNapoli-1.2.5-debug.apk.")
     h2("Procedura su Android")
     for x in [
         "Trasferire l'APK sul telefono (e-mail, Google Drive, USB, link diretto).",
@@ -583,10 +617,12 @@ def build_content(images):
         "una chat con il testo dell'articolo precompilato.",
     ]:
         b(x)
-    note("CAD e CPA sono stati generati automaticamente a partire dagli XML "
-         "AkomaNtoso pubblicati da Normattiva.it, lo stesso formato standard "
-         "utilizzato dagli altri codici. Tutti i testi risultano aggiornati alle "
-         "ultime versioni vigenti pubblicate.")
+    note("Dalla v1.2.5 i nove codici principali corrispondono alla versione "
+         "pubblicata su avvocatotelematico.studiolegalearcella.it/codici, con "
+         "testi vigenti al 15/10/2026. CAD e CPA sono generati a partire dagli XML "
+         "AkomaNtoso pubblicati da Normattiva.it (vigenza: CAD 30/01/2025, CPA "
+         "08/10/2025). La data di aggiornamento di ciascun codice è indicata "
+         "sulla relativa scheda.")
     pb()
 
     # ===================================================================
@@ -972,7 +1008,7 @@ def build_content(images):
     # ===================================================================
     pb()
     C.append(("FOOTER", "— Fine del Manuale —"))
-    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.2.4 — Documento generato automaticamente"))
+    C.append(("FOOTER_SUB", "App Ordine Avvocati Napoli — Versione 1.2.5 — Documento generato automaticamente"))
 
     return C
 

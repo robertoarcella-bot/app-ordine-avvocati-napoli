@@ -43,6 +43,28 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 
 ## Changelog
 
+### v1.2.5 (novembre 2026)
+
+**Codici Italiani**
+- I 9 codici e la home sostituiti con la versione di `avvocatotelematico.studiolegalearcella.it/codici/` (vigenza **15/10/2026** per tutti; prima 22/10/2023 – 04/03/2026), sempre inclusi nell'app per la consultazione offline. CAD e CPA invariati (30/01/2025, 08/10/2025); schede reinserite nella home
+- Nuovo `scripts/aggiorna_codici.mjs`: download validato + schede CAD/CPA + data footer + tema COA + patch v1.2.3 + indice di ricerca globale in un solo comando
+- `scripts/patch_codici_v123.mjs` ripristinato (necessario a ogni aggiornamento); `restyle_codici_coa.mjs` reso idempotente sulla home; `aggiorna_search_index.mjs` usa un replacer a funzione (niente interpretazione di `$&`/`$1` nei testi)
+
+**Magistrati e uffici Tribunale / Corte d'Appello** (`src/config/uffici-giudiziari-na.ts`, rilevazione 17/11/2026 dai siti ufficiali)
+- `T_MAG`/`CA_MAG` rigenerati: Tribunale civile 166 assegnazioni, lavoro 45, penale 167; CA civile 84, lavoro 26, penale 62 (ora con Corte di Assise di Appello e Misure di Prevenzione)
+- Nuove sezioni Corte di Assise Prima/Seconda/Terza; `tAdd` accetta `note` come `cAdd`; CA: Presidente Vicario Papa, Petruzziello presidente V civile
+- `CA_UFF` 47 uffici (+ Ufficio Esecuzione Maxi Processi, 19 PEC aggiunte); `T_DISL` sostituito con la tabella completa del sito (59 voci)
+- `T_SEZ_PIANO_CIV` / `T_LAVORO_BY_COGNOME` invariati (la fonte non pubblica i piani d'aula): Guglielmo, Perpetua, Pigrini senza piano
+- Dettaglio: `../Magistrati_Napoli/VARIAZIONI_2026-05-17_vs_2026-11-17.md`; nuovo Excel `../Tribunale_e_CorteAppello_Napoli_2026-11-17.xlsx`
+
+**Interessi**
+- `Calcolo_Interessi.html`: mora II semestre 2026 al **10,40%** (BCE 2,40% + 8, Comunicato MEF G.U. n. 163 del 16/07/2026); il I semestre 2026 (10,15%) ora termina il 30/06/2026. Tasso legale 2026 (1,6%) già allineato al pacchetto `dati_forensi_ISTAT_MEF`
+
+**Commissione Informatica**
+- Aggiunto l'Avv. Bruno Spagna Musso tra i componenti
+
+**Build**: versionName `1.2.5`, versionCode `125`
+
 ### v1.2.4 (luglio 2026)
 
 **Pulizia catalogo Strumenti**
@@ -204,6 +226,8 @@ app-coa/
 │   ├── genera_codici_aggiuntivi.mjs       # ★ v1.1 — Parser AkomaNtoso → CAD/CPA HTML
 │   ├── restyle_codici_coa.mjs             # ★ v1.1 — Tema COA blu/bianco sui codici
 │   ├── aggiorna_search_index.mjs          # ★ v1.1 — Aggiorna search globale codici
+│   ├── patch_codici_v123.mjs              # ★ v1.2.3 — Menu "Vai a articolo", "Tutti i codici", sblocco scroll
+│   ├── aggiorna_codici.mjs                # ★ v1.2.5 — Scarica i codici dal sito e applica tutti gli adattamenti
 │   └── manual-images/                     # Wireframe PNG generati
 └── README.md                              # Questo file
 ```
@@ -251,13 +275,14 @@ Questi dati sono **hardcoded** nel codice TypeScript dell'app e finiscono nel bu
 | Contatti del COA (sede, tel, fax, email, PEC, orari, codice fiscale, codice univoco) | `src/pages/Info.tsx` | A ogni cambio infrastrutturale | Dati offline-first |
 | Lista documenti pubblici di rilievo | `src/pages/Documenti.tsx` | All'aggiunta/rimozione di sezioni del sito | Solo titoli + URL |
 | Sezioni del sito COA mostrate in "Sito Ordine Avvocati" | `src/config/site.ts` (`SITE.sections`) | A ogni ristrutturazione del sito | URL + label |
-| **Magistrati e cancellerie Tribunale di Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `TRIBUNALE_NAPOLI`) | **Annuale** (variazioni tabellari, pensionamenti) | ~287 magistrati, 11 uffici amministrativi, dislocazione settori |
-| **Magistrati e cancellerie Corte d'Appello Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `CORTE_APPELLO_NAPOLI`) | **Annuale** | ~113 magistrati, 46 uffici/cancellerie, vertici |
+| **Magistrati e cancellerie Tribunale di Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `TRIBUNALE_NAPOLI`) | **Annuale** (variazioni tabellari, pensionamenti) | ~378 assegnazioni (civile 166, lavoro 45, penale 167 — nov. 2026), uffici amministrativi, dislocazione completa (59 voci) |
+| **Magistrati e cancellerie Corte d'Appello Napoli** | `src/config/uffici-giudiziari-na.ts` (oggetto `CORTE_APPELLO_NAPOLI`) | **Annuale** | ~172 assegnazioni (civile 84, lavoro 26, penale 62 — nov. 2026), 47 uffici/cancellerie, vertici. Script di estrazione in `../Magistrati_Napoli/script/` |
 | **Dislocazione aule giudici Tribunale Napoli (Torre A)** | `src/config/uffici-giudiziari-na.ts` (`T_SEZ_PIANO_CIV`, `T_LAVORO_BY_COGNOME`) | A ogni variazione tabellare | Mappa sezione→piano per le 14 sezioni civili; mappa cognome→piano+giorni d'udienza per i magistrati delle 3 sezioni lavoro |
 | **Recapiti uffici giudiziari del distretto** | `src/config/recapiti-uffici-na.ts` | A ogni variazione strutturale (chiusura/apertura sedi, riassetto Procure) | 80+ uffici: Tribunali, Procure, GdP, Sezioni distaccate, Sorveglianza, Minorenni, Tribunale Acque |
 | **Codici Italiani offline** | `public/miniapps/codici/*.html` | A ogni aggiornamento normativo significativo | 11 codici autoportati con search globale; CAD/CPA generati via script da AkomaNtoso |
 | Aule Sezione Lavoro Napoli | `public/miniapps/sedi/Aule_sezione_lavoro.html` (45 giudici hardcoded) | A ogni variazione tabellare (≥1/anno) | File HTML separato (mini-webapp) |
 | Calendario GdP Napoli | `public/miniapps/at/Calendario_gdp_napoli_2026.html` | **Annuale** (anno calendario nel nome) | Va sostituito a fine anno |
+| **Tassi interessi legali e moratori** | `public/miniapps/at/Calcolo_Interessi.html` (array `legalInterestRates`, `defaultInterestRates`) | **Dicembre** (D.M. MEF saggio legale per l'anno successivo) e **gennaio/luglio** (comunicato MEF tasso BCE semestrale ex D.Lgs. 231/2002) | L'ultimo periodo di ciascun array ha `endDate: '9999-12-31'`: chiuderlo e aggiungere il nuovo. Fonte di controllo: pacchetto `../dati_forensi_ISTAT_MEF/` |
 | Mini-webapp di Avv. Arcella | `public/miniapps/at/*.html` | Quando il sito di origine cambia il file | Origine: `avvocatotelematico.studiolegalearcella.it` |
 | Registry mini-webapp con metadati | `src/config/miniapps.ts` | Quando si aggiunge/rimuove uno strumento | jurisdiction, offlineReady, autore |
 | URL aree (Area Riservata, login, area Consiglieri) | `src/services/auth.ts` (`AUTH_URLS`) | Se il sito cambia struttura | Tipicamente stabile |
@@ -552,6 +577,17 @@ Per WebView interna su sito esterno: usa `webviewUrl`.
 
 `src/config/recapiti-uffici-na.ts` — array piatto `RECAPITI_UFFICI`. Ogni voce ha `tipo`, `tipoLabel`, `denominazione`, `circondario`, `comune`, `provincia`, `indirizzo`, `cap`, `telefono`, `email`, `fax`, `note`. La pagina `RecapitiUffici.tsx` raggruppa automaticamente per circondario (gli uffici distrettuali in cima).
 
+### Aggiornare i 9 codici dalla versione online
+
+I codici restano **sempre inclusi nell'app** (offline): la fonte è `https://avvocatotelematico.studiolegalearcella.it/codici/home.html`. Quando il sito viene aggiornato:
+
+```bash
+node scripts/aggiorna_codici.mjs              # download + schede CAD/CPA in home + tema COA + patch v1.2.3 + search index
+npm run cap:sync && cd android && ./gradlew.bat assembleDebug
+```
+
+Lo script scarica e valida tutti i file prima di scriverne uno; `cad.html` e `codice-processo-amministrativo.html` (presenti solo nell'app) non vengono toccati e le loro schede vengono reinserite nella home scaricata. Tutti gli script di adattamento sono idempotenti.
+
 ### Rigenerare CAD/CPA da nuovi XML AkomaNtoso
 
 Quando esce una nuova versione consolidata su Normattiva:
@@ -560,9 +596,12 @@ Quando esce una nuova versione consolidata su Normattiva:
 # Sostituire gli XML in C:/Users/rober/kDrive/__CODING_PROVVISORIA/CODICI XML/
 node scripts/genera_codici_aggiuntivi.mjs    # CAD + CPA
 node scripts/restyle_codici_coa.mjs           # Tema COA blu/bianco
+node scripts/patch_codici_v123.mjs            # Menu "Vai a articolo" + sblocco scroll
 node scripts/aggiorna_search_index.mjs        # Search globale home.html
 npm run cap:sync && cd android && ./gradlew.bat assembleDebug
 ```
+
+Dopo la rigenerazione aggiornare a mano la data `agg. gg/mm/aaaa` della relativa scheda in `home.html` (o rilanciare `aggiorna_codici.mjs`, che la ricava dal campo `vigenza`).
 
 Il parser preserva lo stile della webapp originale: ogni comma in un proprio `<p>`, note di aggiornamento separate in `notesHtml`, `<ref>` flatten a testo, copia/condivisione WhatsApp via template.
 
@@ -595,6 +634,7 @@ Il parser preserva lo stile della webapp originale: ogni comma in un proprio `<p
 | Mini-app non scorre subito | WebView Android richiede reflow forzato | sequenza reflow nei `setTimeout` di MiniAppView |
 | Login PST non riesce (test) | `CapacitorHttp` ha cookie jar separato dal WebView | usare WebView intera per login (Area Riservata) |
 | Notifiche non arrivano in background | Risparmio batteria aggressivo del device | escludere app da ottimizzazione batteria |
+| `npm run build` fallisce con `ENOENT ... copyfile 'public\desktop.ini'` | Google Drive per desktop crea `desktop.ini` in ogni cartella e non permette ad altri programmi di scriverli | Già gestito in `vite.config.ts` (plugin `copyPublicSenzaDesktopIni`, `copyPublicDir: false`) |
 
 ---
 
