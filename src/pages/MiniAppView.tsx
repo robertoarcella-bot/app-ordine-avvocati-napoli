@@ -6,6 +6,7 @@ import { useParams } from 'react-router';
 import { useEffect, useRef } from 'react';
 import { openExternal } from '../services/download';
 import { MINIAPPS } from '../config/miniapps';
+import { useIframeScrollWake } from '../hooks/useIframeScrollWake';
 
 interface RouteParams { id: string }
 
@@ -75,33 +76,8 @@ const PROXY_SCRIPT = `
       '* { box-sizing: border-box; max-width: 100%; }' +
       '.container, .wrapper, .main, main { max-width: 100% !important; width: auto !important; }';
     (document.head || document.body).appendChild(style);
-
-    // Forza un reflow + resize: il WebView Android non sempre ricalcola
-    // il layout dopo l'iniezione del CSS overflow, e lo scroll resta
-    // bloccato finché l'utente non tocca qualcosa. Sequenza ridondante
-    // di reflow toggle + resize a 3 timestep per coprire tutti i casi.
-    function forceReflow() {
-      try {
-        var html = document.documentElement;
-        var body = document.body;
-        if (!html || !body) return;
-        var oldHtmlOverflow = html.style.overflow;
-        var oldBodyOverflow = body.style.overflow;
-        html.style.overflow = 'hidden';
-        body.style.overflow = 'hidden';
-        void body.offsetHeight; // forza reflow
-        html.style.overflow = oldHtmlOverflow || 'auto';
-        body.style.overflow = oldBodyOverflow || 'auto';
-        void body.offsetHeight;
-        window.dispatchEvent(new Event('resize'));
-        // Tocco programmatico per "svegliare" il gesture handler
-        window.scrollTo(0, 1);
-        window.scrollTo(0, 0);
-      } catch (e) { /* noop */ }
-    }
-    setTimeout(forceReflow, 100);
-    setTimeout(forceReflow, 300);
-    setTimeout(forceReflow, 700);
+    // Lo sblocco dello scroll (WebView Android) è gestito dal parent:
+    // vedi hooks/useIframeScrollWake.ts.
   } catch (e) { /* noop */ }
 
   // 3) Intercetta window.open (per WhatsApp, mailto, link esterni)
@@ -133,6 +109,7 @@ const MiniAppView: React.FC = () => {
   const { id } = useParams<RouteParams>();
   const app = MINIAPPS.find(a => a.id === id);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const wakeOnLoad = useIframeScrollWake(iframeRef);
 
   // Listener globale per i messaggi delle mini-app
   useEffect(() => {
@@ -161,6 +138,7 @@ const MiniAppView: React.FC = () => {
     } catch {
       // cross-origin (non dovrebbe mai accadere: le mini-app sono asset locali)
     }
+    wakeOnLoad();
   };
 
   if (!app || !app.file) {
@@ -193,7 +171,7 @@ const MiniAppView: React.FC = () => {
       </IonHeader>
       {/* scrollY=false: lasciamo che sia l'iframe a gestire lo scroll interno,
           altrimenti IonContent intercetta i touch e l'iframe resta bloccato. */}
-      <IonContent fullscreen scrollY={false}>
+      <IonContent scrollY={false}>
         <iframe
           ref={iframeRef}
           src={`/${app.file}`}
@@ -203,10 +181,14 @@ const MiniAppView: React.FC = () => {
           style={{
             border: 'none',
             width: '100%',
-            height: '100%',
             display: 'block',
             position: 'absolute',
-            inset: 0,
+            top: 0,
+            left: 0,
+            // Android 15+ edge-to-edge: non finire sotto la barra di navigazione.
+            // Altezza esplicita: un iframe (elemento "replaced") in position
+            // absolute NON si allunga tra top e bottom, userebbe 150px.
+            height: 'calc(100% - var(--ion-safe-area-bottom, 0px))',
           }}
         />
       </IonContent>

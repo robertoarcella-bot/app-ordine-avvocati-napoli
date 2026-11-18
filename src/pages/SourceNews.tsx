@@ -13,6 +13,7 @@ import { getSource, type SourceNewsItem } from '../config/sources';
 import { cacheGet, cacheSet } from '../services/cache';
 import { openOutline, alertCircleOutline, refreshOutline } from 'ionicons/icons';
 import SourceNewsCard from '../components/SourceNewsCard';
+import { useIframeScrollWake } from '../hooks/useIframeScrollWake';
 
 interface RouteParams { sourceId: string }
 
@@ -201,6 +202,7 @@ interface WebViewProps {
 const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }) => {
   const url = source.newsUrl || source.baseUrl;
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const wakeOnLoad = useIframeScrollWake(iframeRef);
   const [loading, setLoading] = useState(true);
 
   // Rimostra lo spinner quando cambia la pagina o si ricarica: pattern React
@@ -230,7 +232,8 @@ const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
+      {/* scrollY=false: scorre solo l'iframe (niente scroller annidati) */}
+      <IonContent scrollY={false}>
         {loading && (
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
@@ -245,8 +248,19 @@ const SourceWebView: React.FC<WebViewProps> = ({ source, reloadKey, bumpReload }
           ref={iframeRef}
           src={url}
           title={source.shortLabel}
-          onLoad={() => setLoading(false)}
-          style={{ border: 'none', width: '100%', height: '100%' }}
+          onLoad={() => { setLoading(false); wakeOnLoad(); }}
+          style={{
+            border: 'none',
+            width: '100%',
+            display: 'block',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            // Android 15+ edge-to-edge: non finire sotto la barra di navigazione.
+            // Altezza esplicita: un iframe (elemento "replaced") in position
+            // absolute NON si allunga tra top e bottom, userebbe 150px.
+            height: 'calc(100% - var(--ion-safe-area-bottom, 0px))',
+          }}
         />
       </IonContent>
     </IonPage>

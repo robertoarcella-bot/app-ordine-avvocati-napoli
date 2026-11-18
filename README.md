@@ -20,6 +20,20 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 
 > L'ID Android `it.ordineavvocatinapoli.app` è quello da utilizzare per ogni riferimento "ufficiale" all'app installata (autorizzazioni TestFlight/Play, deep link, integrazioni esterne, segnalazioni di abusi). Una volta pubblicato l'app deve mantenere questo identificativo: cambiarlo equivale a creare una nuova app distinta agli occhi degli store.
 
+### Dove sta la repo (dal 18/11/2026)
+
+| Copia | Percorso | Uso |
+|---|---|---|
+| **Repo di lavoro** | `C:\dev\APP_COA\app-coa` | modifiche, build, commit, push |
+| Copia su Google Drive | `G:\Il mio Drive\002_APPLICAZIONI\12_APP_COA\app-coa` | duplicato speculare (anche `.git`), **non modificarlo** |
+
+Google Drive per desktop crea `desktop.ini` in ogni cartella, anche dentro `.git/refs` (git fetch/pull falliscono con `bad object refs/desktop.ini`), e altera i file durante le build: per questo si lavora su disco locale. La copia su Drive si aggiorna con `scripts/sync-gdrive.ps1` (robocopy `/MIR`, esclusi `node_modules`, output di build e `desktop.ini`), lanciato in automatico dagli hook git `post-commit` / `post-merge` / `post-checkout`. Su un nuovo clone installare gli hook una volta:
+
+```powershell
+powershell -File scripts\install-git-hooks.ps1   # hook → sync automatico su Drive dopo ogni commit
+powershell -File scripts\sync-gdrive.ps1         # sync manuale (log in C:\dev\APP_COA\sync-gdrive.log)
+```
+
 ---
 
 ## Sommario
@@ -42,6 +56,23 @@ App mobile **ufficiale** del Consiglio dell'Ordine degli Avvocati di Napoli, a b
 ---
 
 ## Changelog
+
+### v1.2.6 (novembre 2026)
+
+**Android 15+ (edge-to-edge, WebView ≥ 140)**
+- Fondo delle pagine non più nascosto dietro la barra di navigazione di sistema: `ion-content` riceve `--ion-content-safe-area-padding-bottom` dall'inset inferiore (`src/theme/variables.css`). Su WebView precedenti l'inset vale 0, nessun doppio margine
+- Mini-app, siti e news delle fonti in iframe (`MiniAppView`, `SitoView`, `SourceNews`): l'iframe finisce sopra la barra di navigazione e non parte più sotto l'intestazione (tolto `fullscreen` da `IonContent`, che nascondeva il titolo della mini-app)
+
+**Scroll bloccato finché non si tocca lo schermo**
+- Nuovo hook `src/hooks/useIframeScrollWake.ts`: ridimensiona l'iframe di 1 px per un frame e gli dà il focus al caricamento, a fine animazione di ingresso della pagina e (same-origin) quando cambia l'altezza del contenuto. Sostituisce i vecchi "reflow" sincroni, che il compositor del WebView non vedeva
+- `SourceNews`: niente più due scroller annidati (`IonContent` + iframe)
+
+**Commissione Informatica**
+- Corretto il cognome: Avv. Orso Maria **Siporso**
+
+**Repo**: si lavora in `C:\dev\APP_COA\app-coa`; la copia su Google Drive si aggiorna da sola dopo ogni commit (`scripts/sync-gdrive.ps1`, `scripts/install-git-hooks.ps1`)
+
+**Build**: versionName `1.2.6`, versionCode `126`
 
 ### v1.2.5 (novembre 2026)
 

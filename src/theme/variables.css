@@ -70,6 +70,19 @@
   --coa-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/*
+ * Android 15+ (targetSdk 35+) disegna l'app "edge-to-edge": con WebView >= 140
+ * e viewport-fit=cover Capacitor lascia il WebView sotto la barra di
+ * navigazione e passa gli inset al CSS (--safe-area-inset-*, letti da
+ * --ion-safe-area-*). Ionic protegge l'header (toolbar) ma non il fondo di
+ * ion-content: senza questa regola l'ultima parte di ogni pagina (es. Home)
+ * resta nascosta dietro la barra di sistema. Su WebView più vecchi Capacitor
+ * aggiunge invece un padding nativo e qui l'inset vale 0 (nessun doppio margine).
+ */
+ion-content {
+  --ion-content-safe-area-padding-bottom: var(--ion-safe-area-bottom, 0px);
+}
+
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
