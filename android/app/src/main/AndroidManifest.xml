@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,6 +38,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Permessi dichiarati da @capacitor/background-runner e non usati
+         dall'app (nessuna geolocalizzazione, notifiche immediate e non a orario).
+         Rimossi dal manifest unito: la posizione in background impone a Google
+         Play una dichiarazione con video e contraddice la scheda "Sicurezza dei
+         dati"; senza SCHEDULE_EXACT_ALARM i plugin ripiegano da soli su allarmi
+         non esatti (canScheduleExactAlarms). -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
 
     <!-- Per aprire link/PDF con app esterna su Android 11+ -->
     <queries>

@@ -57,6 +57,15 @@ powershell -File scripts\sync-gdrive.ps1         # sync manuale (log in C:\dev\A
 
 ## Changelog
 
+### v1.2.7 (novembre 2026): prima pubblicazione su Google Play
+
+**Permessi Android**
+- Rimossi dal manifest unito `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, `ACCESS_BACKGROUND_LOCATION` e `SCHEDULE_EXACT_ALARM`, dichiarati da `@capacitor/background-runner` ma non usati dall'app (`tools:node="remove"` in `android/app/src/main/AndroidManifest.xml`). La posizione in background avrebbe richiesto la dichiarazione con video su Play Console e contraddetto la scheda "Sicurezza dei dati: nessun dato raccolto". Le notifiche PST restano invariate: i plugin ripiegano su allarmi non esatti
+
+**Materiale per lo store**: `G:\Il mio Drive\002_APPLICAZIONI\12_APP_COA\Consegna_PlayStore`
+
+**Build**: versionName `1.2.7`, versionCode `127`
+
 ### v1.2.6 (novembre 2026)
 
 **Android 15+ (edge-to-edge, WebView ≥ 140)**
